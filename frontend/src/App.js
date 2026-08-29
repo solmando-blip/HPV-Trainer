@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
+import ToastContainer from './components/ToastContainer';
+import ToastProvider from './context/ToastContext';
+import useAuthTimeout from './hooks/useAuthTimeout';
 import Home from './pages/Home';
 import News from './pages/News';
 import Documents from './pages/Documents';
@@ -11,6 +14,39 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import AdminPanel from './pages/AdminPanel';
+import Profile from './pages/Profile';
+
+function AppContent({ user, handleLogout, handleLogin }) {
+  useAuthTimeout(30 * 60 * 1000); // 30-minute timeout
+
+  return (
+    <>
+      <Header user={user} onLogout={handleLogout} />
+      <ToastContainer />
+      <div className="container py-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/news" element={<News user={user} />} />
+          <Route path="/documents" element={<Documents user={user} />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/legal" element={<Legal />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/profile"
+            element={user ? <Profile /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/admin"
+            element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminPanel /> : <Navigate to="/" />}
+          />
+        </Routes>
+      </div>
+    </>
+  );
+}
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -37,26 +73,11 @@ function App() {
   };
 
   return (
-    <Router>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="container py-4">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/news" element={<News user={user} />} />
-          <Route path="/documents" element={<Documents user={user} />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/legal" element={<Legal />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route
-            path="/admin"
-            element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminPanel /> : <Navigate to="/" />}
-          />
-        </Routes>
-      </div>
-    </Router>
+    <ToastProvider>
+      <Router>
+        <AppContent user={user} handleLogout={handleLogout} handleLogin={handleLogin} />
+      </Router>
+    </ToastProvider>
   );
 }
 

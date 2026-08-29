@@ -31,6 +31,7 @@ function Header({ user, onLogout }) {
             {user ? (
               <>
                 <span className="text-light me-3">Hallo, <strong>{user.name}</strong></span>
+                <Link className="btn btn-outline-light btn-sm me-2" to="/profile">Profil</Link>
                 <button className="btn btn-outline-light btn-sm" onClick={handleLogoutClick}>Abmelden</button>
               </>
             ) : (

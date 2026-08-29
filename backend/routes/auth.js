@@ -141,4 +141,68 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
+// Passwort für angemeldete Benutzer ändern
+router.post('/change-password', verifyToken, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ message: 'Alle Felder müssen ausgefüllt werden.' });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'Neues Passwort muss mindestens 6 Zeichen lang sein.' });
+  }
+
+  try {
+    const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Benutzer nicht gefunden.' });
+    }
+
+    const user = userResult.rows[0];
+    const validPass = await bcrypt.compare(currentPassword, user.password);
+    if (!validPass) {
+      return res.status(400).json({ message: 'Aktuelles Passwort ist falsch.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, req.user.id]);
+
+    res.json({ message: 'Passwort erfolgreich geändert.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Profil-Update (Name, E-Mail)
+router.put('/profile', verifyToken, async (req, res) => {
+  const { name, email } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).json({ message: 'Name und E-Mail sind erforderlich.' });
+  }
+
+  try {
+    // Prüfe, ob E-Mail bereits von anderem Benutzer verwendet wird
+    if (email !== req.user.email) {
+      const emailExists = await pool.query('SELECT * FROM users WHERE email = $1 AND id != $2', [email, req.user.id]);
+      if (emailExists.rows.length > 0) {
+        return res.status(400).json({ message: 'Diese E-Mail wird bereits verwendet.' });
+      }
+    }
+
+    const result = await pool.query(
+      'UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING id, name, email, role, status',
+      [name, email, req.user.id]
+    );
+
+    res.json({
+      message: 'Profil erfolgreich aktualisiert.',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

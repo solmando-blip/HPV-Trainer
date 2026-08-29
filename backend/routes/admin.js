@@ -189,4 +189,35 @@ router.get('/templates', async (req, res) => {
   }
 });
 
+// Audit Logs - nur für Admins
+router.get('/audit-logs', verifyRoles('Admin'), async (req, res) => {
+  try {
+    const limit = req.query.limit || 100;
+    const offset = req.query.offset || 0;
+    const action = req.query.action || '';
+
+    let query = 'SELECT * FROM audit_logs';
+    const params = [];
+    
+    if (action) {
+      query += ` WHERE action ILIKE $${params.length + 1}`;
+      params.push(`%${action}%`);
+    }
+
+    query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limit, offset);
+
+    const result = await pool.query(query, params);
+    
+    const countResult = await pool.query('SELECT COUNT(*) FROM audit_logs');
+    
+    res.json({
+      logs: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
