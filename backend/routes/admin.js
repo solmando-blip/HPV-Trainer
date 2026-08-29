@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../database');
+const { sendEmail } = require('../services/emailService');
 const { verifyToken, verifyRoles } = require('../middleware/auth');
 
 router.use(verifyToken, verifyRoles('Admin', 'Moderator'));
 
 router.get('/users/pending', async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, name, email, role, created_at FROM users WHERE status = 'pending'");
+    const result = await pool.query("SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users WHERE status = 'pending'");
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -16,8 +17,23 @@ router.get('/users/pending', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, name, email, role, status, created_at FROM users ORDER BY created_at DESC");
+    const result = await pool.query("SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users ORDER BY created_at DESC");
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/users/:id', verifyRoles('Admin'), async (req, res) => {
+  const { name, email, role, status, license_level, license_number, license_expires_at } = req.body;
+  try {
+    const result = await pool.query(`
+      UPDATE users
+      SET name = $1, email = $2, role = $3, status = $4, license_level = $5, license_number = $6, license_expires_at = $7
+      WHERE id = $8 RETURNING id, name, email, role, status, license_level, license_number, license_expires_at
+    `, [name, email, role, status, license_level, license_number, license_expires_at || null, req.params.id]);
+
+    res.json({ message: 'Benutzer erfolgreich aktualisiert.', user: result.rows[0] });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -74,6 +90,91 @@ router.post('/groups/:id/members', async (req, res) => {
   try {
     await pool.query('INSERT INTO user_groups (user_id, group_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [userId, req.params.id]);
     res.json({ message: 'Mitglied zur Gruppe hinzugefügt.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/groups/:id/send-email', async (req, res) => {
+  const { subject, content } = req.body;
+  try {
+    const members = await pool.query(`
+      SELECT u.email FROM users u
+      JOIN user_groups ug ON u.id = ug.user_id
+      WHERE ug.group_id = $1 AND u.status = 'active'
+    `, [req.params.id]);
+
+    const emails = members.rows.map(m => m.email);
+    if (emails.length === 0) {
+      return res.status(400).json({ message: 'Keine aktiven Mitglieder in dieser Gruppe.' });
+    }
+
+    await sendEmail({
+      to: process.env.SMTP_USER || 'noreply@hpv.local',
+      bcc: emails.join(','),
+      subject,
+      text: content,
+      html: `<p>${String(content).replace(/\n/g, '<br>')}</p>`
+    });
+
+    res.json({ message: `E-Mail erfolgreich per BCC an ${emails.length} Mitglieder gesendet.` });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/whatsapp', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM whatsapp_groups ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/whatsapp', async (req, res) => {
+  const { name, invite_link, description } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO whatsapp_groups (name, invite_link, description) VALUES ($1, $2, $3) RETURNING *',
+      [name, invite_link, description]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete('/whatsapp/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM whatsapp_groups WHERE id = $1', [req.params.id]);
+    res.json({ message: 'WhatsApp-Gruppe gelöscht.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/legal/:key', verifyRoles('Admin'), async (req, res) => {
+  const { title, content } = req.body;
+  try {
+    await pool.query(
+      'UPDATE legal_texts SET title = $1, content = $2, updated_at = NOW() WHERE key = $3',
+      [title, content, req.params.key]
+    );
+    res.json({ message: 'Rechtstext erfolgreich aktualisiert.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/settings/smtp', verifyRoles('Admin'), async (req, res) => {
+  const { host, port, user, pass } = req.body;
+  try {
+    await pool.query("INSERT INTO system_settings (key, value) VALUES ('smtp_host', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value", [host]);
+    await pool.query("INSERT INTO system_settings (key, value) VALUES ('smtp_port', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value", [port]);
+    await pool.query("INSERT INTO system_settings (key, value) VALUES ('smtp_user', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value", [user]);
+    await pool.query("INSERT INTO system_settings (key, value) VALUES ('smtp_pass', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value", [pass]);
+    res.json({ message: 'SMTP-Konfiguration gespeichert.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

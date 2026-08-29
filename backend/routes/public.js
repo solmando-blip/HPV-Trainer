@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
 const multer = require('multer');
 const { pool } = require('../database');
@@ -66,13 +68,35 @@ router.get('/documents', async (req, res) => {
 
 router.post('/documents', verifyToken, verifyRoles('Admin', 'Moderator'), upload.single('file'), async (req, res) => {
   const { title, category } = req.body;
-  const filePath = req.file ? req.file.path : '';
+  if (!req.file) return res.status(400).json({ message: 'Keine Datei hochgeladen.' });
+
+  const filePath = req.file.path;
+  const fileSize = req.file.size;
+  const fileType = path.extname(req.file.originalname).replace('.', '').toLowerCase();
+
   try {
     const result = await pool.query(
-      'INSERT INTO documents (title, file_path, category, uploaded_by) VALUES ($1, $2, $3, $4) RETURNING *',
-      [title, filePath, category || 'General', req.user.id]
+      'INSERT INTO documents (title, file_path, category, uploaded_by, file_size, file_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [title || req.file.originalname, filePath, category || 'General', req.user.id, fileSize, fileType]
     );
     res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/documents/download/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM documents WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Datei nicht gefunden.' });
+
+    const doc = result.rows[0];
+    const fullPath = path.join(__dirname, '..', doc.file_path);
+
+    if (!fs.existsSync(fullPath)) return res.status(404).json({ message: 'Datei auf dem Server nicht vorhanden.' });
+
+    const fileName = doc.title.endsWith(`.${doc.file_type}`) ? doc.title : `${doc.title}.${doc.file_type}`;
+    res.download(fullPath, fileName);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -103,6 +127,34 @@ router.post('/contact', async (req, res) => {
 router.get('/contact', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM contact_messages ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/contact/:id/status', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  const { status } = req.body;
+  try {
+    await pool.query('UPDATE contact_messages SET status = $1 WHERE id = $2', [status, req.params.id]);
+    res.json({ message: 'Status der Anfrage aktualisiert.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete('/contact/:id', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    await pool.query('DELETE FROM contact_messages WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Kontaktanfrage gelöscht.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/legal', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM legal_texts');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
