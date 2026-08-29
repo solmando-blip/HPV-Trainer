@@ -8,8 +8,22 @@ router.use(verifyToken, verifyRoles('Admin', 'Moderator'));
 
 router.get('/users/pending', async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users WHERE status = 'pending'");
-    res.json(result.rows);
+    const limit = parseInt(req.query.limit || 20);
+    const offset = parseInt(req.query.offset || 0);
+
+    const result = await pool.query(
+      "SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users WHERE status = 'pending' ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      [limit, offset]
+    );
+    
+    const countResult = await pool.query("SELECT COUNT(*) FROM users WHERE status = 'pending'");
+    
+    res.json({
+      users: result.rows,
+      total: parseInt(countResult.rows[0].count),
+      limit,
+      offset
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -17,8 +31,59 @@ router.get('/users/pending', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users ORDER BY created_at DESC");
-    res.json(result.rows);
+    const limit = parseInt(req.query.limit || 20);
+    const offset = parseInt(req.query.offset || 0);
+    const search = req.query.search || '';
+    const role = req.query.role || '';
+    const status = req.query.status || '';
+
+    let query = "SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users WHERE 1=1";
+    const params = [];
+
+    if (search) {
+      query += ` AND (name ILIKE $${params.length + 1} OR email ILIKE $${params.length + 1})`;
+      params.push(`%${search}%`);
+    }
+
+    if (role) {
+      query += ` AND role = $${params.length + 1}`;
+      params.push(role);
+    }
+
+    if (status) {
+      query += ` AND status = $${params.length + 1}`;
+      params.push(status);
+    }
+
+    query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+    params.push(limit, offset);
+
+    const result = await pool.query(query, params);
+    
+    // Count total matches
+    let countQuery = "SELECT COUNT(*) FROM users WHERE 1=1";
+    const countParams = [];
+    if (search) {
+      countQuery += ` AND (name ILIKE $${countParams.length + 1} OR email ILIKE $${countParams.length + 1})`;
+      countParams.push(`%${search}%`);
+    }
+    if (role) {
+      countQuery += ` AND role = $${countParams.length + 1}`;
+      countParams.push(role);
+    }
+    if (status) {
+      countQuery += ` AND status = $${countParams.length + 1}`;
+      countParams.push(status);
+    }
+
+    const countResult = await pool.query(countQuery, countParams);
+
+    res.json({
+      users: result.rows,
+      total: parseInt(countResult.rows[0].count),
+      limit,
+      offset
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -1,0 +1,72 @@
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.pagination-info {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.pagination-info span {
+  display: flex;
+  align-items: center;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pagination-page-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-page-numbers .btn {
+  min-width: 40px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.pagination-controls .form-select-sm {
+  min-width: 120px;
+}
+
+.pagination-controls .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination-info {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+  }
+
+  .pagination-page-numbers {
+    justify-content: center;
+  }
+}
