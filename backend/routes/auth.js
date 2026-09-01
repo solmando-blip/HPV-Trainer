@@ -25,10 +25,33 @@ router.post('/register', async (req, res) => {
       [name, email, hashedPassword, 'User', 'pending']
     );
 
+    // Create email verification token (24h valid)
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await pool.query(
+      'INSERT INTO email_verifications (email, token, expires_at) VALUES ($1, $2, $3)',
+      [email, verificationToken, expiresAt]
+    );
+
     const defaultGroup = await pool.query("SELECT id FROM groups WHERE name = 'Mitglieder'");
     if (defaultGroup.rows.length > 0) {
       await pool.query('INSERT INTO user_groups (user_id, group_id) VALUES ($1, $2)', [newUser.rows[0].id, defaultGroup.rows[0].id]);
     }
+
+    // Send verification email
+    const verifyLink = `${process.env.FRONTEND_URL || 'http://localhost:8080'}/verify-email?token=${verificationToken}`;
+    await sendEmail({
+      to: email,
+      subject: 'E-Mail-Bestätigung - HPV Trainer',
+      html: `
+        <p>Hallo ${name},</p>
+        <p>danke für die Registrierung! Bitte bestätigen Sie Ihre E-Mail-Adresse:</p>
+        <p><a href="${verifyLink}">E-Mail jetzt bestätigen</a></p>
+        <p>Der Link ist 24 Stunden gültig.</p>
+        <p>Viele Grüße,<br>HPV Trainer Team</p>
+      `
+    });
 
     const admins = await pool.query("SELECT email FROM users WHERE role IN ('Admin', 'Moderator')");
     const adminEmails = admins.rows.map(a => a.email);
@@ -36,12 +59,12 @@ router.post('/register', async (req, res) => {
       await sendEmail({
         to: adminEmails.join(','),
         subject: 'Neue Registrierung - HPV Trainer',
-        text: `Ein neuer Benutzer (${name} - ${email}) wartet auf Freischaltung.`
+        text: `Ein neuer Benutzer (${name} - ${email}) wartet auf E-Mail-Bestätigung und Freischaltung.`
       });
     }
 
     res.status(201).json({
-      message: 'Registrierung erfolgreich. Ihr Account muss von einem Administrator freigeschaltet werden.',
+      message: 'Registrierung erfolgreich. Bitte bestätigen Sie Ihre E-Mail-Adresse.',
       user: newUser.rows[0]
     });
   } catch (err) {
@@ -200,6 +223,38 @@ router.put('/profile', verifyToken, async (req, res) => {
       message: 'Profil erfolgreich aktualisiert.',
       user: result.rows[0]
     });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Email-Verifikation bestätigen
+router.post('/verify-email', async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ message: 'Verifikations-Token erforderlich.' });
+  }
+
+  try {
+    const tokenResult = await pool.query(
+      'SELECT * FROM email_verifications WHERE token = $1 AND expires_at > NOW()',
+      [token]
+    );
+
+    if (tokenResult.rows.length === 0) {
+      return res.status(400).json({ message: 'Ungültiger oder abgelaufener Verifikations-Link.' });
+    }
+
+    const verification = tokenResult.rows[0];
+
+    // Update user status
+    await pool.query('UPDATE users SET status = $1 WHERE email = $2', ['pending', verification.email]);
+
+    // Delete verification token
+    await pool.query('DELETE FROM email_verifications WHERE id = $1', [verification.id]);
+
+    res.json({ message: 'E-Mail erfolgreich bestätigt. Ihr Account wartet nun auf Freischaltung durch einen Administrator.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -75,6 +75,13 @@ const initDb = async () => {
         token VARCHAR(255) NOT NULL,
         expires_at TIMESTAMP WITH TIME ZONE NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS email_verifications (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) NOT NULL,
+        token VARCHAR(255) UNIQUE NOT NULL,
+        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
       CREATE TABLE IF NOT EXISTS whatsapp_groups (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,

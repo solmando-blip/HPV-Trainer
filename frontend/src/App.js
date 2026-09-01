@@ -13,6 +13,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
 
@@ -34,6 +35,7 @@ function AppContent({ user, handleLogout, handleLogin }) {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route
             path="/profile"
             element={user ? <Profile /> : <Navigate to="/login" />}
