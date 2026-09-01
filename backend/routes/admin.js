@@ -122,6 +122,53 @@ router.post('/users/:id/block', async (req, res) => {
   }
 });
 
+router.post('/users', verifyRoles('Admin'), async (req, res) => {
+  try {
+    const { name, email, password, role, status, license_level, license_number, license_expires_at } = req.body;
+
+    // Validierung
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, E-Mail und Passwort sind erforderlich.' });
+    }
+
+    // Passwort hashen
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Benutzer erstellen
+    const result = await pool.query(
+      `INSERT INTO users (name, email, password, role, status, license_level, license_number, license_expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, name, email, role, status, license_level, license_number, license_expires_at, created_at`,
+      [
+        name,
+        email.toLowerCase(),
+        hashedPassword,
+        role || 'User',
+        status || 'active',
+        license_level || 'Keine',
+        license_number || null,
+        license_expires_at || null
+      ]
+    );
+
+    // Audit-Log (optional - wenn middleware vorhanden)
+    if (req.audit && typeof req.audit === 'function') {
+      await req.audit({ action: 'CREATE_USER', resource_type: 'user', resource_id: result.rows[0].id, new_values: result.rows[0] });
+    }
+
+    res.status(201).json({
+      message: 'Benutzer erfolgreich erstellt.',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(400).json({ message: 'E-Mail-Adresse existiert bereits.' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.delete('/users/:id', verifyRoles('Admin'), async (req, res) => {
   try {
     await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);

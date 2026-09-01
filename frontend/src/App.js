@@ -16,6 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
+import CreateUser from './pages/CreateUser';
 
 function AppContent({ user, handleLogout, handleLogin }) {
   useAuthTimeout(30 * 60 * 1000); // 30-minute timeout
@@ -43,6 +44,10 @@ function AppContent({ user, handleLogout, handleLogin }) {
           <Route
             path="/admin"
             element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminPanel /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/admin/create-user"
+            element={user && user.role === 'Admin' ? <CreateUser /> : <Navigate to="/" />}
           />
         </Routes>
       </div>

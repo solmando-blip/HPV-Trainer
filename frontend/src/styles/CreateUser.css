@@ -1,0 +1,217 @@
+/* CreateUser.css */
+
+.create-user-card {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.create-user-card .card-header {
+  padding: 1.5rem;
+  border-bottom: 3px solid #0056b3;
+}
+
+.create-user-card .card-header h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.create-user-card .card-body {
+  padding: 2rem;
+}
+
+/* Fieldsets */
+fieldset {
+  border: 1px solid #dee2e6 !important;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+fieldset legend {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #212529;
+  padding: 0 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Form Labels */
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-label .text-danger {
+  margin-left: 0.25rem;
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25);
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #dc3545;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.invalid-feedback {
+  display: block;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Button Styling */
+.btn {
+  padding: 0.7rem 1.5rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #218838;
+  border-color: #1e7e34;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #5a6268;
+  border-color: #545b62;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Buttons Container */
+.d-flex {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.gap-2 {
+  gap: 0.75rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .create-user-card .card-body {
+    padding: 1rem;
+  }
+
+  .create-user-card .card-header h2 {
+    font-size: 1.5rem;
+  }
+
+  fieldset {
+    margin-bottom: 1rem !important;
+  }
+
+  fieldset legend {
+    font-size: 1rem;
+  }
+
+  .row {
+    margin-bottom: 1rem;
+  }
+
+  .col-md-6 {
+    margin-bottom: 1rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  .d-flex {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-user-card {
+    border-radius: 4px;
+  }
+
+  .create-user-card .card-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+
+  fieldset legend {
+    font-size: 0.95rem;
+  }
+}
+
+/* Form Row Spacing */
+.row {
+  margin-bottom: 1.5rem;
+}
+
+.row .col-md-6 {
+  margin-bottom: 0;
+}
+
+/* Help Text */
+.form-text {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #6c757d;
+}

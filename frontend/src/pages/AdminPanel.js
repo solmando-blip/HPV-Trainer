@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function AdminPanel() {
   const [pendingUsers, setPendingUsers] = useState([]);
@@ -157,7 +158,12 @@ function AdminPanel() {
     <div className="container-fluid px-0">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Admin Panel</h2>
-        <span className="badge bg-primary rounded-pill px-3 py-2">Verwaltung</span>
+        <div className="d-flex gap-2">
+          <Link to="/admin/create-user" className="btn btn-success btn-sm">
+            <i className="bi bi-plus-circle"></i> Neuer Benutzer
+          </Link>
+          <span className="badge bg-primary rounded-pill px-3 py-2">Verwaltung</span>
+        </div>
       </div>
 
       <div className="row g-3 mb-4">
