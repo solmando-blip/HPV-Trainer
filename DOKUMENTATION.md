@@ -79,7 +79,7 @@ Konto-Status: `pending` → `active` → ggf. `blocked`. Details:
 |---|---|---|---|
 | `/` | Startseite | öffentlich | [§4.1](BENUTZERHANDBUCH.md#41-startseite) |
 | `/news` | News & Mitteilungen | öffentlich lesen; schreiben: Admin/Moderator | [§4.2](BENUTZERHANDBUCH.md#42-news--mitteilungen) |
-| `/documents` | Dokumente & Downloads | öffentlich lesen; Upload: Admin/Moderator | [§4.3](BENUTZERHANDBUCH.md#43-dokumente--downloads) |
+| `/documents` | Dokumente & Downloads (inkl. Browser-Vorschau) | öffentlich lesen; Upload: Admin/Moderator | [§4.3](BENUTZERHANDBUCH.md#43-dokumente--downloads) |
 | `/contact` | Kontaktformular | öffentlich | [§4.4](BENUTZERHANDBUCH.md#44-kontaktformular) |
 | `/legal` | Rechtliche Hinweise | öffentlich | [§4.5](BENUTZERHANDBUCH.md#45-rechtliche-hinweise) |
 | `/register` | Registrieren | öffentlich | [§5.1](BENUTZERHANDBUCH.md#51-registrieren) |
@@ -90,6 +90,24 @@ Konto-Status: `pending` → `active` → ggf. `blocked`. Details:
 | `/profile` | Mein Profil | angemeldet | [§5.5](BENUTZERHANDBUCH.md#55-mein-profil) |
 | `/admin` | Admin-Panel | Admin/Moderator | [§6](BENUTZERHANDBUCH.md#6-admin-bereich) |
 | `/admin/create-user` | Neuen Benutzer anlegen | nur Admin | [§6.2](BENUTZERHANDBUCH.md#62-neuen-benutzer-anlegen) |
+
+---
+
+## 5a. Dateien & API
+
+Die vollständige Endpunkt-Liste steht in [README.md § API-Übersicht](README.md#api-übersicht).
+Wichtig für den Betrieb:
+
+- **Hochgeladene Dateien** (Dokumente, News-Titelbilder) sind nur über geprüfte
+  `/api`-Endpunkte erreichbar – `GET /api/documents/view/:id`,
+  `GET /api/documents/download/:id`, `GET /api/view-image/:filepath`. Jeder Zugriff wird
+  gegen das `uploads/`-Verzeichnis geprüft; einen direkten `/uploads`-Pfad gibt es nicht.
+- **Dokument-Vorschau:** `GET /api/documents/preview-types` liefert den Katalog der
+  vorschaufähigen Dateitypen (`pdf`, `image`, `text`, `word`). Das Frontend richtet sich
+  allein danach – neue Typen daher nur im Backend (`PREVIEW_TYPES` in
+  `backend/routes/public.js`) pflegen.
+- Textartige Dateien werden als `text/plain` ausgeliefert, `.docx` wird im Browser über
+  `mammoth` in mit DOMPurify bereinigtes HTML umgewandelt, `.doc` bietet nur den Download.
 
 ---
 
@@ -130,4 +148,4 @@ Ausführlich: [QUICK-START.md](QUICK-START.md) · Entwicklung: [CLAUDE.md](CLAUD
 
 ---
 
-**Letzte Aktualisierung:** 2026-09-02
+**Letzte Aktualisierung:** 2026-09-03

@@ -171,27 +171,40 @@ angelegt und mit Initialdaten befüllt.
 - GET /api/health
 - GET /api/news
 - GET /api/documents
+- GET /api/documents/preview-types – Katalog `{ endung: "pdf" | "image" | "text" | "word" }`;
+  einzige Quelle dafür, welche Dateitypen das Frontend als Vorschau anbietet
+- GET /api/documents/download/:id – erzwingt Download (`Content-Disposition: attachment`)
+- GET /api/documents/view/:id – Inline-Vorschau; nur Typen aus `preview-types`, sonst `415`.
+  Textartige Typen (txt, csv, md, json, xml, log) werden als `text/plain` ausgeliefert,
+  immer mit `X-Content-Type-Options: nosniff`
+- GET /api/view-image/:filepath – Titelbild eines News-Artikels; nur echte Bilddateien
+  (PNG/JPEG/GIF/WebP), `nosniff`
 - POST /api/contact
 - GET /api/legal
-- GET /api/documents/download/:id
 
-### Admin/Moderator-Endpoints
+> Hochgeladene Dateien sind **ausschließlich** über die drei `/api/...`-Endpunkte oben
+> erreichbar. Jeder Zugriff wird gegen das `uploads/`-Verzeichnis geprüft (Schutz vor
+> Path-Traversal); einen direkten statischen `/uploads`-Pfad gibt es nicht mehr.
 
-- GET /api/admin/users
-- GET /api/admin/users/pending
-- POST /api/admin/users/:id/approve
-- POST /api/admin/users/:id/block
-- PUT /api/admin/users/:id
-- GET /api/admin/groups
-- POST /api/admin/groups
-- GET /api/admin/whatsapp
-- POST /api/admin/whatsapp
-- DELETE /api/admin/whatsapp/:id
-- POST /api/admin/groups/:id/send-email
-- PUT /api/admin/legal/:key
-- POST /api/admin/settings/smtp
-- PUT /api/contact/:id/status
-- DELETE /api/contact/:id
+### Endpoints für angemeldete Nutzer / Redaktion (Admin/Moderator)
+
+- POST/PUT/DELETE /api/news[/:id] – Artikel anlegen/ändern/löschen (Bild-Upload als `image`)
+- POST /api/documents – Datei hochladen (Feld `file`)
+- DELETE /api/documents/:id
+- GET /api/contact · PUT /api/contact/:id/status · DELETE /api/contact/:id
+
+### Admin/Moderator-Endpoints (`/api/admin`)
+
+- GET /api/admin/users · GET /api/admin/users/pending
+- POST /api/admin/users/:id/approve · POST /api/admin/users/:id/block
+- POST /api/admin/users · PUT /api/admin/users/:id · DELETE /api/admin/users/:id (nur Admin)
+- GET /api/admin/groups · POST /api/admin/groups
+- GET /api/admin/groups/:id/members · POST /api/admin/groups/:id/members ·
+  DELETE /api/admin/groups/:id/members/:userId
+- POST /api/admin/groups/:id/send-email (BCC an alle aktiven Mitglieder)
+- GET /api/admin/whatsapp · POST /api/admin/whatsapp · DELETE /api/admin/whatsapp/:id
+- PUT /api/admin/legal/:key (nur Admin) · POST /api/admin/settings/smtp (nur Admin)
+- GET /api/admin/templates · GET /api/admin/audit-logs (nur Admin)
 
 ## Nutzung
 
@@ -205,6 +218,10 @@ angelegt und mit Initialdaten befüllt.
 - Dokumente können hochgeladen werden.
 - Dateigröße und Dateityp werden automatisch gespeichert.
 - Download über die Download-Schaltfläche mit originalem Dateinamen.
+- **Vorschau im Browser** über das Typ-Feld bzw. „👁 Vorschau“: PDF (eingebettet),
+  Bilder, Text-Dateien (txt, csv, md, json, xml, log) und Word `.docx` (über `mammoth`
+  in bereinigtes HTML umgewandelt). Alt-Format `.doc` und übrige Typen bieten nur den
+  Download an. Welche Typen vorschaufähig sind, liefert `GET /api/documents/preview-types`.
 
 ### Kontaktanfragen verwalten
 
@@ -240,6 +257,10 @@ Beispiel siehe .env.example.
 - Rollenbasierte Zugriffskontrolle
 - Admin- und Moderator-Route werden geschützt
 - Passwörter werden im Backend gehasht gespeichert
+- Datei-Auslieferung nur über geprüfte `/api`-Endpunkte: Pfad-Prüfung gegen `uploads/`
+  (kein Path-Traversal), feste MIME-Whitelist, `X-Content-Type-Options: nosniff`,
+  textartige Uploads als `text/plain`; die `.docx`-Vorschau wird clientseitig mit
+  DOMPurify bereinigt
 
 ## Fehlerbehandlung / Troubleshooting
 
