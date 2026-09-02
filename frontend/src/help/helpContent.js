@@ -70,6 +70,8 @@ const helpContent = {
         h: 'Für alle Besucher',
         items: [
           'Die Tabelle zeigt Typ, Titel, Dateigröße und Datum jedes Dokuments.',
+          'Ein Klick auf das Typ-Feld (oder „👁 Vorschau“) öffnet eine Vorschau im Browser: PDF, Text-Dateien (txt, csv, md, json, xml, log), Word-Dokumente (.docx) und Bilder.',
+          'Für Formate ohne Browser-Vorschau (z. B. .doc, Excel) erscheint ein Hinweis mit Download-Schaltfläche.',
           'Über „Download“ wird die Datei mit ihrem ursprünglichen Namen heruntergeladen.',
         ],
       },

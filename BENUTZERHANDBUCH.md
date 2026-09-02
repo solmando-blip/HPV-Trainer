@@ -131,6 +131,13 @@ Zeilenumbrüche im Text werden automatisch übernommen.
 **Für alle Besucher**
 
 - Die Tabelle zeigt Typ, Titel, Größe und Datum.
+- **Vorschau:** Ein Klick auf das **Typ-Feld** (Badge) oder die Schaltfläche **👁 Vorschau**
+  öffnet die Datei direkt im Browser:
+  - **PDF** – eingebettete Seitenansicht
+  - **Text-Dateien** – `txt`, `csv`, `md`, `json`, `xml`, `log`
+  - **Word** – `.docx` (wird in formatierten Text umgewandelt)
+  - **Bilder** – `png`, `jpg`, `gif`, `webp`
+  - andere Formate (z. B. `.doc`, Excel): Hinweis mit Download-Schaltfläche
 - **Download** lädt die Datei mit ihrem ursprünglichen Namen herunter.
 
 **Für Admin & Moderator**

@@ -2,6 +2,28 @@
 
 Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
+## [2.2.0] - 2026-09-02
+
+### ✨ Neue Features
+
+- **Dokument-Vorschau**: Klick auf das Typ-Feld (oder „👁 Vorschau“) auf der Dokumente-Seite
+  öffnet die Datei im Browser – PDF (eingebettet), Text-Dateien (txt, csv, md, json, xml, log),
+  Word `.docx` (in formatierten Text umgewandelt) und Bilder. Formate ohne Browser-Vorschau
+  zeigen einen Hinweis mit Download-Schaltfläche.
+
+### 🔧 Technische Verbesserungen
+
+- Backend: `GET /api/documents/view/:id` liefert Dateien mit korrektem Content-Type inline
+  aus (`Content-Disposition: inline`, `X-Content-Type-Options: nosniff`, Pfad-Prüfung gegen
+  `uploads/`).
+- Frontend: Word-Konvertierung über `mammoth` (per CDN in `index.html`, mit Fallback auf
+  Download, falls nicht ladbar). Neue `styles/Documents.css`.
+- **Datenpersistenz**: benanntes Volume `uploads` für `backend:/app/uploads` in
+  `docker-compose.yml`. Zuvor gingen alle hochgeladenen Dokumente und News-Bilder beim
+  Neubau/Neustart des Backend-Containers verloren.
+
+---
+
 ## [2.1.0] - 2026-09-02
 
 ### ✨ Neue Features

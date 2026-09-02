@@ -1,0 +1,35 @@
+/* Word-Vorschau (von mammoth erzeugtes HTML) im Dokumente-Dialog */
+.docx-preview {
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.docx-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+.docx-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.docx-preview td,
+.docx-preview th {
+  border: 1px solid #dee2e6;
+  padding: 0.35rem 0.5rem;
+  vertical-align: top;
+}
+
+.doc-preview-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 70vh;
+  overflow: auto;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  font-size: 0.9rem;
+}

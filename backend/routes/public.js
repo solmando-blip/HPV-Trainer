@@ -115,6 +115,53 @@ router.get('/documents/download/:id', async (req, res) => {
   }
 });
 
+// Content-Type je Dateiendung – die gespeicherten Dateien haben keine Endung.
+const VIEW_MIME_TYPES = {
+  pdf: 'application/pdf',
+  txt: 'text/plain; charset=utf-8',
+  csv: 'text/csv; charset=utf-8',
+  md: 'text/markdown; charset=utf-8',
+  json: 'application/json; charset=utf-8',
+  xml: 'application/xml; charset=utf-8',
+  log: 'text/plain; charset=utf-8',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  webp: 'image/webp'
+};
+
+// Datei zur Inline-Vorschau ausliefern (kein Download-Header).
+router.get('/documents/view/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM documents WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Datei nicht gefunden.' });
+
+    const doc = result.rows[0];
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    const fullPath = path.join(__dirname, '..', doc.file_path);
+    const relative = path.relative(uploadsDir, fullPath);
+
+    if (relative.startsWith('..') || path.isAbsolute(relative) || !fs.existsSync(fullPath)) {
+      return res.status(404).json({ message: 'Datei auf dem Server nicht vorhanden.' });
+    }
+
+    const type = (doc.file_type || '').toLowerCase();
+    if (!VIEW_MIME_TYPES[type]) {
+      return res.status(415).json({ message: 'Für diesen Dateityp ist keine Vorschau verfügbar.' });
+    }
+
+    res.setHeader('Content-Type', VIEW_MIME_TYPES[type]);
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.sendFile(fullPath);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.delete('/documents/:id', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
   try {
     await pool.query('DELETE FROM documents WHERE id = $1', [req.params.id]);

@@ -64,9 +64,13 @@ add a proxy, when testing anything that hits the backend.
 - `middleware/auth.js` — `verifyToken` (Bearer JWT → `req.user = {id, role, email}`) and
   `verifyRoles(...roles)`. `admin.js` applies `router.use(verifyToken, verifyRoles('Admin','Moderator'))`
   to every route; some routes further narrow with `verifyRoles('Admin')`.
-- `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename;
-  metadata in DB), contact messages, legal texts, image serving. Read endpoints are public; writes
-  require Admin/Moderator.
+- `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename
+  with no extension; metadata incl. `file_type` in DB), contact messages, legal texts, image serving.
+  Read endpoints are public; writes require Admin/Moderator. Document delivery: `download/:id`
+  forces `attachment`; `view/:id` serves inline with an explicit Content-Type from `file_type`
+  (the stored file has no extension) for a fixed safe-type whitelist, `nosniff`, path-checked
+  against `uploads/`. `uploads/` is a named Docker volume (`docker-compose.yml`) — without it every
+  container rebuild wipes all uploaded files while the DB rows survive.
 - `routes/auth.js` — register (creates `pending` user + email-verification token + adds to "Mitglieder"
   group + notifies admins), login, `/me`, forgot/reset password, change-password, profile update,
   verify-email.
