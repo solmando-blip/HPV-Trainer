@@ -9,9 +9,11 @@
       content="HPV Trainer Portal"
     />
     <title>HPV Trainer</title>
-    <!-- Word-Vorschau (.docx) auf der Dokumente-Seite. Fehlt das Skript
-         (z. B. offline), greift die Seite auf den Download zurück. -->
+    <!-- Word-Vorschau (.docx) auf der Dokumente-Seite. Fehlt eines der Skripte
+         (z. B. offline), greift die Seite auf den Download zurück.
+         DOMPurify säubert das aus der .docx erzeugte HTML vor der Anzeige. -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.9.0/mammoth.browser.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.4/purify.min.js"></script>
   </head>
   <body>
     <noscript>Bitte aktiviere JavaScript, damit die Anwendung funktioniert.</noscript>

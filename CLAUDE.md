@@ -79,11 +79,16 @@ add a proxy, when testing anything that hits the backend.
   `system_settings`), `GET /templates` (`email_templates` table), `GET /audit-logs`.
 - `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename
   with no extension; metadata incl. `file_type` in DB), contact messages, legal texts, image serving.
-  Read endpoints are public; writes require Admin/Moderator. Document delivery: `download/:id`
-  forces `attachment`; `view/:id` serves inline with an explicit Content-Type from `file_type`
-  (the stored file has no extension) for a fixed safe-type whitelist, `nosniff`, path-checked
-  against `uploads/`. `uploads/` is a named Docker volume (`docker-compose.yml`) — without it every
-  container rebuild wipes all uploaded files while the DB rows survive.
+  Read endpoints are public; writes require Admin/Moderator. **All three file-serving routes
+  (`download/:id`, `view/:id`, `view-image/:filepath`) must resolve paths through
+  `resolveUploadPath()`** — it strips a leading `uploads/` and rejects anything escaping
+  `uploads/` (path-traversal guard). `download/:id` forces `attachment`; `view/:id` serves inline
+  with `nosniff` and a Content-Type from a fixed whitelist (`VIEW_MIME_TYPES`) where text-family
+  types (txt/csv/md/json/xml/log) are deliberately `text/plain` so uploaded XML/SVG/HTML can't run
+  script on our origin; `view-image` sniffs magic bytes and serves only real images.
+  `uploads/` is a named Docker volume (`docker-compose.yml`) — without it every container rebuild
+  wipes all uploaded files while the DB rows survive; migrating an existing deploy needs the
+  `docker cp` steps in `BACKUPS.md`.
 - `routes/auth.js` — register (creates `pending` user + email-verification token + adds to "Mitglieder"
   group + notifies admins), login, `/me`, forgot/reset password, change-password, profile update,
   verify-email.
@@ -106,7 +111,11 @@ add a proxy, when testing anything that hits the backend.
 - `pages/AdminPanel.js` — large single-file admin UI (users, groups + members, WhatsApp, mail, SMTP,
   legal, contacts). `pages/CreateUser.js` is a separate `/admin/create-user` route, **Admin-only**
   (Moderators are redirected). `pages/Documents.js` renders an in-browser preview for whitelisted
-  file types via the backend `view/:id` endpoint.
+  file types via the backend `view/:id` endpoint; `.docx` is converted with `mammoth` and the
+  resulting HTML **must** be run through `DOMPurify.sanitize` before `dangerouslySetInnerHTML`
+  (both libs are `<script defer>` in `public/index.html`, so preview code waits for them via
+  `waitForGlobal`). Concurrent previews are guarded by `previewReqRef` — keep that pattern when
+  adding preview kinds.
 - `context/ToastContext.js` + `components/ToastContainer.js` — app-wide toast notifications.
 - `components/HelpButton.js` + `help/helpContent.js` — route-aware in-app help. One `<HelpButton />`
   in `App.js` renders a floating "?" on every page; `helpContent.js` maps `location.pathname` →

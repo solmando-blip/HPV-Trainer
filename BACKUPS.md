@@ -132,6 +132,36 @@ docker exec -i hpv_db psql -U postgres hpv_trainer < backup.sql
 docker-compose up -d
 ```
 
+## Uploads-Verzeichnis auf Named Volume migrieren
+
+Seit der Einführung des Named Volumes `uploads` in `docker-compose.yml` werden
+hochgeladene Dokumente und News-Bilder dort persistent gespeichert. **Bestehende
+Installationen, die vorher ohne dieses Volume liefen**, hielten die Dateien nur
+im beschreibbaren Container-Layer. Beim ersten `docker-compose up` nach dem
+Update wird der Backend-Container neu erstellt und das (leere) Volume
+eingehängt – die alten Dateien wären dann weg, während die DB-Einträge bestehen
+bleiben (tote Download-/Vorschau-Links).
+
+**Vor** dem ersten Start mit der neuen Compose-Datei die Dateien sichern und
+danach ins Volume kopieren:
+
+```bash
+# 1. Dateien aus dem noch laufenden alten Container sichern
+docker cp hpv_backend:/app/uploads ./uploads-backup
+
+# 2. Update ziehen und Stack neu bauen (legt das leere Volume an)
+git pull
+docker-compose up -d --build
+
+# 3. Gesicherte Dateien ins neue Volume kopieren
+docker cp ./uploads-backup/. hpv_backend:/app/uploads/
+
+# 4. Kontrolle
+docker exec hpv_backend ls -lah /app/uploads
+```
+
+Bei einer Neuinstallation ist nichts zu tun.
+
 ---
 
 **Wichtig:** Sichern Sie Ihre Backups regelmäßig an einem sicheren Ort (z.B. Cloud, externes Laufwerk)!

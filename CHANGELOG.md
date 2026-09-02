@@ -2,6 +2,40 @@
 
 Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
+## [2.2.1] - 2026-09-03
+
+### 🔒 Sicherheit (Fixes aus Code-Review)
+
+- **Path-Traversal behoben**: `GET /api/view-image/:filepath` löste den vom Client
+  übergebenen Pfad ungeprüft auf und gab beliebige Server-Dateien preis
+  (`../../.env`, `database.js`, …). Jetzt wird jeder Datei-Zugriff über
+  `resolveUploadPath()` auf das `uploads/`-Verzeichnis eingegrenzt; `view-image`
+  liefert zusätzlich nur noch echte Bilder aus (Magic-Byte-Prüfung) und setzt
+  `X-Content-Type-Options: nosniff`. Dieselbe Eingrenzung gilt jetzt auch für
+  `download/:id` und `view/:id`.
+- **Stored XSS behoben**: `view/:id` lieferte hochgeladene `.xml`-Dateien als
+  `application/xml` inline auf der App-Origin aus – XHTML mit `<script>` konnte so
+  das JWT aus dem `localStorage` abgreifen. Textartige Formate (txt, csv, md,
+  json, xml, log) werden jetzt als `text/plain` ausgeliefert.
+- **XSS in der Word-Vorschau behoben**: Das aus `.docx` erzeugte HTML wird vor der
+  Anzeige mit DOMPurify gesäubert (`javascript:`-Links u. a. werden entfernt).
+
+### 🔧 Technische Verbesserungen
+
+- Frontend: Vorschau-Ladevorgänge haben einen Request-Guard – schnelles Umschalten
+  zwischen Dokumenten zeigt nicht mehr den Inhalt des einen unter dem Titel des
+  anderen.
+- Frontend: `.docx`-Vorschau wartet auf das verzögert geladene `mammoth`/`DOMPurify`
+  und meldet „Komponente noch nicht geladen" statt fälschlich „Format nicht
+  unterstützt".
+- Frontend: Für Alt-Format `.doc` wird keine Vorschau-Schaltfläche mehr angeboten
+  (sie konnte ohnehin nur den „keine Vorschau"-Hinweis öffnen).
+- **BACKUPS.md**: Migrationsanleitung „Uploads-Verzeichnis auf Named Volume
+  migrieren" ergänzt – bestehende Installationen verlieren sonst beim ersten
+  `docker-compose up` mit dem neuen `uploads`-Volume ihre Dateien.
+
+---
+
 ## [2.2.0] - 2026-09-02
 
 ### ✨ Neue Features

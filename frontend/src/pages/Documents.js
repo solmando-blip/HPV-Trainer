@@ -1,16 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../styles/Documents.css';
 
 const TEXT_TYPES = ['txt', 'csv', 'md', 'json', 'xml', 'log'];
 const IMAGE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-const WORD_TYPES = ['doc', 'docx'];
+const WORD_TYPES = ['doc', 'docx'];            // nur für Badge-Farbe
+const PREVIEW_WORD_TYPES = ['docx'];           // im Browser tatsächlich darstellbar
 
 // Für welche Typen bietet die „Typ“-Spalte eine Vorschau an?
 const canPreview = (fileType) => {
   const t = (fileType || '').toLowerCase();
-  return t === 'pdf' || TEXT_TYPES.includes(t) || IMAGE_TYPES.includes(t) || WORD_TYPES.includes(t);
+  return t === 'pdf' || TEXT_TYPES.includes(t) || IMAGE_TYPES.includes(t) || PREVIEW_WORD_TYPES.includes(t);
 };
+
+// Wartet, bis ein per <script defer> geladenes Global verfügbar ist.
+const waitForGlobal = (name, timeoutMs = 8000) =>
+  new Promise((resolve) => {
+    if (window[name]) return resolve(true);
+    const start = Date.now();
+    const iv = setInterval(() => {
+      if (window[name]) {
+        clearInterval(iv);
+        resolve(true);
+      } else if (Date.now() - start > timeoutMs) {
+        clearInterval(iv);
+        resolve(false);
+      }
+    }, 100);
+  });
 
 const badgeColor = (fileType) => {
   const t = (fileType || '').toLowerCase();
@@ -26,7 +43,8 @@ function Documents({ user }) {
   const [docs, setDocs] = useState([]);
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null); // { doc, kind, status, data }
+  const [preview, setPreview] = useState(null); // { doc, kind, status, data, message }
+  const previewReqRef = useRef(0);              // gegen Races bei schnellem Umschalten
 
   const fetchDocs = async () => {
     try {
@@ -58,6 +76,8 @@ function Documents({ user }) {
   const openPreview = async (doc) => {
     const type = (doc.file_type || '').toLowerCase();
     const viewUrl = `/api/documents/view/${doc.id}`;
+    const reqId = ++previewReqRef.current;
+    const isStale = () => previewReqRef.current !== reqId;
 
     if (type === 'pdf') {
       setPreview({ doc, kind: 'pdf', status: 'ready' });
@@ -72,25 +92,41 @@ function Documents({ user }) {
       try {
         const res = await fetch(viewUrl);
         if (!res.ok) throw new Error('view failed');
-        setPreview({ doc, kind: 'text', status: 'ready', data: await res.text() });
+        const text = await res.text();
+        if (isStale()) return;
+        setPreview({ doc, kind: 'text', status: 'ready', data: text });
       } catch {
+        if (isStale()) return;
         setPreview({ doc, kind: 'text', status: 'error' });
       }
       return;
     }
-    if (type === 'docx') {
-      if (!window.mammoth) {
-        setPreview({ doc, kind: 'word', status: 'unsupported' });
+    if (PREVIEW_WORD_TYPES.includes(type)) {
+      setPreview({ doc, kind: 'word', status: 'loading' });
+      const [hasMammoth, hasPurify] = await Promise.all([
+        waitForGlobal('mammoth'),
+        waitForGlobal('DOMPurify'),
+      ]);
+      if (isStale()) return;
+      if (!hasMammoth || !hasPurify) {
+        setPreview({
+          doc,
+          kind: 'word',
+          status: 'error',
+          message: 'Die Word-Vorschau ist gerade nicht verfügbar (Komponente noch nicht geladen). Bitte die Seite neu laden oder die Datei herunterladen.',
+        });
         return;
       }
-      setPreview({ doc, kind: 'word', status: 'loading' });
       try {
         const res = await fetch(viewUrl);
         if (!res.ok) throw new Error('view failed');
         const arrayBuffer = await res.arrayBuffer();
         const result = await window.mammoth.convertToHtml({ arrayBuffer });
-        setPreview({ doc, kind: 'word', status: 'ready', data: result.value });
+        if (isStale()) return;
+        const safeHtml = window.DOMPurify.sanitize(result.value, { USE_PROFILES: { html: true } });
+        setPreview({ doc, kind: 'word', status: 'ready', data: safeHtml });
       } catch {
+        if (isStale()) return;
         setPreview({ doc, kind: 'word', status: 'error' });
       }
       return;
@@ -99,7 +135,10 @@ function Documents({ user }) {
     setPreview({ doc, kind: 'word', status: 'unsupported' });
   };
 
-  const closePreview = () => setPreview(null);
+  const closePreview = () => {
+    previewReqRef.current++; // laufende Vorschau-Ladevorgänge verwerfen
+    setPreview(null);
+  };
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -227,7 +266,7 @@ function Documents({ user }) {
                 )}
                 {preview.status === 'error' && (
                   <div className="alert alert-danger mb-0">
-                    Die Vorschau konnte nicht geladen werden. Bitte laden Sie die Datei herunter.
+                    {preview.message || 'Die Vorschau konnte nicht geladen werden. Bitte laden Sie die Datei herunter.'}
                   </div>
                 )}
                 {preview.status === 'unsupported' && (
