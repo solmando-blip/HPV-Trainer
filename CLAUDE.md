@@ -83,8 +83,10 @@ add a proxy, when testing anything that hits the backend.
   (`download/:id`, `view/:id`, `view-image/:filepath`) must resolve paths through
   `resolveUploadPath()`** — it strips a leading `uploads/` and rejects anything escaping
   `uploads/` (path-traversal guard). `download/:id` forces `attachment`; `view/:id` serves inline
-  with `nosniff` and a Content-Type from a fixed whitelist (`VIEW_MIME_TYPES`) where text-family
-  types (txt/csv/md/json/xml/log) are deliberately `text/plain` so uploaded XML/SVG/HTML can't run
+  with `nosniff` and a Content-Type from `PREVIEW_TYPES` (the **single source of truth** for
+  previewable extensions — `{ ext: { mime, kind } }`; the frontend fetches `kind` via
+  `GET /api/documents/preview-types` and keeps no list of its own) where text-family types
+  (txt/csv/md/json/xml/log) are deliberately `text/plain` so uploaded XML/SVG/HTML can't run
   script on our origin; `view-image` sniffs magic bytes and serves only real images.
   `uploads/` is a named Docker volume (`docker-compose.yml`) — without it every container rebuild
   wipes all uploaded files while the DB rows survive; migrating an existing deploy needs the
@@ -115,7 +117,9 @@ add a proxy, when testing anything that hits the backend.
   resulting HTML **must** be run through `DOMPurify.sanitize` before `dangerouslySetInnerHTML`
   (both libs are `<script defer>` in `public/index.html`, so preview code waits for them via
   `waitForGlobal`). Concurrent previews are guarded by `previewReqRef` — keep that pattern when
-  adding preview kinds.
+  adding preview kinds. To add a previewable type, edit only `PREVIEW_TYPES` in
+  `backend/routes/public.js`; the frontend picks it up via the catalog endpoint (the
+  `WORD_TYPES`/`TEXT_LIKE`/`IMAGE_LIKE` arrays in `Documents.js` are for badge colour only).
 - `context/ToastContext.js` + `components/ToastContainer.js` — app-wide toast notifications.
 - `components/HelpButton.js` + `help/helpContent.js` — route-aware in-app help. One `<HelpButton />`
   in `App.js` renders a floating "?" on every page; `helpContent.js` maps `location.pathname` →

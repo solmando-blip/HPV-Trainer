@@ -30,6 +30,9 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
   unterstützt".
 - Frontend: Für Alt-Format `.doc` wird keine Vorschau-Schaltfläche mehr angeboten
   (sie konnte ohnehin nur den „keine Vorschau"-Hinweis öffnen).
+- Vorschau-fähige Dateitypen werden nicht mehr doppelt gepflegt: das Backend ist
+  einzige Quelle (`PREVIEW_TYPES`), das Frontend holt den Katalog über
+  `GET /api/documents/preview-types`.
 - **BACKUPS.md**: Migrationsanleitung „Uploads-Verzeichnis auf Named Volume
   migrieren" ergänzt – bestehende Installationen verlieren sonst beim ersten
   `docker-compose up` mit dem neuen `uploads`-Volume ihre Dateien.

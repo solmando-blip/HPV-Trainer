@@ -2,16 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../styles/Documents.css';
 
-const TEXT_TYPES = ['txt', 'csv', 'md', 'json', 'xml', 'log'];
-const IMAGE_TYPES = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-const WORD_TYPES = ['doc', 'docx'];            // nur für Badge-Farbe
-const PREVIEW_WORD_TYPES = ['docx'];           // im Browser tatsächlich darstellbar
-
-// Für welche Typen bietet die „Typ“-Spalte eine Vorschau an?
-const canPreview = (fileType) => {
-  const t = (fileType || '').toLowerCase();
-  return t === 'pdf' || TEXT_TYPES.includes(t) || IMAGE_TYPES.includes(t) || PREVIEW_WORD_TYPES.includes(t);
-};
+// Nur für die Badge-Farbe – welche Typen im Browser vorschaufähig sind,
+// bestimmt allein das Backend (GET /api/documents/preview-types).
+const WORD_TYPES = ['doc', 'docx'];
+const TEXT_LIKE = ['txt', 'csv', 'md', 'json', 'xml', 'log'];
+const IMAGE_LIKE = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
 // Wartet, bis ein per <script defer> geladenes Global verfügbar ist.
 const waitForGlobal = (name, timeoutMs = 8000) =>
@@ -34,8 +29,8 @@ const badgeColor = (fileType) => {
   if (t === 'pdf') return 'danger';
   if (WORD_TYPES.includes(t)) return 'primary';
   if (['xls', 'xlsx'].includes(t)) return 'success';
-  if (TEXT_TYPES.includes(t)) return 'info';
-  if (IMAGE_TYPES.includes(t)) return 'warning';
+  if (TEXT_LIKE.includes(t)) return 'info';
+  if (IMAGE_LIKE.includes(t)) return 'warning';
   return 'secondary';
 };
 
@@ -44,6 +39,7 @@ function Documents({ user }) {
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null); // { doc, kind, status, data, message }
+  const [previewTypes, setPreviewTypes] = useState(null); // { endung: 'pdf'|'image'|'text'|'word' } vom Backend
   const previewReqRef = useRef(0);              // gegen Races bei schnellem Umschalten
 
   const fetchDocs = async () => {
@@ -57,10 +53,21 @@ function Documents({ user }) {
 
   useEffect(() => { fetchDocs(); }, []);
 
+  // Vorschau-Katalog vom Backend holen (einzige Quelle der Wahrheit).
+  useEffect(() => {
+    axios.get('/api/documents/preview-types')
+      .then(res => setPreviewTypes(res.data || {}))
+      .catch(() => setPreviewTypes({}));
+  }, []);
+
+  const previewKind = (fileType) =>
+    (previewTypes && previewTypes[(fileType || '').toLowerCase()]) || null;
+  const canPreview = (fileType) => previewKind(fileType) !== null;
+
   // Vorschau-Dialog mit Escape schließen
   useEffect(() => {
     if (!preview) return;
-    const onKey = (e) => { if (e.key === 'Escape') setPreview(null); };
+    const onKey = (e) => { if (e.key === 'Escape') { previewReqRef.current++; setPreview(null); } };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [preview]);
@@ -74,20 +81,20 @@ function Documents({ user }) {
   };
 
   const openPreview = async (doc) => {
-    const type = (doc.file_type || '').toLowerCase();
+    const kind = previewKind(doc.file_type);
     const viewUrl = `/api/documents/view/${doc.id}`;
     const reqId = ++previewReqRef.current;
     const isStale = () => previewReqRef.current !== reqId;
 
-    if (type === 'pdf') {
+    if (kind === 'pdf') {
       setPreview({ doc, kind: 'pdf', status: 'ready' });
       return;
     }
-    if (IMAGE_TYPES.includes(type)) {
+    if (kind === 'image') {
       setPreview({ doc, kind: 'image', status: 'ready' });
       return;
     }
-    if (TEXT_TYPES.includes(type)) {
+    if (kind === 'text') {
       setPreview({ doc, kind: 'text', status: 'loading' });
       try {
         const res = await fetch(viewUrl);
@@ -101,7 +108,7 @@ function Documents({ user }) {
       }
       return;
     }
-    if (PREVIEW_WORD_TYPES.includes(type)) {
+    if (kind === 'word') {
       setPreview({ doc, kind: 'word', status: 'loading' });
       const [hasMammoth, hasPurify] = await Promise.all([
         waitForGlobal('mammoth'),

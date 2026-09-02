@@ -143,25 +143,35 @@ router.get('/documents/download/:id', async (req, res) => {
   }
 });
 
-// Content-Type je Dateiendung – die gespeicherten Dateien haben keine Endung.
-// Textartige Formate werden bewusst als text/plain ausgeliefert: so kann ein
-// hochgeladenes XML/SVG/HTML im Browser kein Skript auf unserer Origin ausführen.
-const VIEW_MIME_TYPES = {
-  pdf: 'application/pdf',
-  txt: 'text/plain; charset=utf-8',
-  csv: 'text/plain; charset=utf-8',
-  md: 'text/plain; charset=utf-8',
-  json: 'text/plain; charset=utf-8',
-  xml: 'text/plain; charset=utf-8',
-  log: 'text/plain; charset=utf-8',
-  doc: 'application/msword',
-  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  gif: 'image/gif',
-  webp: 'image/webp'
+// Einzige Quelle der Wahrheit für vorschaufähige Dateitypen (Endung ohne Punkt).
+// Die gespeicherten Dateien haben keine Endung, daher `mime` explizit beim
+// Inline-Ausliefern (view/:id). Textartige Formate bewusst als text/plain, damit
+// hochgeladenes XML/SVG/HTML kein Skript auf unserer Origin ausführen kann.
+// `kind` steuert, wie das Frontend die Datei darstellt – das Frontend holt sich
+// diesen Katalog über GET /api/documents/preview-types und pflegt keine eigene
+// Typ-Liste mehr.
+const PREVIEW_TYPES = {
+  pdf: { mime: 'application/pdf', kind: 'pdf' },
+  png: { mime: 'image/png', kind: 'image' },
+  jpg: { mime: 'image/jpeg', kind: 'image' },
+  jpeg: { mime: 'image/jpeg', kind: 'image' },
+  gif: { mime: 'image/gif', kind: 'image' },
+  webp: { mime: 'image/webp', kind: 'image' },
+  txt: { mime: 'text/plain; charset=utf-8', kind: 'text' },
+  csv: { mime: 'text/plain; charset=utf-8', kind: 'text' },
+  md: { mime: 'text/plain; charset=utf-8', kind: 'text' },
+  json: { mime: 'text/plain; charset=utf-8', kind: 'text' },
+  xml: { mime: 'text/plain; charset=utf-8', kind: 'text' },
+  log: { mime: 'text/plain; charset=utf-8', kind: 'text' },
+  docx: { mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', kind: 'word' }
 };
+
+// Vorschau-Katalog fürs Frontend: Endung -> Darstellungsart.
+router.get('/documents/preview-types', (req, res) => {
+  const catalog = {};
+  for (const [ext, meta] of Object.entries(PREVIEW_TYPES)) catalog[ext] = meta.kind;
+  res.json(catalog);
+});
 
 // Datei zur Inline-Vorschau ausliefern (kein Download-Header).
 router.get('/documents/view/:id', async (req, res) => {
@@ -177,11 +187,11 @@ router.get('/documents/view/:id', async (req, res) => {
     }
 
     const type = (doc.file_type || '').toLowerCase();
-    if (!VIEW_MIME_TYPES[type]) {
+    if (!PREVIEW_TYPES[type]) {
       return res.status(415).json({ message: 'Für diesen Dateityp ist keine Vorschau verfügbar.' });
     }
 
-    res.setHeader('Content-Type', VIEW_MIME_TYPES[type]);
+    res.setHeader('Content-Type', PREVIEW_TYPES[type].mime);
     res.setHeader('Content-Disposition', 'inline');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.sendFile(fullPath);
