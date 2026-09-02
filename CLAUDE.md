@@ -59,9 +59,11 @@ Actions' `CI=true`, so any ESLint warning (unused var, missing hook dep, …) fa
 
 ### Request flow
 `frontend` calls **relative** URLs (`axios.post('/api/auth/login', ...)`). In production nginx
-(`nginx.conf`) proxies `/api` and `/uploads` to the backend container. There is **no `proxy` field in
-`frontend/package.json`**, so `npm start` alone cannot reach the API — run the full Docker stack, or
-add a proxy, when testing anything that hits the backend.
+(`nginx.conf`) proxies only `/api` to the backend container (uploaded files are served exclusively
+through `/api/documents/(view|download)/:id` and `/api/view-image/:filepath` — there is no static
+`/uploads` mount). There is **no `proxy` field in `frontend/package.json`**, so `npm start` alone
+cannot reach the API — run the full Docker stack, or add a proxy, when testing anything that hits
+the backend.
 
 ### Backend structure (`backend/`)
 - `server.js` — wires middleware and mounts three routers: `/api/auth`, `/api/admin`, `/api` (public).

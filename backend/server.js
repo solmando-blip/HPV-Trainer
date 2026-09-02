@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const { initDb } = require('./database');
@@ -15,7 +14,10 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(auditMiddleware); // Add audit middleware
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Hochgeladene Dateien werden ausschließlich über /api/documents/(view|download)/:id
+// und /api/view-image/:filepath ausgeliefert – jeweils mit Pfad-Prüfung, MIME-
+// Whitelist und nosniff. Kein direkter statischer Zugriff auf uploads/.
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 

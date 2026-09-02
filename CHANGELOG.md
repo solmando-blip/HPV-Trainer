@@ -33,6 +33,9 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 - Vorschau-fähige Dateitypen werden nicht mehr doppelt gepflegt: das Backend ist
   einzige Quelle (`PREVIEW_TYPES`), das Frontend holt den Katalog über
   `GET /api/documents/preview-types`.
+- Statischer `/uploads`-Zugriff entfernt (`express.static`-Mount in `server.js`
+  und `location /uploads` in `nginx.conf`). Hochgeladene Dateien laufen jetzt
+  ausschließlich über die geprüften `/api`-Endpunkte.
 - **BACKUPS.md**: Migrationsanleitung „Uploads-Verzeichnis auf Named Volume
   migrieren" ergänzt – bestehende Installationen verlieren sonst beim ersten
   `docker-compose up` mit dem neuen `uploads`-Volume ihre Dateien.
