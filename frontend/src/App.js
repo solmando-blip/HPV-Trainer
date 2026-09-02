@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
+import HelpButton from './components/HelpButton';
 import ToastContainer from './components/ToastContainer';
 import ToastProvider from './context/ToastContext';
 import useAuthTimeout from './hooks/useAuthTimeout';
@@ -25,6 +26,7 @@ function AppContent({ user, handleLogout, handleLogin }) {
     <>
       <Header user={user} onLogout={handleLogout} />
       <ToastContainer />
+      <HelpButton />
       <div className="container py-4">
         <Routes>
           <Route path="/" element={<Home />} />

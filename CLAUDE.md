@@ -88,6 +88,10 @@ add a proxy, when testing anything that hits the backend.
 - `hooks/useAuthTimeout.js` — 30-min inactivity → clears localStorage → redirect to `/login`.
 - `pages/AdminPanel.js` — large single-file admin UI (users, groups, WhatsApp, mail, SMTP, legal, contacts).
 - `context/ToastContext.js` + `components/ToastContainer.js` — app-wide toast notifications.
+- `components/HelpButton.js` + `help/helpContent.js` — route-aware in-app help. One `<HelpButton />`
+  in `App.js` renders a floating "?" on every page; `helpContent.js` maps `location.pathname` →
+  help text. To change a page's help, edit only `helpContent.js` (keyed by exact path;
+  `fallbackHelp` covers unlisted routes). Keep it in sync with `BENUTZERHANDBUCH.md`.
 - `components/` — reusable `Pagination`, `SearchFilter`; `hooks/` — `usePagination`, `useLoading`.
 - Auth requests attach the token manually as `{ headers: { Authorization: \`Bearer ${token}\` } }`;
   there is no axios interceptor.

@@ -1,0 +1,88 @@
+/* Schwebender Hilfe-Button + Dialog für die seitenbezogene In-App-Hilfe */
+
+.help-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background-color: #0d6efd;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  z-index: 1050;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.help-fab:hover {
+  background-color: #0b5ed7;
+  transform: translateY(-2px);
+}
+
+.help-fab:focus-visible {
+  outline: 3px solid rgba(13, 110, 253, 0.4);
+  outline-offset: 2px;
+}
+
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1060;
+}
+
+.help-dialog {
+  background: #fff;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.help-dialog-header,
+.help-dialog-footer {
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.help-dialog-header {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.help-dialog-footer {
+  border-top: 1px solid #dee2e6;
+}
+
+.help-dialog-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.help-dialog-body ul {
+  padding-left: 1.25rem;
+}
+
+.help-dialog-body li {
+  margin-bottom: 0.25rem;
+}
+
+@media print {
+  .help-fab {
+    display: none;
+  }
+}

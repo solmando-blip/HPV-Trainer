@@ -2,6 +2,37 @@
 
 Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
+## [2.1.0] - 2026-09-02
+
+### ✨ Neue Features
+
+- **Gruppenmitglieder-Verwaltung (Frontend)**: Im Admin-Panel können Benutzer über
+  „Mitglieder verwalten“ zu Gruppen hinzugefügt und daraus entfernt werden. Die
+  Mitgliederzahl je Gruppe aktualisiert sich sofort.
+- **News-Titelbilder**: Beiträge können ein Bild erhalten (Upload mit Sofort-Vorschau,
+  Anzeige im News-Feed).
+- **In-App-Hilfe auf allen Seiten**: Schwebende „?“-Schaltfläche unten rechts öffnet einen
+  seitenbezogenen Hilfe-Dialog. Inhalte deckungsgleich mit dem Benutzerhandbuch.
+
+### 🔧 Technische Verbesserungen
+
+- Backend: `GET /api/admin/groups/:id/members`, `DELETE /api/admin/groups/:id/members/:userId`;
+  Rollenprüfung (Admin/Moderator) auf `POST /api/admin/groups/:id/members`.
+- Backend: `image_path` an `articles`, Bild-Upload auf `POST/PUT /api/news`,
+  `GET /api/view-image/:filepath`.
+- Frontend: verbleibende hartkodierte `http://localhost:5000`-URLs auf relative Pfade
+  umgestellt (Login, Profil, E-Mail-Bestätigung).
+- Frontend: neue Bausteine `components/HelpButton.js`, `help/helpContent.js`, `styles/Help.css`.
+
+### 📚 Dokumentation
+
+- **BENUTZERHANDBUCH.md**: vollständig überarbeitet, seitenweise Gliederung, deckungsgleich
+  mit der In-App-Hilfe.
+- **DOKUMENTATION.md**: neuer Einstiegs- und Übersichtsindex über alle Dokumente.
+- **CLAUDE.md**: Leitfaden für die Arbeit im Repository.
+
+---
+
 ## [2.0.0] - 2026-08-29
 
 ### ✨ Neue Features
@@ -185,4 +216,4 @@ Intern verwendet für Hessischer Pétanque Verband e.V.
 
 ---
 
-**Letzte Aktualisierung**: 2026-08-29
+**Letzte Aktualisierung**: 2026-09-02

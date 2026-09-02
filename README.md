@@ -2,6 +2,10 @@
 
 Vollständige Webanwendung für die Verwaltung von Mitgliedern, News, Dokumenten, Kontaktanfragen und Admin-Aufgaben für den Hessischen Pétanque Verband (HPV).
 
+> 📚 **Gesamte Dokumentation:** [DOKUMENTATION.md](DOKUMENTATION.md) – Übersicht und Einstieg.
+> Anwender: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md) · Admins: [ADMIN-HANDBUCH.md](ADMIN-HANDBUCH.md).
+> Zusätzlich hat jede Seite der Anwendung eine kontextbezogene **„?“-Hilfe** (unten rechts).
+
 ## Überblick
 
 Die App besteht aus:

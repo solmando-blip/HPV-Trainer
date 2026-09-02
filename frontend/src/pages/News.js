@@ -1,6 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Artikel nach Erscheinungsmonat gruppieren. Die Liste kommt bereits
+// absteigend sortiert vom Backend, dadurch bleiben Monate und Artikel
+// innerhalb eines Monats chronologisch (neueste zuerst).
+const groupArticlesByMonth = (list) => {
+  const groups = [];
+  const byKey = new Map();
+
+  list.forEach((art) => {
+    const d = new Date(art.created_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+    if (!byKey.has(key)) {
+      const group = {
+        key,
+        label: d.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }),
+        items: [],
+      };
+      byKey.set(key, group);
+      groups.push(group);
+    }
+    byKey.get(key).items.push(art);
+  });
+
+  return groups;
+};
+
 function News({ user }) {
   const [articles, setArticles] = useState([]);
   const [title, setTitle] = useState('');
@@ -8,6 +34,7 @@ function News({ user }) {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [editingArticle, setEditingArticle] = useState(null);
+  const [showIndex, setShowIndex] = useState(true);
 
   const fetchNews = async () => {
     try {
@@ -64,6 +91,18 @@ function News({ user }) {
     setImagePreview(art.image_path ? `/api/view-image/${encodeURIComponent(art.image_path)}` : null);
   };
 
+  const scrollToArticle = (e, id) => {
+    e.preventDefault();
+    const el = document.getElementById(`article-${id}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const scrollToIndex = (e) => {
+    e.preventDefault();
+    const el = document.getElementById('artikel-uebersicht');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -113,8 +152,46 @@ function News({ user }) {
         </div>
       )}
 
+      {articles.length > 1 && (
+        <div className="card mb-4 shadow-sm" id="artikel-uebersicht">
+          <div className="card-header d-flex justify-content-between align-items-center">
+            <span className="fw-bold">📑 Artikel-Übersicht ({articles.length})</span>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => setShowIndex(v => !v)}
+              aria-expanded={showIndex}
+            >
+              {showIndex ? 'Einklappen' : 'Ausklappen'}
+            </button>
+          </div>
+          {showIndex && (
+            <div className="card-body">
+              {groupArticlesByMonth(articles).map(group => (
+                <div key={group.key} className="mb-3">
+                  <h6 className="text-uppercase text-muted small border-bottom pb-1 mb-2">
+                    {group.label} <span className="fw-normal">({group.items.length})</span>
+                  </h6>
+                  <ul className="list-unstyled mb-0 ms-2">
+                    {group.items.map(art => (
+                      <li key={art.id} className="mb-1">
+                        <a href={`#article-${art.id}`} onClick={e => scrollToArticle(e, art.id)}>
+                          {art.title}
+                        </a>
+                        <span className="text-muted small ms-2">
+                          {new Date(art.created_at).toLocaleDateString('de-DE')}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {articles.map(art => (
-        <div className="card mb-3 shadow-sm" key={art.id}>
+        <div className="card mb-3 shadow-sm" key={art.id} id={`article-${art.id}`} style={{ scrollMarginTop: '1rem' }}>
           {art.image_path && (
             <img src={`/api/view-image/${encodeURIComponent(art.image_path)}`} alt={art.title} style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }} />
           )}
@@ -130,6 +207,11 @@ function News({ user }) {
             </div>
             <p className="text-muted small">Am: {new Date(art.created_at).toLocaleDateString()} von {art.author_name || 'Verband'}</p>
             <div dangerouslySetInnerHTML={{ __html: art.content.replace(/\n/g, '<br>') }} />
+            {articles.length > 1 && (
+              <p className="mb-0 mt-3">
+                <a href="#artikel-uebersicht" onClick={scrollToIndex} className="small text-muted">↑ Zur Artikel-Übersicht</a>
+              </p>
+            )}
           </div>
         </div>
       ))}
