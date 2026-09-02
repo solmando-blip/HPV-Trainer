@@ -22,12 +22,13 @@ router.get('/news', async (req, res) => {
   }
 });
 
-router.post('/news', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+router.post('/news', verifyToken, verifyRoles('Admin', 'Moderator'), upload.single('image'), async (req, res) => {
   const { title, content } = req.body;
+  const imagePath = req.file ? req.file.path : null;
   try {
     const result = await pool.query(
-      'INSERT INTO articles (title, content, author_id) VALUES ($1, $2, $3) RETURNING *',
-      [title, content, req.user.id]
+      'INSERT INTO articles (title, content, image_path, author_id) VALUES ($1, $2, $3, $4) RETURNING *',
+      [title, content, imagePath, req.user.id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -35,13 +36,25 @@ router.post('/news', verifyToken, verifyRoles('Admin', 'Moderator'), async (req,
   }
 });
 
-router.put('/news/:id', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+router.put('/news/:id', verifyToken, verifyRoles('Admin', 'Moderator'), upload.single('image'), async (req, res) => {
   const { title, content } = req.body;
+  const imagePath = req.file ? req.file.path : undefined;
   try {
-    const result = await pool.query(
-      'UPDATE articles SET title = $1, content = $2 WHERE id = $3 RETURNING *',
-      [title, content, req.params.id]
-    );
+    let query = 'UPDATE articles SET title = $1, content = $2';
+    const params = [title, content];
+    let paramCount = 2;
+    
+    if (imagePath !== undefined) {
+      paramCount++;
+      query += `, image_path = $${paramCount}`;
+      params.push(imagePath);
+    }
+    
+    paramCount++;
+    query += ` WHERE id = $${paramCount} RETURNING *`;
+    params.push(req.params.id);
+    
+    const result = await pool.query(query, params);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -156,6 +169,21 @@ router.get('/legal', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM legal_texts');
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/view-image/:filepath', (req, res) => {
+  try {
+    const filePath = decodeURIComponent(req.params.filepath);
+    const fullPath = path.join(__dirname, '..', filePath);
+    
+    if (!fs.existsSync(fullPath)) {
+      return res.status(404).json({ message: 'Bild nicht gefunden.' });
+    }
+    
+    res.sendFile(fullPath);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

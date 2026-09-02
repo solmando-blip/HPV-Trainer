@@ -20,6 +20,10 @@ function AdminPanel() {
   const [smtpPass, setSmtpPass] = useState('');
   const [contacts, setContacts] = useState([]);
   const [editUser, setEditUser] = useState(null);
+  const [selectedGroupForMembers, setSelectedGroupForMembers] = useState(null);
+  const [groupMembers, setGroupMembers] = useState([]);
+  const [availableUsersForGroup, setAvailableUsersForGroup] = useState([]);
+  const [userToAdd, setUserToAdd] = useState('');
 
   const token = localStorage.getItem('hpv_token');
   const headers = { Authorization: `Bearer ${token}` };
@@ -31,9 +35,9 @@ function AdminPanel() {
         axios.get('/api/admin/users', { headers }),
         axios.get('/api/admin/groups', { headers })
       ]);
-      setPendingUsers(pendingRes.data);
-      setUsers(usersRes.data);
-      setGroups(groupsRes.data);
+      setPendingUsers(pendingRes.data.users || []);
+      setUsers(usersRes.data.users || []);
+      setGroups(groupsRes.data || []);
     } catch (err) {
       console.error(err);
     }
@@ -81,6 +85,56 @@ function AdminPanel() {
   const blockUser = async (id) => {
     await axios.post(`/api/admin/users/${id}/block`, {}, { headers });
     loadData();
+  };
+
+  const loadGroupMembers = async (groupId) => {
+    try {
+      const [membersRes, usersRes] = await Promise.all([
+        axios.get(`/api/admin/groups/${groupId}/members`, { headers }),
+        axios.get('/api/admin/users', { headers, params: { limit: 500 } })
+      ]);
+      const members = membersRes.data || [];
+      const allUsers = usersRes.data.users || [];
+      const memberIds = members.map(m => m.id);
+
+      setGroupMembers(members);
+      setAvailableUsersForGroup(allUsers.filter(u => !memberIds.includes(u.id)));
+      setSelectedGroupForMembers(groupId);
+    } catch (err) {
+      console.error('Fehler beim Laden der Gruppenmitglieder:', err);
+    }
+  };
+
+  const toggleGroupMembers = (groupId) => {
+    if (selectedGroupForMembers === groupId) {
+      setSelectedGroupForMembers(null);
+      setGroupMembers([]);
+      setAvailableUsersForGroup([]);
+      setUserToAdd('');
+    } else {
+      loadGroupMembers(groupId);
+    }
+  };
+
+  const addUserToGroup = async (userId, groupId) => {
+    if (!userId) return;
+    try {
+      await axios.post(`/api/admin/groups/${groupId}/members`, { userId }, { headers });
+      setUserToAdd('');
+      await Promise.all([loadGroupMembers(groupId), loadData()]);
+    } catch (err) {
+      alert('Fehler beim Hinzufügen des Benutzers zur Gruppe.');
+    }
+  };
+
+  const removeUserFromGroup = async (userId, groupId) => {
+    if (!window.confirm('Benutzer wirklich aus der Gruppe entfernen?')) return;
+    try {
+      await axios.delete(`/api/admin/groups/${groupId}/members/${userId}`, { headers });
+      await Promise.all([loadGroupMembers(groupId), loadData()]);
+    } catch (err) {
+      alert('Fehler beim Entfernen des Benutzers aus der Gruppe.');
+    }
   };
 
   const createGroup = async (e) => {
@@ -256,13 +310,61 @@ function AdminPanel() {
               <button className="btn btn-success">Erstellen</button>
             </div>
           </form>
-          <div className="row g-2">
+          <ul className="list-group list-group-flush">
             {groups.map(g => (
-              <div key={g.id} className="col-md-4">
-                <div className="border rounded p-2 bg-light h-100">{g.name} <span className="text-muted">({g.member_count} Mitglieder)</span></div>
-              </div>
+              <li key={g.id} className="list-group-item px-0">
+                <div className="d-flex justify-content-between align-items-center">
+                  <span><strong>{g.name}</strong> <span className="text-muted">({g.member_count} Mitglieder)</span></span>
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => toggleGroupMembers(g.id)}
+                  >
+                    {selectedGroupForMembers === g.id ? 'Schließen' : 'Mitglieder verwalten'}
+                  </button>
+                </div>
+
+                {selectedGroupForMembers === g.id && (
+                  <div className="mt-3 border rounded p-3 bg-light">
+                    <div className="row g-2 align-items-end mb-3">
+                      <div className="col-md-9">
+                        <label className="form-label mb-1">Benutzer hinzufügen</label>
+                        <select className="form-select" value={userToAdd} onChange={e => setUserToAdd(e.target.value)}>
+                          <option value="">Benutzer auswählen...</option>
+                          {availableUsersForGroup.map(u => (
+                            <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-md-3 d-grid">
+                        <button
+                          className="btn btn-success"
+                          disabled={!userToAdd}
+                          onClick={() => addUserToGroup(Number(userToAdd), g.id)}
+                        >
+                          Hinzufügen
+                        </button>
+                      </div>
+                    </div>
+
+                    {groupMembers.length === 0 ? (
+                      <p className="mb-0 text-muted">Noch keine Mitglieder in dieser Gruppe.</p>
+                    ) : (
+                      <ul className="list-group">
+                        {groupMembers.map(m => (
+                          <li key={m.id} className="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                              {m.name} <small className="text-muted">{m.email}</small> {statusBadge(m.status)}
+                            </span>
+                            <button className="btn btn-sm btn-outline-danger" onClick={() => removeUserFromGroup(m.id, g.id)}>Entfernen</button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
 

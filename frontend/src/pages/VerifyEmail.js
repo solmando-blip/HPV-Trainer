@@ -17,7 +17,7 @@ function VerifyEmail() {
 
     const verifyEmail = async () => {
       try {
-        const response = await axios.post('http://localhost:5000/api/auth/verify-email', { token });
+        const response = await axios.post('/api/auth/verify-email', { token });
         setMessage(response.data.message);
         setTimeout(() => navigate('/login'), 3000);
       } catch (err) {

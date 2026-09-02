@@ -34,7 +34,7 @@ function Profile() {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/auth/me', {
+      const response = await axios.get('/api/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setProfile(response.data);
@@ -61,7 +61,7 @@ function Profile() {
     }
 
     try {
-      const response = await axios.put('http://localhost:5000/api/auth/profile', 
+      const response = await axios.put('/api/auth/profile', 
         { name, email },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -99,7 +99,7 @@ function Profile() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/change-password',
+      const response = await axios.post('/api/auth/change-password',
         { currentPassword, newPassword },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

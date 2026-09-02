@@ -197,11 +197,35 @@ router.post('/groups', async (req, res) => {
   }
 });
 
-router.post('/groups/:id/members', async (req, res) => {
+router.post('/groups/:id/members', verifyRoles('Admin', 'Moderator'), async (req, res) => {
   const { userId } = req.body;
   try {
     await pool.query('INSERT INTO user_groups (user_id, group_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [userId, req.params.id]);
     res.json({ message: 'Mitglied zur Gruppe hinzugefügt.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/groups/:id/members', verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT u.id, u.name, u.email, u.role, u.status
+      FROM users u
+      JOIN user_groups ug ON u.id = ug.user_id
+      WHERE ug.group_id = $1
+      ORDER BY u.name ASC
+    `, [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete('/groups/:id/members/:userId', verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    await pool.query('DELETE FROM user_groups WHERE group_id = $1 AND user_id = $2', [req.params.id, req.params.userId]);
+    res.json({ message: 'Mitglied aus Gruppe entfernt.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

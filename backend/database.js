@@ -38,6 +38,7 @@ const initDb = async () => {
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
+        image_path VARCHAR(500),
         author_id INT REFERENCES users(id) ON DELETE SET NULL,
         status VARCHAR(50) DEFAULT 'published',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -108,6 +109,9 @@ const initDb = async () => {
       ALTER TABLE documents
         ADD COLUMN IF NOT EXISTS file_size INT DEFAULT 0,
         ADD COLUMN IF NOT EXISTS file_type VARCHAR(50) DEFAULT 'unknown';
+
+      ALTER TABLE articles
+        ADD COLUMN IF NOT EXISTS image_path VARCHAR(500);
 
       ALTER TABLE contact_messages
         DROP CONSTRAINT IF EXISTS contact_messages_status_check;
