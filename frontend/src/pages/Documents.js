@@ -179,11 +179,23 @@ function Documents({ user }) {
     <div>
       <h2 className="mb-4">📁 Dokumente & Downloads</h2>
 
+      <div className="alert alert-warning d-flex gap-2" role="alert">
+        <span aria-hidden="true">⚠️</span>
+        <span>
+          <strong>Keine Viren-/Schadsoftware-Prüfung:</strong> Hochgeladene Dateien werden nicht
+          serverseitig gescannt. Laden Sie nur selbst geprüfte Dateien hoch und lassen Sie jeden
+          Download vor dem Öffnen von Ihrem eigenen Virenschutz prüfen.
+        </span>
+      </div>
+
       {user && ['Admin', 'Moderator'].includes(user.role) && (
         <form className="mb-4 card card-body shadow-sm" onSubmit={handleUpload}>
           <h5>Neue Datei Hochladen</h5>
           <input className="form-control mb-2" placeholder="Anzeigename (optional)" value={title} onChange={e => setTitle(e.target.value)} />
           <input className="form-control mb-2" type="file" onChange={e => setFile(e.target.files[0])} required />
+          <div className="form-text mb-2">
+            Bitte nur Dateien hochladen, die zuvor mit einem aktuellen Virenscanner geprüft wurden.
+          </div>
           <button className="btn btn-primary" type="submit">Upload Starten</button>
         </form>
       )}

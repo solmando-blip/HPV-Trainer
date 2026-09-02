@@ -73,6 +73,7 @@ const helpContent = {
           'Ein Klick auf das Typ-Feld (oder „👁 Vorschau“) öffnet eine Vorschau im Browser: PDF, Text-Dateien (txt, csv, md, json, xml, log), Word-Dokumente (.docx) und Bilder.',
           'Für Formate ohne Browser-Vorschau (z. B. .doc, Excel) erscheint ein Hinweis mit Download-Schaltfläche.',
           'Über „Download“ wird die Datei mit ihrem ursprünglichen Namen heruntergeladen.',
+          'Wichtig: Hochgeladene Dateien werden nicht auf Viren oder Schadsoftware geprüft. Öffnen bzw. speichern Sie Downloads nur, wenn Sie der Quelle vertrauen, und lassen Sie die Datei anschließend von Ihrem eigenen Virenschutz prüfen.',
         ],
       },
       {
@@ -82,8 +83,12 @@ const helpContent = {
           'Ohne Anzeigename wird der Originaldateiname verwendet.',
           'Dateityp und -größe werden automatisch erkannt und gespeichert.',
           'Das Papierkorb-Symbol entfernt ein Dokument (mit Rückfrage).',
+          'Es findet keine serverseitige Viren-/Schadsoftware-Prüfung statt. Laden Sie nur Dateien hoch, die Sie zuvor selbst mit einem aktuellen Virenscanner geprüft haben.',
         ],
       },
+    ],
+    tips: [
+      'Vor dem Hochladen und nach jedem Download die Datei mit einem aktuellen Virenscanner prüfen – die Anwendung übernimmt das nicht.',
     ],
   },
 

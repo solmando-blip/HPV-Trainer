@@ -103,6 +103,10 @@ Im Admin-Panel unter **Benutzer** sehen Sie alle registrierten Mitglieder.
 
 **Info:** Dateityp, Größe und Upload-Datum werden automatisch gespeichert.
 
+> ⚠️ **Keine Schadsoftware-Prüfung:** Die hochgeladene Datei wird ohne Viren-/Malware-Scan sofort
+> für alle zum Download bereitgestellt. Nur zuvor selbst geprüfte Dateien hochladen. Ein
+> serverseitiger Virenscan (z. B. ClamAV) ist derzeit **nicht** eingebunden.
+
 #### Dokument löschen
 
 1. **Admin-Panel** → **Dokumente** → Button **Löschen**

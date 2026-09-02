@@ -4,6 +4,12 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
 ## [2.2.1] - 2026-09-03
 
+### ⚠️ Hinweise
+
+- **Dokumente & Downloads**: deutlicher Warnhinweis auf der Seite, im Upload-Formular, in der
+  In-App-Hilfe und in beiden Handbüchern, dass hochgeladene Dateien **nicht** auf Viren/
+  Schadsoftware geprüft werden – Uploads und Downloads sind selbst zu scannen.
+
 ### 🔒 Sicherheit (Fixes aus Code-Review)
 
 - **Path-Traversal behoben**: `GET /api/view-image/:filepath` löste den vom Client

@@ -140,6 +140,10 @@ Zeilenumbrüche im Text werden automatisch übernommen.
   - andere Formate (z. B. `.doc`, Excel): Hinweis mit Download-Schaltfläche
 - **Download** lädt die Datei mit ihrem ursprünglichen Namen herunter.
 
+> ⚠️ **Keine Viren-/Schadsoftware-Prüfung:** Hochgeladene Dateien werden **nicht** serverseitig
+> gescannt. Öffnen oder speichern Sie Downloads nur, wenn Sie der Quelle vertrauen, und lassen Sie
+> jede Datei vor dem Öffnen von Ihrem eigenen, aktuellen Virenschutz prüfen.
+
 **Für Admin & Moderator**
 
 1. Datei über das Dateifeld auswählen.
@@ -147,6 +151,9 @@ Zeilenumbrüche im Text werden automatisch übernommen.
 3. **Upload Starten** klicken.
 4. Dateityp und -größe werden automatisch erkannt.
 5. Das 🗑️-Symbol entfernt ein Dokument (mit Rückfrage).
+
+> ⚠️ Es findet **keine** serverseitige Schadsoftware-Prüfung statt. Laden Sie nur Dateien hoch,
+> die Sie zuvor selbst mit einem aktuellen Virenscanner geprüft haben.
 
 ### 4.4 Kontaktformular
 
