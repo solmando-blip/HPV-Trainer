@@ -29,7 +29,9 @@ npm install
 npm run dev        # nodemon server.js on PORT (default 5000)
 npm start          # node server.js
 ```
-Needs a reachable PostgreSQL and env vars (see below). `initDb()` runs on every boot and is
+Needs a reachable PostgreSQL and env vars (see below). Quickest path: `docker-compose up -d db`
+(the `db` service publishes `5432:5432`) and point `DATABASE_URL` at `localhost:5432` per
+`.env.example`. `initDb()` runs on every boot and is
 idempotent (`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`), so pointing at an existing DB
 is safe and is how schema migrations are applied — edit `backend/database.js`, restart.
 
@@ -41,9 +43,14 @@ npm start          # react-scripts dev server on :3000
 npm run build       # production build to frontend/build (what the nginx image serves)
 ```
 
-### Tests
-There is no test suite, lint config, or CI build that actually works (`.github/workflows/docker-image.yml`
-references a non-existent root `Dockerfile`). Verify changes manually via the running stack.
+### Tests & CI
+There is no test suite or lint config — verify changes manually via the running stack.
+
+CI (`.github/workflows/docker-image.yml`, job name `CI`) runs on push/PR to `main` and does three
+things: `docker build -f frontend.Dockerfile`, `docker build -f backend.Dockerfile`, and
+`docker compose config -q`. **Gotcha:** the frontend Dockerfile runs `npm run build` with GitHub
+Actions' `CI=true`, so any ESLint warning (unused var, missing hook dep, …) fails the build. Keep
+`npm run build` warning-free locally before pushing.
 
 ### DB backup
 `scripts/backup.sh` runs `pg_dump` (designed to run inside the `hpv_db` container). See `BACKUPS.md`.
@@ -63,7 +70,13 @@ add a proxy, when testing anything that hits the backend.
   `moderator@hpv.local` accounts (`admin123` / `moderator123`).
 - `middleware/auth.js` — `verifyToken` (Bearer JWT → `req.user = {id, role, email}`) and
   `verifyRoles(...roles)`. `admin.js` applies `router.use(verifyToken, verifyRoles('Admin','Moderator'))`
-  to every route; some routes further narrow with `verifyRoles('Admin')`.
+  to every route; some routes further narrow with `verifyRoles('Admin')` (user create/update/delete,
+  legal texts, SMTP settings, audit-log viewer).
+- `routes/admin.js` — users (list/pending with `limit`/`offset`/`search`/`role`/`status` query params,
+  approve/block, CRUD), groups + **group membership** (`GET/POST /groups/:id/members`,
+  `DELETE /groups/:id/members/:userId`), `POST /groups/:id/send-email` (BCC to active members only),
+  WhatsApp groups, `PUT /legal/:key`, `POST /settings/smtp` (writes `smtp_*` rows to
+  `system_settings`), `GET /templates` (`email_templates` table), `GET /audit-logs`.
 - `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename
   with no extension; metadata incl. `file_type` in DB), contact messages, legal texts, image serving.
   Read endpoints are public; writes require Admin/Moderator. Document delivery: `download/:id`
@@ -90,7 +103,10 @@ add a proxy, when testing anything that hits the backend.
 - `App.js` — all routes; auth state is `user` in `localStorage` (`hpv_user` + `hpv_token`). Route
   guards are inline `user && ['Admin','Moderator'].includes(user.role)` checks.
 - `hooks/useAuthTimeout.js` — 30-min inactivity → clears localStorage → redirect to `/login`.
-- `pages/AdminPanel.js` — large single-file admin UI (users, groups, WhatsApp, mail, SMTP, legal, contacts).
+- `pages/AdminPanel.js` — large single-file admin UI (users, groups + members, WhatsApp, mail, SMTP,
+  legal, contacts). `pages/CreateUser.js` is a separate `/admin/create-user` route, **Admin-only**
+  (Moderators are redirected). `pages/Documents.js` renders an in-browser preview for whitelisted
+  file types via the backend `view/:id` endpoint.
 - `context/ToastContext.js` + `components/ToastContainer.js` — app-wide toast notifications.
 - `components/HelpButton.js` + `help/helpContent.js` — route-aware in-app help. One `<HelpButton />`
   in `App.js` renders a floating "?" on every page; `helpContent.js` maps `location.pathname` →
