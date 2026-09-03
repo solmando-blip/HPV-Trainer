@@ -1,8 +1,8 @@
-# Implementation Summary - HPV Trainer v2.0
+# Implementation Summary - HPV Trainer v2.1
 
 **Status**: ✅ **COMPLETE & DEPLOYED**  
-**Last Updated**: 2026-09-01  
-**Version**: 2.0.0
+**Last Updated**: 2026-09-03  
+**Version**: 2.1.0
 
 ---
 
@@ -14,6 +14,9 @@ Die **HPV Trainer App** ist eine vollständige Full-Stack-Webanwendung für den 
 - Dokumenten und Downloads
 - Kontaktanfragen
 - Admin-Funktionen und Benutzerfreischaltung
+- Events mit Anmeldung
+- Trainer-Verzeichnis mit Selbstauskunft
+- Hospitierungen (Trainer-Shadowing) zwischen Mitgliedern
 
 ---
 
@@ -42,6 +45,17 @@ Die **HPV Trainer App** ist eine vollständige Full-Stack-Webanwendung für den 
 - ✅ SMTP-Einstellungen konfigurieren
 - ✅ Rechtliche Texte bearbeiten (Impressum, Datenschutz, AGB)
 - ✅ Audit-Log-Viewer mit Pagination
+
+### **Events, Trainer-Verzeichnis & Hospitierungen (v2.1)**
+- ✅ Öffentliche Event-Übersicht + Detailseite mit Teilnehmerzähler
+- ✅ Event-Anmeldung für Gäste und eingeloggte Nutzer (Name/E-Mail vorausgefüllt)
+- ✅ Anmeldeschluss-, Duplikat- und Kapazitätsprüfung serverseitig
+- ✅ Admin: Event-CRUD, Anmeldungsverwaltung (Accept/Reject), CSV-Export
+- ✅ Öffentliches Trainer-Verzeichnis mit Filtern (Verein, Region, Lizenz, Erfahrung, Freitext)
+- ✅ Selbstauskunft-Profil mit Sichtbarkeits- und Hospitierungs-Schaltern
+- ✅ Hospitierungs-Workflow: Anfragen → Annehmen/Ablehnen → Termin bestätigen (kein Zurück-Springen im Status)
+- ✅ Admin-Übersicht für Hospitierungen mit Status-Filter
+- ✅ 12 E-Mail-Textbausteine (9 automatisch, 3 manuell per Admin-Button auslösbar)
 
 ### **Frontend-Features**
 - ✅ Responsive Design (Mobile/Tablet/Desktop)
@@ -103,12 +117,20 @@ hpv-trainer/
 │   ├── routes/
 │   │   ├── auth.js          # Login, Register, Password-Reset, Email-Verify
 │   │   ├── admin.js         # Admin-Panel API
-│   │   └── public.js        # News, Documents, Contact, Legal
+│   │   ├── public.js        # News, Documents, Contact, Legal
+│   │   ├── events.js        # Events, Anmeldung, Admin-Verwaltung, CSV-Export
+│   │   ├── trainer.js       # Trainer-Verzeichnis + Selbstauskunft-Profil
+│   │   └── hospitality.js   # Hospitierungs-Workflow + Admin-Übersicht
 │   ├── middleware/
 │   │   └── auth.js          # JWT-Verification, Role-Based Access
 │   ├── services/
-│   │   ├── emailService.js  # Email-Sending (SMTP/Mock)
-│   │   └── auditService.js  # Audit-Logging
+│   │   ├── emailService.js     # Email-Sending (SMTP/Mock)
+│   │   ├── templateService.js  # Email-Template-Rendering ({{var}}-Substitution)
+│   │   └── auditService.js     # Audit-Logging
+│   ├── data/
+│   │   └── emailTemplates.js   # Die 12 E-Mail-Textbausteine (Seed-Daten)
+│   ├── utils/
+│   │   └── csv.js           # Hand-geschriebener CSV-Export (keine Library)
 │   ├── database.js          # DB-Initialize & Schema
 │   ├── server.js            # Express Server
 │   └── uploads/             # Document uploads directory
@@ -132,7 +154,11 @@ hpv-trainer/
 │   │   │   ├── News.js
 │   │   │   ├── Documents.js
 │   │   │   ├── Contact.js
-│   │   │   └── Legal.js
+│   │   │   ├── Legal.js
+│   │   │   ├── Events.js / EventDetail.js
+│   │   │   ├── TrainerDirectory.js / TrainerProfileView.js / TrainerProfileForm.js
+│   │   │   ├── Hospitality.js
+│   │   │   └── AdminEvents.js / AdminEventRegistrations.js / AdminHospitality.js
 │   │   ├── hooks/
 │   │   │   ├── useAuthTimeout.js
 │   │   │   ├── useLoading.js
@@ -197,7 +223,7 @@ docker-compose up --build -d
 ## 📊 Database Schema
 
 **Haupttabellen:**
-- `users` - Benutzer mit Rollen, Lizenzen, Status
+- `users` - Benutzer mit Rollen, Lizenzen, Status, optionaler Adresse (Straße/PLZ/Ort)
 - `groups` - Benutzergruppen (z.B. Trainer, Jugend)
 - `user_groups` - Mitgliedschaft in Gruppen
 - `articles` - News & Artikel
@@ -208,6 +234,11 @@ docker-compose up --build -d
 - `email_verifications` - E-Mail-Bestätigungstokens
 - `password_reset_tokens` - Passwort-Reset-Tokens
 - `audit_logs` - Admin-Aktionen & Änderungen
+- `events` - Trainings-Events (Datum/Zeit dient zugleich als Anmeldeschluss)
+- `event_registrations` - Anmeldungen (Gast oder eingeloggt), `UNIQUE(event_id, email)`
+- `trainer_profiles` - Selbstauskunft-Profile (ein Profil pro User), Sichtbarkeits-/Hospitierungs-Flags
+- `hospitality_requests` - Hospitierungs-Anfragen mit Status-Workflow (pending→accepted/rejected→confirmed)
+- `email_templates` - 12 Textbausteine mit `{{variable}}`-Platzhaltern, admin-editierbar
 
 ---
 
@@ -313,14 +344,18 @@ docker-compose up --build -d
 
 ## 🚀 Future Roadmap
 
-### v2.1 (Q4 2026)
+### v2.1 (2026-09-03) ✅ Abgeschlossen
+- [x] Events mit Anmeldung, Deadline/Kapazitäts-/Duplikatsprüfung
+- [x] Trainer-Verzeichnis mit Filtern + Selbstauskunft-Profil
+- [x] Hospitierungs-Workflow (Anfrage → Annehmen → Termin bestätigen)
+- [x] 12 E-Mail-Textbausteine (9 automatisch, 3 manuell auslösbar)
+
+### v2.2 (Q1 2027)
 - [ ] Zwei-Faktor-Authentifizierung (2FA)
 - [ ] Advanced Audit-Reports
 - [ ] API-Rate-Limiting
 - [ ] User-Avatar/Profilbilder
-
-### v2.2 (Q1 2027)
-- [ ] Kalender & Event-Verwaltung
+- [ ] Automatischer Scheduler für Event-Erinnerungen (aktuell nur manuell per Admin-Button)
 - [ ] Trainer-Kurse & Zertifikate
 - [ ] Newsletter-Versand
 - [ ] Swagger/OpenAPI-Dokumentation
@@ -353,6 +388,6 @@ Intern für Hessischer Pétanque Verband e.V.
 
 ---
 
-**Last Updated**: 2026-09-01  
+**Last Updated**: 2026-09-03  
 **Status**: Production Ready ✅  
 **Support**: https://github.com/solmando-blip/HPV-Trainer/issues
