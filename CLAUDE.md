@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Full-stack membership-management web app for the Hessischer Pétanque Verband (HPV): user/role
 administration, trainer licenses, news, document downloads, contact requests, WhatsApp group links,
-legal texts, and group BCC mailing. UI text and most docs are in German — match that when touching
+legal texts, group BCC mailing, events with registration, a trainer directory, and a hospitality
+(shadowing) request workflow. UI text and most docs are in German — match that when touching
 user-facing strings.
 
 - `backend/` — Node.js + Express REST API, PostgreSQL via `pg`
@@ -66,19 +67,54 @@ cannot reach the API — run the full Docker stack, or add a proxy, when testing
 the backend.
 
 ### Backend structure (`backend/`)
-- `server.js` — wires middleware and mounts three routers: `/api/auth`, `/api/admin`, `/api` (public).
+- `server.js` — wires middleware and mounts six router files: `/api/auth`, `/api/admin`, and
+  `public.js`/`events.js`/`trainer.js`/`hospitality.js` all at the bare `/api` prefix.
 - `database.js` — single `pg` Pool + `initDb()`. Owns the **entire schema and seed data** inline:
-  tables, `ALTER TABLE` migrations, seeded groups, legal texts, and the default `admin@hpv.local` /
-  `moderator@hpv.local` accounts (`admin123` / `moderator123`).
+  tables, `ALTER TABLE` migrations, seeded groups, legal texts, the default `admin@hpv.local` /
+  `moderator@hpv.local` accounts (`admin123` / `moderator123`), a seeded test event, and the 12
+  email templates from `data/emailTemplates.js` (kept in a separate file so `database.js` doesn't
+  balloon; seeded via `ON CONFLICT (name) DO NOTHING` so admin edits to the texts survive restarts).
+- `routes/events.js` — public `GET /events`, `GET /events/:id` (both include a `registered_count`
+  via `LEFT JOIN event_registrations`), `POST /events/:id/register` (public, optional auth via
+  `getOptionalUser` so a logged-in user's `user_id` is attached without requiring it); enforces
+  deadline (`(date + time) < NOW()`), capacity (`COUNT` pre-check against `max_participants`,
+  **not transactional** — accepted race-condition risk), and duplicate registration (`UNIQUE
+  (event_id, email)` + catch `23505`). Admin/Moderator: full event CRUD, registrations list/status
+  toggle/CSV export (`utils/csv.js`, hand-rolled, no library), and three manually-triggered
+  notification routes (`send-reminder`, `send-feedback-request`, `send-registration-reminder`) that
+  email the event's current non-rejected registrants — these three templates have no automatic
+  trigger since the app has no job scheduler.
+- `routes/trainer.js` — public trainer directory (`GET /trainer-profiles`, filterable by
+  `verein`/`region`/`license`/`experience`/`q`, always `WHERE is_visible=true`) and
+  `GET /trainer-profiles/:id` (resolves even when hidden). `GET /trainer-profiles/vereine` and
+  `GET /trainer-profiles/me` are registered **before** the `:id` route to avoid Express matching
+  them as an id. `PUT /trainer-profiles/me` is an upsert (`ON CONFLICT (user_id) DO UPDATE`,
+  first-insert detected via `RETURNING ..., (xmax = 0) AS inserted`).
+- `routes/hospitality.js` — request/accept/reject/confirm workflow between two `trainer_profiles`
+  users. `ALLOWED_TRANSITIONS` (module-local) enforces `pending→accepted/rejected`,
+  `accepted→confirmed`, no back-transitions — enforced in application code since Postgres `CHECK`
+  can't see the previous row value without a trigger (none exist in this codebase). Rejects
+  `requester_id === host_id` and hosts with `accepts_hospitality = false`.
+- `services/templateService.js` — `sendTemplatedEmail({to, bcc, templateName, vars})` loads a row
+  from `email_templates`, merges in always-available global vars (`current_year`, `platform_url`,
+  `support_email`, …), substitutes `{{var}}` placeholders, and converts the plain-text content
+  (which uses `**bold**` and newlines) to HTML by escaping first (vars may contain user input) then
+  converting `**`/`\n`. Logs `[Email Template]: <name> -> <recipient>` independent of
+  `emailService`'s own mock-log line.
 - `middleware/auth.js` — `verifyToken` (Bearer JWT → `req.user = {id, role, email}`) and
   `verifyRoles(...roles)`. `admin.js` applies `router.use(verifyToken, verifyRoles('Admin','Moderator'))`
   to every route; some routes further narrow with `verifyRoles('Admin')` (user create/update/delete,
-  legal texts, SMTP settings, audit-log viewer).
+  legal texts, SMTP settings, audit-log viewer). `getOptionalUser(req)` returns the decoded JWT or
+  `null` without ever responding/throwing — used only by the guest-capable event registration route.
 - `routes/admin.js` — users (list/pending with `limit`/`offset`/`search`/`role`/`status` query params,
-  approve/block, CRUD), groups + **group membership** (`GET/POST /groups/:id/members`,
+  approve/block — `approve` sends `welcome_email_new_user`, CRUD — `POST /users` sends
+  `admin_invitation` only when the created role is `Admin`/`Moderator`, else `welcome_email_new_user`),
+  groups + **group membership** (`GET/POST /groups/:id/members`,
   `DELETE /groups/:id/members/:userId`), `POST /groups/:id/send-email` (BCC to active members only),
   WhatsApp groups, `PUT /legal/:key`, `POST /settings/smtp` (writes `smtp_*` rows to
-  `system_settings`), `GET /templates` (`email_templates` table), `GET /audit-logs`.
+  `system_settings`), `GET /templates` (`email_templates` table — no admin UI consumes this; editing
+  a template today means updating `data/emailTemplates.js` and re-running `initDb`, or a direct SQL
+  `UPDATE`), `GET /audit-logs`.
 - `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename
   with no extension; metadata incl. `file_type` in DB), contact messages, legal texts, image serving.
   Read endpoints are public; writes require Admin/Moderator. **All three file-serving routes
@@ -106,7 +142,18 @@ the backend.
 - `role`: `Admin` | `Moderator` | `User` | `Gast`
 - `status`: `pending` (awaiting approval) | `active` | `blocked` — login rejects non-active
 - `license_level`: DB CHECK constraint — `Keine` | `Hilfstrainer` | `C-Trainer` | `B-Trainer` | `A-Trainer`
+- `strasse` / `plz` / `ort` — optional address fields, self-service editable at `/profile`, no CHECK/NOT NULL
 - `contact_messages.status`: `new` | `read` | `answered` | `archived` (CHECK constraint, re-applied in `initDb`)
+
+### Events / Trainer / Hospitality model
+- `events` — `date`/`time` columns double as the registration deadline (no separate deadline field);
+  `event_registrations.status`: `pending` | `accepted` | `rejected` (freely toggled by admin, no
+  transition restriction), `UNIQUE(event_id, email)`, `user_id` nullable (guest registrations).
+- `trainer_profiles` — one per `user_id` (`UNIQUE`), `is_visible` gates the public directory listing
+  only (`GET /trainer-profiles/:id` still resolves when hidden), `accepts_hospitality` gates whether
+  `POST /hospitality` accepts a request for that user.
+- `hospitality_requests.status`: `pending` → `accepted`/`rejected` → `confirmed`, no back-transitions
+  (see `routes/hospitality.js`'s `ALLOWED_TRANSITIONS`).
 
 ### Frontend structure (`frontend/src/`)
 - `App.js` — all routes; auth state is `user` in `localStorage` (`hpv_user` + `hpv_token`). Route
@@ -122,11 +169,24 @@ the backend.
   adding preview kinds. To add a previewable type, edit only `PREVIEW_TYPES` in
   `backend/routes/public.js`; the frontend picks it up via the catalog endpoint (the
   `WORD_TYPES`/`TEXT_LIKE`/`IMAGE_LIKE` arrays in `Documents.js` are for badge colour only).
+- `pages/Events.js`/`EventDetail.js`, `pages/TrainerDirectory.js`/`TrainerProfileView.js`/
+  `TrainerProfileForm.js`, `pages/Hospitality.js` — public/self-service pages for the three new
+  features; `pages/AdminEvents.js`/`AdminEventRegistrations.js`/`AdminHospitality.js` are separate
+  routes (not folded into `AdminPanel.js`, which only gained a "Weitere Verwaltung" quick-link card)
+  since the checklist's admin flows need their own URLs
+  (`/admin/events`, `/admin/event-registrations[/:eventId]`, `/admin/hospitality`). All of them
+  follow `AdminPanel.js`'s existing modal convention (conditional-rendered `div.modal.d-block`, no
+  Bootstrap JS Modal API involved).
+- `components/EventRegistrationModal.js` / `HospitalityRequestModal.js` — the two non-admin modals.
+- `index.js` now also imports `bootstrap/dist/js/bootstrap.bundle.min.js` (previously only the CSS
+  was loaded, so the header's hamburger `data-bs-toggle` had no JS behind it).
 - `context/ToastContext.js` + `components/ToastContainer.js` — app-wide toast notifications.
 - `components/HelpButton.js` + `help/helpContent.js` — route-aware in-app help. One `<HelpButton />`
   in `App.js` renders a floating "?" on every page; `helpContent.js` maps `location.pathname` →
   help text. To change a page's help, edit only `helpContent.js` (keyed by exact path;
-  `fallbackHelp` covers unlisted routes). Keep it in sync with `BENUTZERHANDBUCH.md`.
+  `fallbackHelp` covers unlisted routes; `HelpButton.js` also falls back to the parent path with a
+  trailing `/\d+` stripped, e.g. `/events/5` → `/events`, before `fallbackHelp`). Keep it in sync
+  with `BENUTZERHANDBUCH.md`.
 - `components/` — reusable `Pagination`, `SearchFilter`; `hooks/` — `usePagination`, `useLoading`.
 - Auth requests attach the token manually as `{ headers: { Authorization: \`Bearer ${token}\` } }`;
   there is no axios interceptor.
