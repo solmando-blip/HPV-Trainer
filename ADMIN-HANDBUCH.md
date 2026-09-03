@@ -8,10 +8,11 @@ Vollständiges Referenz-Handbuch für Administrator und Moderator.
 
 1. [Benutzerbasierte Verwaltung](#benutzerbasierte-verwaltung)
 2. [Inhalts-Management](#inhalts-management)
-3. [Kommunikation](#kommunikation)
-4. [Konfiguration](#konfiguration)
-5. [Rollen und Berechtigungen](#rollen-und-berechtigungen)
-6. [Troubleshooting](#troubleshooting)
+3. [Events, Trainer-Verzeichnis & Hospitierungen](#events-trainer-verzeichnis--hospitierungen)
+4. [Kommunikation](#kommunikation)
+5. [Konfiguration](#konfiguration)
+6. [Rollen und Berechtigungen](#rollen-und-berechtigungen)
+7. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -127,6 +128,71 @@ Unter **Admin-Panel** → **Rechtstexte** können Sie folgende Seiten anpassen:
 2. Vorhandenen Text löschen
 3. Neuen Text eingeben (HTML möglich)
 4. **Speichern**
+
+---
+
+## Events, Trainer-Verzeichnis & Hospitierungen
+
+### Events verwalten
+
+#### Event erstellen
+
+1. **Admin-Panel** → Kasten **Weitere Verwaltung** → **📅 Events**
+2. Button **Event erstellen**
+3. Felder ausfüllen:
+   - **Title**, **Description**, **Agenda**
+   - **Date** / **Time** – dient zugleich als Anmeldeschluss: nach diesem Zeitpunkt lehnt das System
+     neue Anmeldungen automatisch ab
+   - **Location**
+   - **Max Participants** – `0` bedeutet unbegrenzt
+4. **Speichern**
+
+#### Event bearbeiten / löschen
+
+1. In der Events-Tabelle Button **Bearbeiten** bzw. **Löschen** klicken
+2. Beim Löschen: alle zugehörigen Anmeldungen werden mitgelöscht (Bestätigungsdialog beachten)
+
+#### Anmeldungen verwalten
+
+1. In der Events-Tabelle Button **Anmeldungen** (oder **📋 Event-Anmeldungen** im Admin-Panel, dann
+   Event auswählen)
+2. Tabelle zeigt Name, Email, Verein, Lizenz, Level, Status
+3. Pro Zeile **Accept** / **Reject** – ändert den Status frei (kein fester Übergangs-Zwang)
+4. Button **CSV Export** lädt alle Anmeldungen als Datei herunter
+
+**Info:** Eine Anmeldung wird serverseitig abgelehnt, wenn der Anmeldeschluss überschritten ist,
+das Event bereits voll ist (`Max Participants` erreicht, gezählt werden alle nicht abgelehnten
+Anmeldungen), oder dieselbe E-Mail-Adresse sich ein zweites Mal für dasselbe Event anmeldet.
+
+#### Manuelle Erinnerungs-/Feedback-Mails
+
+Drei Buttons pro Event in der Events-Tabelle, jeweils an alle aktuellen (nicht abgelehnten)
+Anmeldungen versendet:
+- **Anmelde-Erinnerung senden** – Erinnerung vor dem Anmeldeschluss
+- **Vor-Event-Erinnerung senden** – Erinnerung kurz vor dem Event
+- **Feedback-Anfrage senden** – Bitte um Rückmeldung nach dem Event
+
+Diese drei werden **nicht automatisch** verschickt (kein Scheduler in der App) — sie müssen bei
+Bedarf manuell ausgelöst werden.
+
+### Trainer-Verzeichnis
+
+Das Verzeichnis (`/trainer`) wird ausschließlich von den Mitgliedern selbst gepflegt — es gibt
+keine Admin-Verwaltungsseite dafür. Jeder Nutzer legt sein Profil unter **Mein Profil** →
+**Trainer-Profil** (bzw. `/trainer/profile`) selbst an und steuert dort:
+- **Im Verzeichnis sichtbar?** – ob das Profil in der öffentlichen Liste erscheint
+- **Hospitierungen akzeptieren?** – ob andere eine Hospitier-Anfrage stellen können
+
+### Hospitierungen verwalten
+
+1. **Admin-Panel** → **🤝 Hospitierungen**
+2. Tabelle zeigt Requester, Host, Status, Date Proposed, Date Confirmed
+3. Dropdown oben rechts filtert nach Status (pending / accepted / rejected / confirmed)
+4. Button **Löschen** entfernt eine Anfrage unabhängig vom Status
+
+**Info:** Der Status-Ablauf ist fest verdrahtet: `pending` → `accepted`/`rejected` → `confirmed`.
+Ein Zurückspringen (z. B. von `accepted` zu `pending`) ist nicht möglich, auch nicht über die
+Admin-Ansicht — dafür müsste die Anfrage gelöscht und neu gestellt werden.
 
 ---
 
@@ -266,8 +332,8 @@ Jede Anfrage hat einen Status:
 
 | Rolle | Zugriff | Berechtigungen |
 |-------|--------|----------------|
-| **Admin** | Alle Funktionen | ✅ Benutzer verwalten, News/Docs bearbeiten, Mail-Versand, SMTP-Einstellungen, Gruppen, Rechtstexte |
-| **Moderator** | Admin-Panel (eingeschränkt) | ✅ Benutzer freischalten, News schreiben, Kontaktanfragen, keine SMTP/Gruppen |
+| **Admin** | Alle Funktionen | ✅ Benutzer verwalten, News/Docs bearbeiten, Mail-Versand, SMTP-Einstellungen, Gruppen, Rechtstexte, Events/Anmeldungen/Hospitierungen |
+| **Moderator** | Admin-Panel (eingeschränkt) | ✅ Benutzer freischalten (nicht anlegen/löschen/bearbeiten), News schreiben, Kontaktanfragen, Events/Anmeldungen/Hospitierungen verwalten; ❌ keine SMTP/Gruppen/Benutzerverwaltung |
 | **Benutzer** | Dashboard | ✅ News lesen, Dokumente runterladen, Kontaktformular nutzen |
 | **Gast** | Öffentliche Seiten | ✅ News lesen, Dokumente runterladen, Kontaktformular |
 
@@ -311,6 +377,23 @@ Jede Anfrage hat einen Status:
 1. **Backend läuft?** → `docker-compose logs backend`
 2. **Upload-Ordner existiert?** → `/backend/uploads/`
 3. **DB-Fehler?** → Logs prüfen
+
+### Anmeldung zu einem Event schlägt fehl
+
+**Häufige Gründe:**
+1. **Anmeldeschluss überschritten** → Event-Datum/Uhrzeit liegt in der Vergangenheit; Datum im
+   Admin-Panel prüfen/anpassen
+2. **Event ist voll** → `Max Participants` erreicht (gezählt werden alle nicht abgelehnten
+   Anmeldungen); Wert erhöhen oder eine Anmeldung auf "Reject" setzen
+3. **Bereits angemeldet** → dieselbe E-Mail-Adresse ist für dieses Event schon eingetragen
+
+### Hospitier-Anfrage kann nicht gestellt werden
+
+1. **Zielprofil nimmt keine Hospitierungen an** → Trainer hat "Hospitierungen akzeptieren?" auf
+   seinem Profil deaktiviert
+2. **Kein Trainer-Profil vorhanden** → die Zielperson hat noch kein Profil unter `/trainer/profile`
+   angelegt
+3. **Anfrage an sich selbst** → wird serverseitig abgelehnt
 
 ### Datenbank-Fehler
 

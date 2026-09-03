@@ -1,6 +1,6 @@
 # HPV Trainer
 
-Vollständige Webanwendung für die Verwaltung von Mitgliedern, News, Dokumenten, Kontaktanfragen und Admin-Aufgaben für den Hessischen Pétanque Verband (HPV).
+Vollständige Webanwendung für die Verwaltung von Mitgliedern, News, Dokumenten, Kontaktanfragen, Events, dem Trainer-Verzeichnis, Hospitierungen und Admin-Aufgaben für den Hessischen Pétanque Verband (HPV).
 
 > 📚 **Gesamte Dokumentation:** [DOKUMENTATION.md](DOKUMENTATION.md) – Übersicht und Einstieg.
 > Anwender: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md) · Admins: [ADMIN-HANDBUCH.md](ADMIN-HANDBUCH.md).
@@ -25,6 +25,9 @@ Ziel der Anwendung ist die zentrale Verwaltung von:
 - WhatsApp-Gruppen
 - Rechtstexten
 - Mail-/SMTP-Konfiguration
+- Events und Event-Anmeldungen
+- Trainer-Verzeichnis und Selbstauskunft-Profile
+- Hospitierungen (Trainer-Shadowing) zwischen Mitgliedern
 
 ## Funktionen
 
@@ -35,6 +38,14 @@ Ziel der Anwendung ist die zentrale Verwaltung von:
 - Dokumentenübersicht und Download
 - Kontaktformular
 - Rechtliche Hinweise (Impressum, Datenschutz, AGB)
+- Event-Übersicht und -Details (inkl. Anmeldung als Gast oder eingeloggt)
+- Trainer-Verzeichnis mit Filtern (Verein, Region, Lizenz, Erfahrung, Freitext)
+
+### Nur für eingeloggte Nutzer
+
+- Eigenes Trainer-Profil anlegen/bearbeiten (Sichtbarkeit & Hospitierungs-Einstellung)
+- Hospitier-Anfragen stellen, annehmen/ablehnen, Termin bestätigen
+- Profil inkl. optionaler Adresse (Straße, PLZ, Ort) pflegen
 
 ### Admin/Moderator-Bereich
 
@@ -47,6 +58,10 @@ Ziel der Anwendung ist die zentrale Verwaltung von:
 - SMTP-Einstellungen verwalten
 - Kontaktanfragen einsehen, beantworten und archivieren
 - Rechtstexte aktualisieren
+- Events anlegen/bearbeiten/löschen
+- Event-Anmeldungen verwalten (Accept/Reject, CSV-Export)
+- Manuelle Erinnerungs-/Feedback-Mails an Event-Teilnehmer auslösen
+- Hospitierungen einsehen, nach Status filtern, löschen
 
 ## Technischer Stack
 
@@ -69,7 +84,12 @@ hpv-trainer/
 │  │  ├─ admin.js
 │  │  ├─ auth.js
 │  │  ├─ public.js
+│  │  ├─ events.js
+│  │  ├─ trainer.js
+│  │  ├─ hospitality.js
 │  │  └─ ...
+│  ├─ data/
+│  │  └─ emailTemplates.js
 │  ├─ middleware/
 │  ├─ services/
 │  ├─ database.js
@@ -153,16 +173,26 @@ Die Datenbank wird beim Start automatisch initialisiert. Dabei werden Tabellen w
 - legal_texts
 - whatsapp_groups
 - system_settings
+- events
+- event_registrations
+- trainer_profiles
+- hospitality_requests
+- email_templates
 
-angelegt und mit Initialdaten befüllt.
+angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Textbausteinen).
 
 ### Wichtige Datenfelder
 
 - users.role: Admin, Moderator, User, Gast
 - users.status: pending, active, blocked
 - users.license_level: Keine, Hilfstrainer, C-Trainer, B-Trainer, A-Trainer
+- users.strasse / users.plz / users.ort: optionale Adresse, keine Pflichtfelder
 - documents.file_size, documents.file_type
 - contact_messages.status: new, read, answered, archived
+- events.date/time: dienen zugleich als Anmeldeschluss (kein separates Deadline-Feld)
+- event_registrations.status: pending, accepted, rejected — `UNIQUE(event_id, email)`
+- trainer_profiles.is_visible / accepts_hospitality: Sichtbarkeit im Verzeichnis bzw. ob Hospitier-Anfragen angenommen werden
+- hospitality_requests.status: pending → accepted/rejected → confirmed (keine Rück-Übergänge)
 
 ## API-Übersicht
 
@@ -181,6 +211,10 @@ angelegt und mit Initialdaten befüllt.
   (PNG/JPEG/GIF/WebP), `nosniff`
 - POST /api/contact
 - GET /api/legal
+- GET /api/events · GET /api/events/:id (inkl. `registered_count`)
+- POST /api/events/:id/register – Anmeldung (Gast oder eingeloggt), prüft Deadline/Kapazität/Duplikat
+- GET /api/trainer-profiles (Filter: `verein`, `region`, `license`, `experience`, `q`) ·
+  GET /api/trainer-profiles/:id (auch wenn `is_visible=false`) · GET /api/trainer-profiles/vereine
 
 > Hochgeladene Dateien sind **ausschließlich** über die drei `/api/...`-Endpunkte oben
 > erreichbar. Jeder Zugriff wird gegen das `uploads/`-Verzeichnis geprüft (Schutz vor
@@ -192,6 +226,10 @@ angelegt und mit Initialdaten befüllt.
 - POST /api/documents – Datei hochladen (Feld `file`)
 - DELETE /api/documents/:id
 - GET /api/contact · PUT /api/contact/:id/status · DELETE /api/contact/:id
+- POST/PUT/DELETE /api/events[/:id] – Event-CRUD
+- GET /api/trainer-profiles/me · PUT /api/trainer-profiles/me – eigenes Trainer-Profil (Upsert)
+- POST /api/hospitality – Anfrage stellen · GET /api/hospitality/mine · GET /api/hospitality/received
+- PUT /api/hospitality/:id/accept · /reject · /confirm · DELETE /api/hospitality/:id (nur `pending`)
 
 ### Admin/Moderator-Endpoints (`/api/admin`)
 
@@ -205,6 +243,11 @@ angelegt und mit Initialdaten befüllt.
 - GET /api/admin/whatsapp · POST /api/admin/whatsapp · DELETE /api/admin/whatsapp/:id
 - PUT /api/admin/legal/:key (nur Admin) · POST /api/admin/settings/smtp (nur Admin)
 - GET /api/admin/templates · GET /api/admin/audit-logs (nur Admin)
+- GET /api/admin/event-registrations[/:eventId] · PUT /api/admin/event-registrations/:id/status ·
+  GET /api/admin/event-registrations/:eventId/export (CSV)
+- POST /api/admin/events/:id/send-reminder · /send-feedback-request · /send-registration-reminder –
+  manuell ausgelöste Mails an die Event-Anmeldungen (kein automatischer Scheduler)
+- GET /api/admin/hospitality (Filter `status`) · DELETE /api/admin/hospitality/:id
 
 ## Nutzung
 
@@ -238,12 +281,38 @@ angelegt und mit Initialdaten befüllt.
 - Die SMTP-Einstellungen können im Admin-Bereich gespeichert werden.
 - Für lokale Tests kann der Mock-Mail-System-Mode aktiviert werden, wenn keine SMTP-Daten gesetzt sind.
 
+### Events verwalten
+
+- Admin/Moderator legen Events mit Titel, Beschreibung, Datum/Uhrzeit, Ort, Agenda und maximaler
+  Teilnehmerzahl an (`/admin/events`).
+- Anmeldung ist bis zum Event-Zeitpunkt möglich, danach wird sie serverseitig abgelehnt.
+- Über `/admin/event-registrations/:eventId` können Anmeldungen angenommen/abgelehnt und als CSV
+  exportiert werden.
+
+### Trainer-Verzeichnis & Hospitierungen
+
+- Jeder eingeloggte Nutzer kann unter `/trainer/profile` ein Trainer-Profil anlegen; nur sichtbare
+  Profile (`is_visible=true`) erscheinen im öffentlichen Verzeichnis (`/trainer`).
+- Über ein sichtbares Profil kann eine Hospitier-Anfrage gestellt werden (sofern
+  `accepts_hospitality=true`). Ablauf: Anfrage → Annehmen/Ablehnen → Termin bestätigen, jeweils mit
+  automatischer Benachrichtigungs-Mail. Verwaltung im Dashboard unter `/hospitality`.
+
+### E-Mail-Textbausteine
+
+- 12 Templates in `backend/data/emailTemplates.js`, geseedet in die `email_templates`-Tabelle
+  (`ON CONFLICT DO NOTHING`, spätere Admin-Bearbeitungen bleiben also erhalten).
+- 9 werden automatisch verschickt (Anmeldebestätigung, Hospitierungs-Lifecycle, Willkommens-Mail, …).
+- 3 (Vor-Event-Erinnerung, Feedback-Anfrage, Anmelde-Erinnerung) werden manuell per Button auf
+  `/admin/events` ausgelöst und gehen an die aktuellen Event-Anmeldungen.
+
 ## Umgebungsvariablen
 
 Die wichtigsten Konfigurationen liegen in den Umgebungsvariablen oder in der Docker-Umgebung:
 
 - DATABASE_URL
 - PORT
+- JWT_SECRET
+- FRONTEND_URL (Basis für Links in E-Mails, z. B. Profil-/Login-/Dashboard-Links)
 - SMTP_HOST
 - SMTP_PORT
 - SMTP_USER
