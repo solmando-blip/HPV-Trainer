@@ -113,7 +113,19 @@ router.post('/users/:id/approve', async (req, res) => {
     );
     if (result.rows.length > 0) {
       const { name, email } = result.rows[0];
-      await sendTemplatedEmail({ to: email, templateName: 'welcome_email_new_user', vars: { name } });
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+      await sendTemplatedEmail({
+        to: email,
+        templateName: 'welcome_email_new_user',
+        vars: {
+          user_name: name,
+          user_email: email,
+          login_link: `${frontendUrl}/login`,
+          profile_link: `${frontendUrl}/profile`,
+          events_link: `${frontendUrl}/events`,
+          privacy_link: `${frontendUrl}/legal`
+        }
+      });
     }
     res.json({ message: 'Benutzer freigeschaltet.' });
   } catch (err) {
@@ -165,11 +177,33 @@ router.post('/users', verifyRoles('Admin'), async (req, res) => {
       await req.audit({ action: 'CREATE_USER', resource_type: 'user', resource_id: result.rows[0].id, new_values: result.rows[0] });
     }
 
-    await sendTemplatedEmail({
-      to: result.rows[0].email,
-      templateName: 'admin_invitation',
-      vars: { name: result.rows[0].name, email: result.rows[0].email, role: result.rows[0].role }
-    });
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+    if (['Admin', 'Moderator'].includes(result.rows[0].role)) {
+      await sendTemplatedEmail({
+        to: result.rows[0].email,
+        templateName: 'admin_invitation',
+        vars: {
+          user_name: result.rows[0].name,
+          new_role: result.rows[0].role,
+          login_link: `${frontendUrl}/login`,
+          admin_link: `${frontendUrl}/admin`,
+          admin_contact_email: process.env.SMTP_USER || 'admin@hpv-trainer.local'
+        }
+      });
+    } else {
+      await sendTemplatedEmail({
+        to: result.rows[0].email,
+        templateName: 'welcome_email_new_user',
+        vars: {
+          user_name: result.rows[0].name,
+          user_email: result.rows[0].email,
+          login_link: `${frontendUrl}/login`,
+          profile_link: `${frontendUrl}/profile`,
+          events_link: `${frontendUrl}/events`,
+          privacy_link: `${frontendUrl}/legal`
+        }
+      });
+    }
 
     res.status(201).json({
       message: 'Benutzer erfolgreich erstellt.',

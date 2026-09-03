@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
+const emailTemplates = require('./data/emailTemplates');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@db:5432/hpv_trainer'
@@ -230,34 +231,12 @@ const initDb = async () => {
       WHERE NOT EXISTS (SELECT 1 FROM events WHERE title = 'Trainings-Community 24.10.26');
     `);
 
-    await pool.query(`
-      INSERT INTO email_templates (name, subject, content) VALUES
-      ('event_registration_confirmation', 'Anmeldebestätigung: {{event_title}}',
-       '<p>Hallo {{name}},</p><p>Ihre Anmeldung zum Event <strong>{{event_title}}</strong> am {{event_date}} um {{event_time}} Uhr in {{event_location}} ist eingegangen.</p><p>Viele Grüße,<br>HPV Trainer Team</p>'),
-      ('event_registration_admin_notification', 'Neue Anmeldung: {{event_title}}',
-       '<p>Neue Anmeldung von {{name}} ({{email}}) zum Event <strong>{{event_title}}</strong> am {{event_date}}.</p>'),
-      ('hospitality_request_notification', 'Neue Hospitier-Anfrage von {{requester_name}}',
-       '<p>Hallo {{host_name}},</p><p>{{requester_name}} möchte bei Ihnen hospitieren:</p><p><em>{{message}}</em></p><p>Bitte im Portal unter „Hospitieren" antworten.</p>'),
-      ('hospitality_request_accepted', 'Ihre Hospitier-Anfrage wurde angenommen',
-       '<p>Hallo {{requester_name}},</p><p>{{host_name}} hat Ihre Hospitier-Anfrage angenommen. Ein Termin wird demnächst vorgeschlagen.</p>'),
-      ('hospitality_request_rejected', 'Ihre Hospitier-Anfrage wurde abgelehnt',
-       '<p>Hallo {{requester_name}},</p><p>{{host_name}} hat Ihre Hospitier-Anfrage leider abgelehnt.</p>'),
-      ('hospitality_confirmed', 'Hospitier-Termin bestätigt',
-       '<p>Der Hospitier-Termin zwischen {{requester_name}} und {{host_name}} wurde bestätigt:</p><p>Datum: {{date_confirmed}}<br>Ort: {{location}}<br>Hinweise: {{notes}}</p>'),
-      ('event_reminder_before', 'Erinnerung: {{event_title}} steht bevor',
-       '<p>Hallo {{name}},</p><p>Das Event <strong>{{event_title}}</strong> findet am {{event_date}} statt. Wir freuen uns auf Sie!</p>'),
-      ('event_feedback_request', 'Wie war {{event_title}}?',
-       '<p>Hallo {{name}},</p><p>Vielen Dank für Ihre Teilnahme an {{event_title}}. Wir freuen uns über Ihr Feedback.</p>'),
-      ('trainer_profile_created', 'Ihr Trainer-Profil wurde erstellt',
-       '<p>Hallo {{name}},</p><p>Ihr Trainer-Profil wurde erfolgreich angelegt und ist nun im Verzeichnis sichtbar (sofern aktiviert).</p>'),
-      ('welcome_email_new_user', 'Willkommen bei HPV Trainer',
-       '<p>Hallo {{name}},</p><p>Ihr Konto wurde freigeschaltet. Viel Erfolg mit dem HPV-Trainer-Portal!</p>'),
-      ('admin_invitation', 'Ihr HPV-Trainer-Konto wurde erstellt',
-       '<p>Hallo {{name}},</p><p>Ein Administrator hat für Sie ein Konto ({{email}}, Rolle: {{role}}) angelegt. Sie können sich ab sofort anmelden.</p>'),
-      ('event_registration_reminder', 'Erinnerung: Anmeldung zu {{event_title}}',
-       '<p>Hallo {{name}},</p><p>Nur eine kurze Erinnerung an Ihre Anmeldung zu {{event_title}} am {{event_date}}.</p>')
-      ON CONFLICT (name) DO NOTHING;
-    `);
+    for (const t of emailTemplates) {
+      await pool.query(
+        'INSERT INTO email_templates (name, subject, content) VALUES ($1, $2, $3) ON CONFLICT (name) DO NOTHING',
+        [t.name, t.subject, t.content]
+      );
+    }
 
     const adminPass = await bcrypt.hash('admin123', 10);
     const modPass = await bcrypt.hash('moderator123', 10);

@@ -77,10 +77,23 @@ router.post('/events/:id/register', async (req, res) => {
     );
 
     const eventDate = new Date(event.date).toLocaleDateString('de-DE');
+    const registrationLicense = has_license ? 'Ja' : 'Nein';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+
     await sendTemplatedEmail({
       to: normalizedEmail,
       templateName: 'event_registration_confirmation',
-      vars: { name, event_title: event.title, event_date: eventDate, event_time: event.time, event_location: event.location }
+      vars: {
+        user_name: name,
+        event_title: event.title,
+        event_date: eventDate,
+        event_time: event.time,
+        event_location: event.location,
+        registration_name: name,
+        registration_verein: verein || '–',
+        registration_license: registrationLicense,
+        registration_level: experience_level || 'Anfänger'
+      }
     });
 
     const admins = await pool.query("SELECT email FROM users WHERE role IN ('Admin', 'Moderator')");
@@ -90,7 +103,20 @@ router.post('/events/:id/register', async (req, res) => {
         to: process.env.SMTP_USER || 'noreply@hpv.local',
         bcc: adminEmails.join(','),
         templateName: 'event_registration_admin_notification',
-        vars: { name, email: normalizedEmail, event_title: event.title, event_date: eventDate }
+        vars: {
+          event_title: event.title,
+          event_date: eventDate,
+          registration_name: name,
+          registration_email: normalizedEmail,
+          registration_verein: verein || '–',
+          registration_license: registrationLicense,
+          registration_level: experience_level || 'Anfänger',
+          registration_description: description || '–',
+          registration_date: new Date().toLocaleDateString('de-DE'),
+          admin_manage_registrations_link: `${frontendUrl}/admin/event-registrations/${req.params.id}`,
+          current_registrations: countResult.rows[0].count + 1,
+          max_participants: event.max_participants
+        }
       });
     }
 
@@ -205,6 +231,72 @@ router.get('/admin/event-registrations/:eventId/export', verifyToken, verifyRole
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="event-${req.params.eventId}-registrations.csv"`);
     res.send('﻿' + csv);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Manuell durch Admin/Moderator ausgelöst (siehe HPV-TRAINER-EMAIL-TEMPLATES.md,
+// "WANN WELCHES TEMPLATE VERWENDET WIRD") – kein automatischer Scheduler,
+// Empfänger sind die aktuell nicht abgelehnten Anmeldungen des Events.
+router.post('/admin/events/:id/send-reminder', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    const eventResult = await pool.query(
+      `SELECT e.*, u.name AS creator_name, u.email AS creator_email
+       FROM events e LEFT JOIN users u ON u.id = e.created_by WHERE e.id = $1`,
+      [req.params.id]
+    );
+    if (eventResult.rows.length === 0) return res.status(404).json({ message: 'Event nicht gefunden.' });
+    const event = eventResult.rows[0];
+
+    const regs = await pool.query(
+      "SELECT DISTINCT name, email FROM event_registrations WHERE event_id = $1 AND status <> 'rejected'",
+      [req.params.id]
+    );
+
+    for (const r of regs.rows) {
+      await sendTemplatedEmail({
+        to: r.email,
+        templateName: 'event_reminder_before',
+        vars: {
+          user_name: r.name,
+          event_title: event.title,
+          event_time: event.time,
+          event_location: event.location,
+          event_agenda: event.agenda || '–',
+          event_contact_person: event.creator_name || '–',
+          event_contact_phone: '–',
+          event_contact_email: event.creator_email || ''
+        }
+      });
+    }
+
+    res.json({ message: `Erinnerung an ${regs.rows.length} Anmeldungen gesendet.` });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/admin/events/:id/send-feedback-request', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    const eventResult = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+    if (eventResult.rows.length === 0) return res.status(404).json({ message: 'Event nicht gefunden.' });
+    const event = eventResult.rows[0];
+
+    const regs = await pool.query(
+      "SELECT DISTINCT name, email FROM event_registrations WHERE event_id = $1 AND status <> 'rejected'",
+      [req.params.id]
+    );
+
+    for (const r of regs.rows) {
+      await sendTemplatedEmail({
+        to: r.email,
+        templateName: 'event_feedback_request',
+        vars: { user_name: r.name, event_title: event.title, feedback_form_link: '' }
+      });
+    }
+
+    res.json({ message: `Feedback-Anfrage an ${regs.rows.length} Anmeldungen gesendet.` });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -12,12 +12,16 @@ const ALLOWED_TRANSITIONS = {
 };
 
 const HOSPITALITY_SELECT = `
-  SELECT hr.*, req.name AS requester_name, req.email AS requester_email,
-         host.name AS host_name, host.email AS host_email
+  SELECT hr.*, req.name AS requester_name, req.email AS requester_email, req_tp.verein AS requester_verein,
+         host.name AS host_name, host.email AS host_email, host_tp.verein AS host_verein
   FROM hospitality_requests hr
   JOIN users req ON req.id = hr.requester_id
   JOIN users host ON host.id = hr.host_id
+  LEFT JOIN trainer_profiles req_tp ON req_tp.user_id = req.id
+  LEFT JOIN trainer_profiles host_tp ON host_tp.user_id = host.id
 `;
+
+const FRONTEND_URL = () => process.env.FRONTEND_URL || 'http://localhost:8080';
 
 router.post('/hospitality', verifyToken, async (req, res) => {
   const { host_id, message, date_proposed } = req.body;
@@ -38,12 +42,22 @@ router.post('/hospitality', verifyToken, async (req, res) => {
       [req.user.id, host_id, message || null, date_proposed || null]
     );
 
-    const requester = await pool.query('SELECT name FROM users WHERE id = $1', [req.user.id]);
+    const requester = await pool.query(
+      `SELECT u.name, tp.verein FROM users u LEFT JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1`,
+      [req.user.id]
+    );
     const host = await pool.query('SELECT name, email FROM users WHERE id = $1', [host_id]);
     await sendTemplatedEmail({
       to: host.rows[0].email,
       templateName: 'hospitality_request_notification',
-      vars: { host_name: host.rows[0].name, requester_name: requester.rows[0].name, message: message || '' }
+      vars: {
+        host_name: host.rows[0].name,
+        requester_name: requester.rows[0].name,
+        requester_verein: requester.rows[0].verein || '–',
+        request_message: message || '–',
+        proposed_date: date_proposed ? new Date(date_proposed).toLocaleDateString('de-DE') : '–',
+        hospitality_dashboard_link: `${FRONTEND_URL()}/hospitality`
+      }
     });
 
     res.status(201).json({ message: 'Hospitier-Anfrage gesendet.', request: result.rows[0] });
@@ -109,11 +123,20 @@ router.put('/hospitality/:id/accept', verifyToken, async (req, res) => {
   const updated = await transition(req, res, 'accepted');
   if (!updated) return;
   const requester = await pool.query('SELECT name, email FROM users WHERE id = $1', [updated.requester_id]);
-  const host = await pool.query('SELECT name FROM users WHERE id = $1', [updated.host_id]);
+  const host = await pool.query(
+    `SELECT u.name, u.email, tp.verein FROM users u LEFT JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1`,
+    [updated.host_id]
+  );
   await sendTemplatedEmail({
     to: requester.rows[0].email,
     templateName: 'hospitality_request_accepted',
-    vars: { requester_name: requester.rows[0].name, host_name: host.rows[0].name }
+    vars: {
+      requester_name: requester.rows[0].name,
+      host_name: host.rows[0].name,
+      host_verein: host.rows[0].verein || '–',
+      host_email: host.rows[0].email,
+      hospitality_dashboard_link: `${FRONTEND_URL()}/hospitality`
+    }
   });
   res.json({ message: 'Anfrage angenommen.', request: updated });
 });
@@ -126,7 +149,11 @@ router.put('/hospitality/:id/reject', verifyToken, async (req, res) => {
   await sendTemplatedEmail({
     to: requester.rows[0].email,
     templateName: 'hospitality_request_rejected',
-    vars: { requester_name: requester.rows[0].name, host_name: host.rows[0].name }
+    vars: {
+      requester_name: requester.rows[0].name,
+      host_name: host.rows[0].name,
+      trainer_directory_link: `${FRONTEND_URL()}/trainer`
+    }
   });
   res.json({ message: 'Anfrage abgelehnt.', request: updated });
 });
@@ -141,15 +168,24 @@ router.put('/hospitality/:id/confirm', verifyToken, async (req, res) => {
   if (!updated) return;
   const requester = await pool.query('SELECT name, email FROM users WHERE id = $1', [updated.requester_id]);
   const host = await pool.query('SELECT name, email FROM users WHERE id = $1', [updated.host_id]);
-  const vars = {
-    requester_name: requester.rows[0].name,
+  const confirmedDate = updated.date_confirmed ? new Date(updated.date_confirmed).toLocaleDateString('de-DE') : '–';
+  const sharedVars = {
     host_name: host.rows[0].name,
-    date_confirmed: updated.date_confirmed ? new Date(updated.date_confirmed).toLocaleDateString('de-DE') : '',
-    location: updated.location || '',
-    notes: updated.notes || ''
+    confirmed_date: confirmedDate,
+    training_time: '–',
+    training_location: updated.location || '–',
+    confirmation_notes: updated.notes || '–'
   };
-  await sendTemplatedEmail({ to: requester.rows[0].email, templateName: 'hospitality_confirmed', vars });
-  await sendTemplatedEmail({ to: host.rows[0].email, templateName: 'hospitality_confirmed', vars });
+  await sendTemplatedEmail({
+    to: requester.rows[0].email,
+    templateName: 'hospitality_confirmed',
+    vars: { ...sharedVars, name: requester.rows[0].name, contact_email: host.rows[0].email }
+  });
+  await sendTemplatedEmail({
+    to: host.rows[0].email,
+    templateName: 'hospitality_confirmed',
+    vars: { ...sharedVars, name: host.rows[0].name, contact_email: requester.rows[0].email }
+  });
   res.json({ message: 'Termin bestätigt.', request: updated });
 });
 

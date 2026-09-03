@@ -108,10 +108,18 @@ router.put('/trainer-profiles/me', verifyToken, async (req, res) => {
 
     if (result.rows[0].inserted) {
       const userResult = await pool.query('SELECT name FROM users WHERE id = $1', [req.user.id]);
+      const userName = userResult.rows[0] ? userResult.rows[0].name : req.user.email;
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
       await sendTemplatedEmail({
         to: req.user.email,
         templateName: 'trainer_profile_created',
-        vars: { name: userResult.rows[0] ? userResult.rows[0].name : req.user.email }
+        vars: {
+          user_name: userName,
+          profile_verein: verein || '(noch nicht gesetzt)',
+          profile_license_status: has_license ? 'Ja' : 'Nein',
+          profile_visible: is_visible !== false ? 'Ja' : 'Nein',
+          profile_edit_link: `${frontendUrl}/trainer/profile`
+        }
       });
     }
 
