@@ -19,6 +19,11 @@ function Header({ user, onLogout }) {
         <div className="collapse navbar-collapse" id="navMenu">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
+            <li className="nav-item"><Link className="nav-link" to="/events">Events</Link></li>
+            <li className="nav-item"><Link className="nav-link" to="/trainer">Trainer</Link></li>
+            {user && (
+              <li className="nav-item"><Link className="nav-link" to="/hospitality">Hospitieren</Link></li>
+            )}
             <li className="nav-item"><Link className="nav-link" to="/news">News</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/documents">Dokumente</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/contact">Kontakt</Link></li>

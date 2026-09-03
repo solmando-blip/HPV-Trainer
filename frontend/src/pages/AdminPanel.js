@@ -220,6 +220,15 @@ function AdminPanel() {
         </div>
       </div>
 
+      <div className="card mb-4 shadow-sm border-secondary">
+        <div className="card-header bg-secondary text-white fw-bold">Weitere Verwaltung</div>
+        <div className="card-body d-flex gap-2 flex-wrap">
+          <Link to="/admin/events" className="btn btn-outline-primary btn-sm">📅 Events</Link>
+          <Link to="/admin/event-registrations" className="btn btn-outline-primary btn-sm">📋 Event-Anmeldungen</Link>
+          <Link to="/admin/hospitality" className="btn btn-outline-primary btn-sm">🤝 Hospitierungen</Link>
+        </div>
+      </div>
+
       <div className="row g-3 mb-4">
         <div className="col-md-4">
           <div className="card border-warning shadow-sm h-100">

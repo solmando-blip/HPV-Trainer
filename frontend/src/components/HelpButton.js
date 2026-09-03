@@ -9,7 +9,10 @@ function HelpButton() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
-  const help = helpContent[location.pathname] || fallbackHelp;
+  // Für Detail-Routen mit numerischer ID (z. B. /events/5) gibt es keinen
+  // eigenen Eintrag – auf den übergeordneten Pfad zurückfallen.
+  const parentPath = location.pathname.replace(/\/\d+$/, '') || '/';
+  const help = helpContent[location.pathname] || helpContent[parentPath] || fallbackHelp;
 
   // Dialog bei Seitenwechsel schließen
   useEffect(() => {

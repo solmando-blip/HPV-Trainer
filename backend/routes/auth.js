@@ -110,7 +110,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/me', verifyToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name, email, role, status, created_at FROM users WHERE id = $1', [req.user.id]);
+    const result = await pool.query('SELECT id, name, email, role, status, strasse, plz, ort, created_at FROM users WHERE id = $1', [req.user.id]);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -199,7 +199,7 @@ router.post('/change-password', verifyToken, async (req, res) => {
 
 // Profil-Update (Name, E-Mail)
 router.put('/profile', verifyToken, async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, strasse, plz, ort } = req.body;
 
   if (!name || !email) {
     return res.status(400).json({ message: 'Name und E-Mail sind erforderlich.' });
@@ -215,8 +215,9 @@ router.put('/profile', verifyToken, async (req, res) => {
     }
 
     const result = await pool.query(
-      'UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING id, name, email, role, status',
-      [name, email, req.user.id]
+      `UPDATE users SET name = $1, email = $2, strasse = $3, plz = $4, ort = $5
+       WHERE id = $6 RETURNING id, name, email, role, status, strasse, plz, ort`,
+      [name, email, strasse || null, plz || null, ort || null, req.user.id]
     );
 
     res.json({

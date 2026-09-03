@@ -7,6 +7,9 @@ const { auditMiddleware } = require('./services/auditService');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const publicRoutes = require('./routes/public');
+const eventsRoutes = require('./routes/events');
+const trainerRoutes = require('./routes/trainer');
+const hospitalityRoutes = require('./routes/hospitality');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +27,9 @@ app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Dat
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', publicRoutes);
+app.use('/api', eventsRoutes);
+app.use('/api', trainerRoutes);
+app.use('/api', hospitalityRoutes);
 
 initDb().then(() => {
   app.listen(PORT, () => console.log(`Backend server running on port ${PORT}`));

@@ -14,6 +14,9 @@ function Profile() {
   // Profile form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [strasse, setStrasse] = useState('');
+  const [plz, setPlz] = useState('');
+  const [ort, setOrt] = useState('');
   const [saveMessage, setSaveMessage] = useState('');
   const [saveError, setSaveError] = useState('');
   
@@ -40,6 +43,9 @@ function Profile() {
       setProfile(response.data);
       setName(response.data.name);
       setEmail(response.data.email);
+      setStrasse(response.data.strasse || '');
+      setPlz(response.data.plz || '');
+      setOrt(response.data.ort || '');
       setLoading(false);
     } catch (error) {
       console.error('Profil-Fehler:', error);
@@ -61,13 +67,13 @@ function Profile() {
     }
 
     try {
-      const response = await axios.put('/api/auth/profile', 
-        { name, email },
+      const response = await axios.put('/api/auth/profile',
+        { name, email, strasse, plz, ort },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
       setSaveMessage(response.data.message);
       setProfile(response.data.user);
-      
+
       // Update localStorage
       const storedUser = JSON.parse(localStorage.getItem('hpv_user'));
       storedUser.name = response.data.user.name;
@@ -172,6 +178,40 @@ function Profile() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Straße und Hausnummer</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={strasse}
+                    onChange={(e) => setStrasse(e.target.value)}
+                    placeholder="Optional"
+                  />
+                </div>
+
+                <div className="row">
+                  <div className="col-4 mb-3">
+                    <label className="form-label">PLZ</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={plz}
+                      onChange={(e) => setPlz(e.target.value)}
+                      placeholder="Optional"
+                    />
+                  </div>
+                  <div className="col-8 mb-3">
+                    <label className="form-label">Ort</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={ort}
+                      onChange={(e) => setOrt(e.target.value)}
+                      placeholder="Optional"
+                    />
+                  </div>
                 </div>
 
                 <div className="mb-3">

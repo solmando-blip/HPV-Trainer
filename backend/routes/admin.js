@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../database');
 const { sendEmail } = require('../services/emailService');
+const { sendTemplatedEmail } = require('../services/templateService');
 const { verifyToken, verifyRoles } = require('../middleware/auth');
 
 router.use(verifyToken, verifyRoles('Admin', 'Moderator'));
@@ -106,7 +107,14 @@ router.put('/users/:id', verifyRoles('Admin'), async (req, res) => {
 
 router.post('/users/:id/approve', async (req, res) => {
   try {
-    await pool.query("UPDATE users SET status = 'active' WHERE id = $1", [req.params.id]);
+    const result = await pool.query(
+      "UPDATE users SET status = 'active' WHERE id = $1 RETURNING name, email",
+      [req.params.id]
+    );
+    if (result.rows.length > 0) {
+      const { name, email } = result.rows[0];
+      await sendTemplatedEmail({ to: email, templateName: 'welcome_email_new_user', vars: { name } });
+    }
     res.json({ message: 'Benutzer freigeschaltet.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -156,6 +164,12 @@ router.post('/users', verifyRoles('Admin'), async (req, res) => {
     if (req.audit && typeof req.audit === 'function') {
       await req.audit({ action: 'CREATE_USER', resource_type: 'user', resource_id: result.rows[0].id, new_values: result.rows[0] });
     }
+
+    await sendTemplatedEmail({
+      to: result.rows[0].email,
+      templateName: 'admin_invitation',
+      vars: { name: result.rows[0].name, email: result.rows[0].email, role: result.rows[0].role }
+    });
 
     res.status(201).json({
       message: 'Benutzer erfolgreich erstellt.',

@@ -311,6 +311,111 @@ const helpContent = {
       'Direkt angelegte Konten durchlaufen keine E-Mail-Bestätigung – Adresse sorgfältig prüfen.',
     ],
   },
+  '/events': {
+    title: 'Events',
+    intro: 'Übersicht aller anstehenden Trainings-Events des Verbandes – für alle sichtbar.',
+    sections: [
+      {
+        h: 'Anmeldung',
+        items: [
+          'Auf ein Event klicken, um Details zu sehen und sich über „Zur Anmeldung“ einzutragen.',
+          'Anmeldung ist auch ohne Login möglich (als Gast).',
+          'Nach Ablauf des Event-Datums ist keine Anmeldung mehr möglich.',
+        ],
+      },
+      {
+        h: 'Verwaltung (Admin/Moderator)',
+        items: [
+          'Unter „Admin Panel“ → „Weitere Verwaltung“ → „Events“ können Events angelegt, bearbeitet und gelöscht werden.',
+        ],
+      },
+    ],
+  },
+
+  '/trainer': {
+    title: 'Trainer-Verzeichnis',
+    intro: 'Öffentliches Verzeichnis aller sichtbaren Trainer-Profile.',
+    sections: [
+      {
+        h: 'Filtern',
+        items: [
+          'Nach Verein, Region, Lizenz und Erfahrungslevel filtern oder per Freitextsuche suchen.',
+          'Auf ein Profil klicken für Details und – bei Login – eine Hospitier-Anfrage.',
+        ],
+      },
+    ],
+  },
+
+  '/trainer/profile': {
+    title: 'Mein Trainer-Profil',
+    intro: 'Hier legen Sie Ihr eigenes Trainer-Profil an oder bearbeiten es.',
+    sections: [
+      {
+        h: 'Sichtbarkeit',
+        items: [
+          '„Im Verzeichnis sichtbar?“ steuert, ob Ihr Profil in der öffentlichen Liste erscheint.',
+          '„Hospitierungen akzeptieren?“ blendet den Anfrage-Button auf Ihrem Profil ein oder aus.',
+        ],
+      },
+    ],
+  },
+
+  '/hospitality': {
+    title: 'Hospitieren',
+    intro: 'Dashboard für Hospitier-Anfragen – gestellte und erhaltene.',
+    sections: [
+      {
+        h: 'Ablauf',
+        items: [
+          'Gestellte Anfragen können storniert werden, solange sie noch ausstehend sind.',
+          'Erhaltene Anfragen können angenommen oder abgelehnt werden.',
+          'Nach Annahme können Sie einen Termin (Datum, Ort, Hinweise) bestätigen.',
+        ],
+      },
+    ],
+  },
+
+  '/admin/events': {
+    title: 'Events verwalten',
+    intro: 'Admin/Moderator-Ansicht zur Verwaltung aller Events.',
+    sections: [
+      {
+        h: 'Aktionen',
+        items: [
+          '„Event erstellen“ öffnet ein Formular für Titel, Datum, Ort, Agenda und maximale Teilnehmerzahl.',
+          'Über die Tabelle bearbeiten oder löschen.',
+        ],
+      },
+    ],
+  },
+
+  '/admin/event-registrations': {
+    title: 'Event-Anmeldungen verwalten',
+    intro: 'Event auswählen, um die Liste der Anmeldungen zu sehen.',
+    sections: [
+      {
+        h: 'Aktionen',
+        items: [
+          'Anmeldungen annehmen oder ablehnen.',
+          '„CSV Export“ lädt alle Anmeldungen des Events als Datei herunter.',
+        ],
+      },
+    ],
+  },
+
+  '/admin/hospitality': {
+    title: 'Hospitierungen verwalten',
+    intro: 'Übersicht aller Hospitier-Anfragen im System.',
+    sections: [
+      {
+        h: 'Aktionen',
+        items: [
+          'Nach Status filtern (ausstehend, angenommen, abgelehnt, bestätigt).',
+          'Einträge löschen.',
+        ],
+      },
+    ],
+  },
 };
 
 // Fallback, falls für einen Pfad kein spezieller Text hinterlegt ist.

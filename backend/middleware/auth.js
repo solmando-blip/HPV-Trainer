@@ -26,4 +26,15 @@ const verifyRoles = (...allowedRoles) => {
   };
 };
 
-module.exports = { verifyToken, verifyRoles };
+const getOptionalUser = (req) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return null;
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET || 'hpv_secret_key');
+  } catch (err) {
+    return null;
+  }
+};
+
+module.exports = { verifyToken, verifyRoles, getOptionalUser };

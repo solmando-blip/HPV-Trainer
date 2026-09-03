@@ -18,6 +18,15 @@ import VerifyEmail from './pages/VerifyEmail';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
 import CreateUser from './pages/CreateUser';
+import Events from './pages/Events';
+import EventDetail from './pages/EventDetail';
+import TrainerDirectory from './pages/TrainerDirectory';
+import TrainerProfileView from './pages/TrainerProfileView';
+import TrainerProfileForm from './pages/TrainerProfileForm';
+import Hospitality from './pages/Hospitality';
+import AdminEvents from './pages/AdminEvents';
+import AdminEventRegistrations from './pages/AdminEventRegistrations';
+import AdminHospitality from './pages/AdminHospitality';
 
 function AppContent({ user, handleLogout, handleLogin }) {
   useAuthTimeout(30 * 60 * 1000); // 30-minute timeout
@@ -34,6 +43,18 @@ function AppContent({ user, handleLogout, handleLogin }) {
           <Route path="/documents" element={<Documents user={user} />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/legal" element={<Legal />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/events/:id" element={<EventDetail user={user} />} />
+          <Route path="/trainer" element={<TrainerDirectory />} />
+          <Route path="/trainer/:id" element={<TrainerProfileView user={user} />} />
+          <Route
+            path="/trainer/profile"
+            element={user ? <TrainerProfileForm /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/hospitality"
+            element={user ? <Hospitality user={user} /> : <Navigate to="/login" />}
+          />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -50,6 +71,22 @@ function AppContent({ user, handleLogout, handleLogin }) {
           <Route
             path="/admin/create-user"
             element={user && user.role === 'Admin' ? <CreateUser /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/admin/events"
+            element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminEvents /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/admin/event-registrations"
+            element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminEventRegistrations /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/admin/event-registrations/:eventId"
+            element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminEventRegistrations /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/admin/hospitality"
+            element={user && ['Admin', 'Moderator'].includes(user.role) ? <AdminHospitality /> : <Navigate to="/" />}
           />
         </Routes>
       </div>
