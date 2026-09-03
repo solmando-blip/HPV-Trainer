@@ -284,4 +284,4 @@ Intern verwendet für Hessischer Pétanque Verband e.V.
 
 ---
 
-**Letzte Aktualisierung**: 2026-09-02
+**Letzte Aktualisierung**: 2026-09-03
