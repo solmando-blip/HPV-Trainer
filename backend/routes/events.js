@@ -236,9 +236,11 @@ router.get('/admin/event-registrations/:eventId/export', verifyToken, verifyRole
   }
 });
 
-// Manuell durch Admin/Moderator ausgelöst (siehe HPV-TRAINER-EMAIL-TEMPLATES.md,
-// "WANN WELCHES TEMPLATE VERWENDET WIRD") – kein automatischer Scheduler,
-// Empfänger sind die aktuell nicht abgelehnten Anmeldungen des Events.
+// Diese drei Routen (send-reminder, send-feedback-request,
+// send-registration-reminder) werden manuell durch Admin/Moderator ausgelöst
+// (siehe HPV-TRAINER-EMAIL-TEMPLATES.md, "WANN WELCHES TEMPLATE VERWENDET
+// WIRD") – kein automatischer Scheduler. Empfänger sind jeweils die aktuell
+// nicht abgelehnten Anmeldungen des Events.
 router.post('/admin/events/:id/send-reminder', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
   try {
     const eventResult = await pool.query(
@@ -297,6 +299,43 @@ router.post('/admin/events/:id/send-feedback-request', verifyToken, verifyRoles(
     }
 
     res.json({ message: `Feedback-Anfrage an ${regs.rows.length} Anmeldungen gesendet.` });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/admin/events/:id/send-registration-reminder', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    const eventResult = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+    if (eventResult.rows.length === 0) return res.status(404).json({ message: 'Event nicht gefunden.' });
+    const event = eventResult.rows[0];
+    const eventDate = new Date(event.date).toLocaleDateString('de-DE');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+    const eventLink = `${frontendUrl}/events/${req.params.id}`;
+
+    const regs = await pool.query(
+      "SELECT DISTINCT name, email FROM event_registrations WHERE event_id = $1 AND status <> 'rejected'",
+      [req.params.id]
+    );
+
+    for (const r of regs.rows) {
+      await sendTemplatedEmail({
+        to: r.email,
+        templateName: 'event_registration_reminder',
+        vars: {
+          user_name: r.name,
+          deadline: eventDate,
+          event_title: event.title,
+          event_date: eventDate,
+          event_time: event.time,
+          event_location: event.location,
+          registration_link: eventLink,
+          event_details_link: eventLink
+        }
+      });
+    }
+
+    res.json({ message: `Anmelde-Erinnerung an ${regs.rows.length} Anmeldungen gesendet.` });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

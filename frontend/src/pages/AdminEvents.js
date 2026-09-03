@@ -85,6 +85,16 @@ function AdminEvents() {
     }
   };
 
+  const sendRegistrationReminder = async (id) => {
+    if (!window.confirm('Anmelde-Erinnerung an alle Anmeldungen dieses Events senden?')) return;
+    try {
+      const res = await axios.post(`/api/admin/events/${id}/send-registration-reminder`, {}, { headers });
+      addToast(res.data.message, 'success');
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Fehler beim Senden.', 'error');
+    }
+  };
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -110,7 +120,8 @@ function AdminEvents() {
                   <td>{ev.registered_count}/{ev.max_participants}</td>
                   <td className="text-end">
                     <Link to={`/admin/event-registrations/${ev.id}`} className="btn btn-sm btn-outline-secondary me-2">Anmeldungen</Link>
-                    <button className="btn btn-sm btn-outline-info me-2" onClick={() => sendReminder(ev.id)}>Erinnerung senden</button>
+                    <button className="btn btn-sm btn-outline-info me-2" onClick={() => sendRegistrationReminder(ev.id)}>Anmelde-Erinnerung senden</button>
+                    <button className="btn btn-sm btn-outline-info me-2" onClick={() => sendReminder(ev.id)}>Vor-Event-Erinnerung senden</button>
                     <button className="btn btn-sm btn-outline-info me-2" onClick={() => sendFeedbackRequest(ev.id)}>Feedback-Anfrage senden</button>
                     <button className="btn btn-sm btn-outline-warning me-2" onClick={() => openEdit(ev)}>Bearbeiten</button>
                     <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(ev.id)}>Löschen</button>
