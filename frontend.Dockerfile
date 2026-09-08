@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FFROM node:18-alpine AS builder
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm install
@@ -7,6 +7,18 @@ RUN npm run build
 
 FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+RUN cat > /etc/nginx/conf.d/default.conf << 'EOF'
+server {
+    listen 80;
+    server_name localhost;
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+}
+EOF
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
