@@ -82,11 +82,11 @@ flowchart LR
 
 ```mermaid
 stateDiagram-v2
-    [*] --> pending: Anfrage gestellt<br/>✉ hospitality_request_notification → Host
-    pending --> accepted: Host nimmt an<br/>✉ hospitality_request_accepted
-    pending --> rejected: Host lehnt ab<br/>✉ hospitality_request_rejected
-    pending --> [*]: User zieht zurück<br/>(nur solange pending)
-    accepted --> confirmed: Termin bestätigen<br/>Datum · Ort · Notizen<br/>✉ hospitality_confirmed → beide
+    [*] --> pending: Anfrage gestellt · ✉ hospitality_request_notification
+    pending --> accepted: Host nimmt an · ✉ hospitality_request_accepted
+    pending --> rejected: Host lehnt ab · ✉ hospitality_request_rejected
+    pending --> [*]: User zieht zurück (nur solange pending)
+    accepted --> confirmed: Termin bestätigen · ✉ hospitality_confirmed
     rejected --> [*]
     confirmed --> [*]
 ```
@@ -109,9 +109,9 @@ Nachrichten aus dem öffentlichen Kontaktformular landen im Admin-Posteingang.
 ```mermaid
 stateDiagram-v2
     [*] --> new: Kontaktformular (öffentlich)
-    new --> read
+    new --> read: gelesen
     read --> answered: Antwort per Mail-Link
-    answered --> archived
+    answered --> archived: archivieren
     archived --> new: reaktivieren
 ```
 
