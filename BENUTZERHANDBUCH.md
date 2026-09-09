@@ -271,8 +271,9 @@ Interne Einladungslinks hinterlegen:
 
 ### 6.6 Rechtstexte *(nur Admin)*
 
-Bearbeitung von **Impressum**, **Datenschutz** und **AGB**. Die Inhalte erscheinen sofort
-öffentlich unter *Rechtliche Hinweise*.
+Karte **📄 Rechtstexte** aufklappen. Für **Impressum**, **Datenschutz** und **AGB** jeweils
+**Titel** und **Inhalt** (Markdown) direkt im Feld bearbeiten und **Speichern**. Die Inhalte
+erscheinen sofort öffentlich unter *Rechtliche Hinweise*. Moderatoren sehen die Texte nur.
 
 ### 6.7 E-Mail-Templates
 

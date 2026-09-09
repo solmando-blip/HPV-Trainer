@@ -21,6 +21,7 @@ function AdminPanel() {
   const [smtpUser, setSmtpUser] = useState('');
   const [smtpPass, setSmtpPass] = useState('');
   const [contacts, setContacts] = useState([]);
+  const [legalEdits, setLegalEdits] = useState({});
   const [editUser, setEditUser] = useState(null);
   const [selectedGroupForMembers, setSelectedGroupForMembers] = useState(null);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -29,6 +30,8 @@ function AdminPanel() {
 
   const token = localStorage.getItem('trainer_token');
   const headers = { Authorization: `Bearer ${token}` };
+  const currentUser = JSON.parse(localStorage.getItem('trainer_user') || 'null');
+  const isAdmin = currentUser?.role === 'Admin';
 
   const loadData = async () => {
     try {
@@ -58,8 +61,26 @@ function AdminPanel() {
     try {
       const res = await axios.get('/api/legal');
       setLegalData(res.data);
+      setLegalEdits(Object.fromEntries(
+        res.data.map(t => [t.key, { title: t.title, content: t.content }])
+      ));
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const saveLegal = async (key) => {
+    const draft = legalEdits[key];
+    if (!draft || !draft.title.trim() || !draft.content.trim()) {
+      alert('Titel und Inhalt dürfen nicht leer sein.');
+      return;
+    }
+    try {
+      const res = await axios.put(`/api/admin/legal/${key}`, draft, { headers });
+      alert(res.data.message);
+      loadLegalData();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Fehler beim Speichern');
     }
   };
 
@@ -441,13 +462,45 @@ function AdminPanel() {
         borderClass="border-dark"
         badge={<span className="badge bg-light text-dark">{legalData.length}</span>}
       >
-        {legalData.map(item => (
-          <div key={item.key} className="mb-3 border rounded p-3 bg-light">
-            <h6 className="fw-bold text-uppercase mb-2">{item.key}</h6>
-            <p className="mb-1"><strong>Titel:</strong> {item.title}</p>
-            <small className="text-muted">{item.content.slice(0, 120)}...</small>
-          </div>
-        ))}
+        {!isAdmin && (
+          <div className="alert alert-info py-2">Rechtstexte können nur von Administratoren bearbeitet werden.</div>
+        )}
+        {legalData.map(item => {
+          const draft = legalEdits[item.key] || { title: item.title, content: item.content };
+          return (
+            <div key={item.key} className="mb-4 border rounded p-3">
+              <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <h6 className="fw-bold text-uppercase mb-0">{item.key}</h6>
+                {item.updated_at && (
+                  <small className="text-muted">zuletzt geändert: {new Date(item.updated_at).toLocaleString('de-DE')}</small>
+                )}
+              </div>
+              <div className="mb-2">
+                <label className="form-label mb-1">Titel</label>
+                <input
+                  className="form-control"
+                  value={draft.title}
+                  disabled={!isAdmin}
+                  onChange={e => setLegalEdits({ ...legalEdits, [item.key]: { ...draft, title: e.target.value } })}
+                />
+              </div>
+              <div className="mb-2">
+                <label className="form-label mb-1">Inhalt <span className="text-muted">(Markdown)</span></label>
+                <textarea
+                  className="form-control"
+                  rows={10}
+                  style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace', fontSize: '.85rem' }}
+                  value={draft.content}
+                  disabled={!isAdmin}
+                  onChange={e => setLegalEdits({ ...legalEdits, [item.key]: { ...draft, content: e.target.value } })}
+                />
+              </div>
+              {isAdmin && (
+                <button className="btn btn-sm btn-primary" onClick={() => saveLegal(item.key)}>Speichern</button>
+              )}
+            </div>
+          );
+        })}
       </CollapsibleCard>
 
       <CollapsibleCard

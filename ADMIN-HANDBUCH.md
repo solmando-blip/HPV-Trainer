@@ -133,12 +133,15 @@ Unter **Admin-Panel** → **Rechtstexte** können Sie folgende Seiten anpassen:
 - **Datenschutz** – DSGVO-Erklärung
 - **AGB** – Allgemeine Geschäftsbedingungen
 
-#### Text bearbeiten
+#### Text bearbeiten *(nur Admin)*
 
-1. **Admin-Panel** → **Rechtstexte** → Reiter wählen
-2. Vorhandenen Text löschen
-3. Neuen Text eingeben (HTML möglich)
-4. **Speichern**
+1. **Admin-Panel** → Karte **📄 Rechtstexte** aufklappen
+2. Beim gewünschten Text (`impressum` / `datenschutz` / `agb`) **Titel** und **Inhalt**
+   direkt in den Feldern anpassen. Der Inhalt ist **Markdown** (`### Überschrift`, `**fett**`).
+3. Button **Speichern** – die Änderung ist sofort öffentlich unter *Rechtliche Hinweise*
+   sichtbar; das Datum „zuletzt geändert" wird aktualisiert.
+
+Moderatoren sehen die Texte, können sie aber nicht speichern.
 
 ---
 

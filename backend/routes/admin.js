@@ -341,12 +341,18 @@ router.delete('/whatsapp/:id', async (req, res) => {
 
 router.put('/legal/:key', verifyRoles('Admin'), async (req, res) => {
   const { title, content } = req.body;
+  if (!title || !content) {
+    return res.status(400).json({ message: 'Titel und Inhalt sind erforderlich.' });
+  }
   try {
-    await pool.query(
-      'UPDATE legal_texts SET title = $1, content = $2, updated_at = NOW() WHERE key = $3',
+    const result = await pool.query(
+      'UPDATE legal_texts SET title = $1, content = $2, updated_at = NOW() WHERE key = $3 RETURNING *',
       [title, content, req.params.key]
     );
-    res.json({ message: 'Rechtstext erfolgreich aktualisiert.' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Rechtstext nicht gefunden.' });
+    }
+    res.json({ message: 'Rechtstext erfolgreich aktualisiert.', legal: result.rows[0] });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

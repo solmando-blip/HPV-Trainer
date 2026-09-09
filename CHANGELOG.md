@@ -6,6 +6,10 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
 ### ✨ Neue Features
 
+- **Rechtstexte im Admin-Panel bearbeitbar**: Die Karte „📄 Rechtstexte" zeigt jetzt je Text
+  (Impressum / Datenschutz / AGB) editierbare Felder für Titel und Markdown-Inhalt plus einen
+  Speichern-Button (`PUT /api/admin/legal/:key`, nur Admin; Moderatoren sehen die Texte
+  schreibgeschützt). Vorher war die Karte reine Anzeige.
 - **Event-Anmeldung löschen**: Papierkorb-Button je Zeile in der Event-Anmeldungen-Ansicht
   (mit Rückfrage). Backend: `DELETE /api/admin/event-registrations/:id` (Admin + Moderator).
 - **E-Mail-Template-Verwaltung im Admin-Panel**: Neue Karte „📧 E-Mail-Templates" (Admin
