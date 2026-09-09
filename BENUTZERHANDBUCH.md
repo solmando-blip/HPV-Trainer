@@ -175,7 +175,7 @@ Fassung. Änderungen erfolgen im Admin-Panel unter *Rechtstexte* (nur Admin).
 
 ### 5.1 Registrieren
 
-1. **Name**, **E-Mail** und **Passwort** (mind. 6 Zeichen) eingeben, **Konto Erstellen** klicken.
+1. **Name**, **E-Mail** und **Passwort** (mind. 6 Zeichen) eingeben – optional den **Verein** –, **Konto Erstellen** klicken.
 2. Sie erhalten eine E-Mail mit einem **Bestätigungslink** (24 Stunden gültig).
 3. Nach der Bestätigung prüft ein Administrator das Konto und schaltet es frei.
 4. Erst nach der Freischaltung ist eine Anmeldung möglich.
@@ -211,8 +211,8 @@ Mögliche Meldungen:
 
 Erreichbar nach Anmeldung über **Profil** oben rechts.
 
-- **Reiter „Profilinformationen“:** Name und E-Mail ändern, **Speichern**.
-  Rolle, Status und Registrierungsdatum werden nur angezeigt.
+- **Reiter „Profilinformationen“:** Name, E-Mail, **Verein** und Adresse ändern, **Speichern**.
+  Verein und Adresse sind optional. Rolle, Status und Registrierungsdatum werden nur angezeigt.
 - **Reiter „Passwort ändern“:** aktuelles Passwort + zweimal das neue (mind. 6 Zeichen), **Passwort ändern**.
 
 > **Tipp:** Nach einer E-Mail-Änderung melden Sie sich künftig mit der neuen Adresse an.
@@ -239,7 +239,7 @@ immer sichtbar.
 
 Über **Neuer Benutzer** (oben rechts im Admin-Panel) *(nur Admin)*.
 
-- **Pflichtangaben:** Name (mind. 2 Zeichen), gültige E-Mail, Passwort (mind. 6 Zeichen, zweimal identisch).
+- **Pflichtangaben:** Name (mind. 2 Zeichen), gültige E-Mail, Passwort (mind. 6 Zeichen, zweimal identisch). **Verein** ist optional.
 - **Rolle & Status:** frei wählbar; Status „Aktiv“ bedeutet sofortige Anmeldemöglichkeit.
 - **Trainerlizenz:** bei jeder Stufe außer „Keine“ ist die **Lizenznummer Pflicht**; ein Ablaufdatum ist optional.
 

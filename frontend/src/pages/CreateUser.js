@@ -11,6 +11,7 @@ function CreateUser() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    verein: '',
     password: '',
     confirmPassword: '',
     role: 'User',
@@ -65,6 +66,7 @@ function CreateUser() {
       const payload = {
         name: form.name,
         email: form.email,
+        verein: form.verein || null,
         password: form.password,
         role: form.role,
         status: form.status,
@@ -129,6 +131,19 @@ function CreateUser() {
                     placeholder="benutzer@example.com"
                   />
                   {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <label htmlFor="verein" className="form-label">Verein</label>
+                  <input
+                    type="text"
+                    id="verein"
+                    name="verein"
+                    className="form-control"
+                    value={form.verein}
+                    onChange={handleInputChange}
+                    placeholder="Optional"
+                  />
                 </div>
               </div>
             </fieldset>

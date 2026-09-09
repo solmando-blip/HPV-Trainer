@@ -222,7 +222,7 @@ const helpContent = {
       {
         h: 'Reiter „Profilinformationen“',
         items: [
-          'Name und E-Mail ändern und mit „Speichern“ übernehmen.',
+          'Name, E-Mail, Verein und Adresse ändern und mit „Speichern“ übernehmen. Verein und Adresse sind optional.',
           'Rolle, Status und Registrierungsdatum werden nur angezeigt und können hier nicht geändert werden.',
         ],
       },
@@ -293,6 +293,7 @@ const helpContent = {
         h: 'Pflichtangaben',
         items: [
           'Name (mind. 2 Zeichen), gültige E-Mail und Passwort (mind. 6 Zeichen, zweimal identisch).',
+          'Verein ist optional.',
         ],
       },
       {

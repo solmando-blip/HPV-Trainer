@@ -13,6 +13,7 @@ Die neue **Benutzer-Anlagefunktion** ermöglicht es Administratoren, neue Benutz
 **Persönliche Daten:**
 - ✅ Name (erforderlich, min. 2 Zeichen)
 - ✅ E-Mail (erforderlich, eindeutig)
+- ✅ Verein (optional)
 
 **Anmeldedaten:**
 - ✅ Passwort (erforderlich, min. 6 Zeichen)

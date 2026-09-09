@@ -14,6 +14,7 @@ function Profile() {
   // Profile form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [verein, setVerein] = useState('');
   const [strasse, setStrasse] = useState('');
   const [plz, setPlz] = useState('');
   const [ort, setOrt] = useState('');
@@ -43,6 +44,7 @@ function Profile() {
       setProfile(response.data);
       setName(response.data.name);
       setEmail(response.data.email);
+      setVerein(response.data.verein || '');
       setStrasse(response.data.strasse || '');
       setPlz(response.data.plz || '');
       setOrt(response.data.ort || '');
@@ -68,7 +70,7 @@ function Profile() {
 
     try {
       const response = await axios.put('/api/auth/profile',
-        { name, email, strasse, plz, ort },
+        { name, email, verein, strasse, plz, ort },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
       setSaveMessage(response.data.message);
@@ -177,6 +179,17 @@ function Profile() {
                     className="form-control"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Verein</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={verein}
+                    onChange={(e) => setVerein(e.target.value)}
+                    placeholder="Optional – z. B. Pétanque Club Musterstadt"
                   />
                 </div>
 

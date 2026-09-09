@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', verein: '', password: '' });
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
 
@@ -25,6 +25,7 @@ function Register() {
       <form onSubmit={handleSubmit}>
         <input className="form-control mb-3" placeholder="Name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
         <input className="form-control mb-3" type="email" placeholder="E-Mail" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
+        <input className="form-control mb-3" placeholder="Verein (optional)" value={form.verein} onChange={e => setForm({ ...form, verein: e.target.value })} />
         <input className="form-control mb-3" type="password" placeholder="Passwort" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
         <button className="btn btn-primary w-100" type="submit">Konto Erstellen</button>
       </form>

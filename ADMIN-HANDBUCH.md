@@ -34,10 +34,10 @@ Im Admin-Panel unter **Benutzer** sehen Sie alle registrierten Mitglieder.
 **Verfügbare Spalten:**
 - Name
 - E-Mail
-- Status (ausstehend / aktiv / blockiert)
+- Verein
 - Rolle (Admin / Moderator / Benutzer / Gast)
-- Trainerlizenz
-- Aktionen (bearbeiten / löschen)
+- Status (ausstehend / aktiv / blockiert)
+- Aktionen (bearbeiten / sperren)
 
 ### Ausstehende Benutzer freischalten
 
@@ -52,8 +52,10 @@ Im Admin-Panel unter **Benutzer** sehen Sie alle registrierten Mitglieder.
 2. Folgende Felder änderbar:
    - **Name**
    - **E-Mail** (ändert auch Anmeldename)
+   - **Verein** (optionales Freitextfeld)
    - **Rolle** (Admin / Moderator / Benutzer / Gast)
-   - **Trainerlizenz** (Keine / Hilfstrainer / C / B / A)
+   - **Status** (ausstehend / aktiv / blockiert)
+   - **Trainerlizenz** (Keine / Hilfstrainer / C / B / A) und **Lizenznummer**
 3. **Speichern** klicken
 
 ### Benutzer sperren/entsperren

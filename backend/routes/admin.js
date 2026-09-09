@@ -13,7 +13,7 @@ router.get('/users/pending', async (req, res) => {
     const offset = parseInt(req.query.offset || 0);
 
     const result = await pool.query(
-      "SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users WHERE status = 'pending' ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+      "SELECT id, name, email, role, status, verein, license_level, license_number, license_expires_at, created_at FROM users WHERE status = 'pending' ORDER BY created_at DESC LIMIT $1 OFFSET $2",
       [limit, offset]
     );
     
@@ -38,7 +38,7 @@ router.get('/users', async (req, res) => {
     const role = req.query.role || '';
     const status = req.query.status || '';
 
-    let query = "SELECT id, name, email, role, status, license_level, license_number, license_expires_at, created_at FROM users WHERE 1=1";
+    let query = "SELECT id, name, email, role, status, verein, license_level, license_number, license_expires_at, created_at FROM users WHERE 1=1";
     const params = [];
 
     if (search) {
@@ -91,13 +91,13 @@ router.get('/users', async (req, res) => {
 });
 
 router.put('/users/:id', verifyRoles('Admin'), async (req, res) => {
-  const { name, email, role, status, license_level, license_number, license_expires_at } = req.body;
+  const { name, email, role, status, verein, license_level, license_number, license_expires_at } = req.body;
   try {
     const result = await pool.query(`
       UPDATE users
-      SET name = $1, email = $2, role = $3, status = $4, license_level = $5, license_number = $6, license_expires_at = $7
-      WHERE id = $8 RETURNING id, name, email, role, status, license_level, license_number, license_expires_at
-    `, [name, email, role, status, license_level, license_number, license_expires_at || null, req.params.id]);
+      SET name = $1, email = $2, role = $3, status = $4, verein = $5, license_level = $6, license_number = $7, license_expires_at = $8
+      WHERE id = $9 RETURNING id, name, email, role, status, verein, license_level, license_number, license_expires_at
+    `, [name, email, role, status, verein || null, license_level, license_number, license_expires_at || null, req.params.id]);
 
     res.json({ message: 'Benutzer erfolgreich aktualisiert.', user: result.rows[0] });
   } catch (err) {
@@ -144,7 +144,7 @@ router.post('/users/:id/block', async (req, res) => {
 
 router.post('/users', verifyRoles('Admin'), async (req, res) => {
   try {
-    const { name, email, password, role, status, license_level, license_number, license_expires_at } = req.body;
+    const { name, email, password, role, status, verein, license_level, license_number, license_expires_at } = req.body;
 
     // Validierung
     if (!name || !email || !password) {
@@ -157,15 +157,16 @@ router.post('/users', verifyRoles('Admin'), async (req, res) => {
 
     // Benutzer erstellen
     const result = await pool.query(
-      `INSERT INTO users (name, email, password, role, status, license_level, license_number, license_expires_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, name, email, role, status, license_level, license_number, license_expires_at, created_at`,
+      `INSERT INTO users (name, email, password, role, status, verein, license_level, license_number, license_expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, name, email, role, status, verein, license_level, license_number, license_expires_at, created_at`,
       [
         name,
         email.toLowerCase(),
         hashedPassword,
         role || 'User',
         status || 'active',
+        verein || null,
         license_level || 'Keine',
         license_number || null,
         license_expires_at || null

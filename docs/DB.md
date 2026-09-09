@@ -45,6 +45,7 @@ erDiagram
 | license_level | varchar(50) | DEFAULT `'Keine'`, CHECK IN (`Keine`, `Hilfstrainer`, `C-Trainer`, `B-Trainer`, `A-Trainer`) |
 | license_number | varchar(100) | |
 | license_expires_at | date | |
+| verein | varchar(255) | *ALTER* — Verein/Club des Mitglieds, optional |
 | strasse | varchar(255) | *ALTER* — optionale Adresse |
 | plz | varchar(20) | *ALTER* |
 | ort | varchar(255) | *ALTER* |

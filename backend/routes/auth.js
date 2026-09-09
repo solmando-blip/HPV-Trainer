@@ -8,7 +8,7 @@ const { verifyToken } = require('../middleware/auth');
 const { sendEmail } = require('../services/emailService');
 
 router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, verein } = req.body;
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Alle Felder müssen ausgefüllt werden.' });
   }
@@ -21,8 +21,8 @@ router.post('/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await pool.query(
-      'INSERT INTO users (name, email, password, role, status) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, status',
-      [name, email, hashedPassword, 'User', 'pending']
+      'INSERT INTO users (name, email, password, role, status, verein) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, role, status',
+      [name, email, hashedPassword, 'User', 'pending', verein || null]
     );
 
     // Create email verification token (24h valid)
@@ -110,7 +110,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/me', verifyToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name, email, role, status, strasse, plz, ort, created_at FROM users WHERE id = $1', [req.user.id]);
+    const result = await pool.query('SELECT id, name, email, role, status, verein, strasse, plz, ort, created_at FROM users WHERE id = $1', [req.user.id]);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -199,7 +199,7 @@ router.post('/change-password', verifyToken, async (req, res) => {
 
 // Profil-Update (Name, E-Mail)
 router.put('/profile', verifyToken, async (req, res) => {
-  const { name, email, strasse, plz, ort } = req.body;
+  const { name, email, verein, strasse, plz, ort } = req.body;
 
   if (!name || !email) {
     return res.status(400).json({ message: 'Name und E-Mail sind erforderlich.' });
@@ -215,9 +215,9 @@ router.put('/profile', verifyToken, async (req, res) => {
     }
 
     const result = await pool.query(
-      `UPDATE users SET name = $1, email = $2, strasse = $3, plz = $4, ort = $5
-       WHERE id = $6 RETURNING id, name, email, role, status, strasse, plz, ort`,
-      [name, email, strasse || null, plz || null, ort || null, req.user.id]
+      `UPDATE users SET name = $1, email = $2, verein = $3, strasse = $4, plz = $5, ort = $6
+       WHERE id = $7 RETURNING id, name, email, role, status, verein, strasse, plz, ort`,
+      [name, email, verein || null, strasse || null, plz || null, ort || null, req.user.id]
     );
 
     res.json({

@@ -19,6 +19,14 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 - **Menüpunkt „Turniersoftware"**: externer Link ganz links in der Navigationsleiste auf
   `https://swiss-pair-pro.base44.app/` (öffnet in neuem Tab).
 
+### ✨ Feld „Verein" am Benutzerkonto
+
+- Neue Spalte `users.verein` (varchar(255), optional, per `ALTER TABLE … ADD COLUMN IF NOT EXISTS`).
+- Bearbeitbar/erfassbar in: **Mein Profil**, **Admin-Panel → Benutzer bearbeiten**,
+  **Neuer Benutzer**, **Registrierung** (optional). Neue Spalte „Verein" in der Benutzer-Tabelle.
+- API: `verein` in `GET /api/auth/me`, `PUT /api/auth/profile`, `POST /api/auth/register`,
+  `GET/POST/PUT /api/admin/users[…]`.
+
 ### 🏷️ Umbenennung „HPV" → „Trainer-Portal"
 
 - **Sichtbare UI**: Navigations-Brand, Startseiten-Titel, Seitentitel/Meta, In-App-Hilfe.

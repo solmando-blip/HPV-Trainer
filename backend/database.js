@@ -166,6 +166,7 @@ const initDb = async () => {
         ADD COLUMN IF NOT EXISTS license_level VARCHAR(50) DEFAULT 'Keine' CHECK (license_level IN ('Keine', 'Hilfstrainer', 'C-Trainer', 'B-Trainer', 'A-Trainer')),
         ADD COLUMN IF NOT EXISTS license_number VARCHAR(100),
         ADD COLUMN IF NOT EXISTS license_expires_at DATE,
+        ADD COLUMN IF NOT EXISTS verein VARCHAR(255),
         ADD COLUMN IF NOT EXISTS strasse VARCHAR(255),
         ADD COLUMN IF NOT EXISTS plz VARCHAR(20),
         ADD COLUMN IF NOT EXISTS ort VARCHAR(255);

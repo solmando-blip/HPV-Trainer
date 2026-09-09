@@ -291,13 +291,14 @@ function AdminPanel() {
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
             <thead>
-              <tr><th>Name</th><th>Email</th><th>Rolle</th><th>Status</th><th className="text-end">Aktion</th></tr>
+              <tr><th>Name</th><th>Email</th><th>Verein</th><th>Rolle</th><th>Status</th><th className="text-end">Aktion</th></tr>
             </thead>
             <tbody>
               {users.map(u => (
                 <tr key={u.id}>
                   <td>{u.name}</td>
                   <td>{u.email}</td>
+                  <td>{u.verein || <span className="text-muted">—</span>}</td>
                   <td>{u.role}</td>
                   <td>{statusBadge(u.status)}</td>
                   <td className="text-end">
@@ -526,6 +527,10 @@ function AdminPanel() {
                     <div className="col-md-6">
                       <label className="form-label">E-Mail</label>
                       <input className="form-control" value={editUser.email} onChange={e => setEditUser({ ...editUser, email: e.target.value })} required />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Verein</label>
+                      <input className="form-control" value={editUser.verein || ''} onChange={e => setEditUser({ ...editUser, verein: e.target.value })} placeholder="Optional" />
                     </div>
                     <div className="col-md-6">
                       <label className="form-label">Rolle</label>

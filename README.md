@@ -190,6 +190,7 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
 - users.role: Admin, Moderator, User, Gast
 - users.status: pending, active, blocked
 - users.license_level: Keine, Hilfstrainer, C-Trainer, B-Trainer, A-Trainer
+- users.verein: Verein/Club des Mitglieds, optionales Freitextfeld
 - users.strasse / users.plz / users.ort: optionale Adresse, keine Pflichtfelder
 - documents.file_size, documents.file_type
 - contact_messages.status: new, read, answered, archived
