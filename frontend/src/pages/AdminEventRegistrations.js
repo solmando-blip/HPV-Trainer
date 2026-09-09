@@ -107,7 +107,7 @@ function AdminEventRegistrations() {
                 <tr key={r.id}>
                   <td>{r.name}</td>
                   <td>{r.email}</td>
-                  <td>{r.verein}</td>
+                  <td>{r.verein || <span className="text-muted">—</span>}</td>
                   <td>{r.has_license ? 'Ja' : 'Nein'}</td>
                   <td>{r.experience_level}</td>
                   <td>{statusBadge(r.status)}</td>

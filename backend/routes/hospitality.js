@@ -12,8 +12,10 @@ const ALLOWED_TRANSITIONS = {
 };
 
 const HOSPITALITY_SELECT = `
-  SELECT hr.*, req.name AS requester_name, req.email AS requester_email, req_tp.verein AS requester_verein,
-         host.name AS host_name, host.email AS host_email, host_tp.verein AS host_verein
+  SELECT hr.*, req.name AS requester_name, req.email AS requester_email,
+         COALESCE(NULLIF(req_tp.verein, ''), req.verein) AS requester_verein,
+         host.name AS host_name, host.email AS host_email,
+         COALESCE(NULLIF(host_tp.verein, ''), host.verein) AS host_verein
   FROM hospitality_requests hr
   JOIN users req ON req.id = hr.requester_id
   JOIN users host ON host.id = hr.host_id
@@ -43,7 +45,8 @@ router.post('/hospitality', verifyToken, async (req, res) => {
     );
 
     const requester = await pool.query(
-      `SELECT u.name, tp.verein FROM users u LEFT JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1`,
+      `SELECT u.name, COALESCE(NULLIF(tp.verein, ''), u.verein) AS verein
+       FROM users u LEFT JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1`,
       [req.user.id]
     );
     const host = await pool.query('SELECT name, email FROM users WHERE id = $1', [host_id]);
@@ -124,7 +127,8 @@ router.put('/hospitality/:id/accept', verifyToken, async (req, res) => {
   if (!updated) return;
   const requester = await pool.query('SELECT name, email FROM users WHERE id = $1', [updated.requester_id]);
   const host = await pool.query(
-    `SELECT u.name, u.email, tp.verein FROM users u LEFT JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1`,
+    `SELECT u.name, u.email, COALESCE(NULLIF(tp.verein, ''), u.verein) AS verein
+     FROM users u LEFT JOIN trainer_profiles tp ON tp.user_id = u.id WHERE u.id = $1`,
     [updated.host_id]
   );
   await sendTemplatedEmail({

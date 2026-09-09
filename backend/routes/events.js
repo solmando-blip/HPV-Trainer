@@ -33,13 +33,19 @@ router.get('/events/:id', async (req, res) => {
 
 router.post('/events/:id/register', async (req, res) => {
   const optionalUser = getOptionalUser(req);
-  const { name, email, verein, has_license, experience_level, description } = req.body;
+  let { name, email, verein, has_license, experience_level, description } = req.body;
 
   if (!name || !email) {
     return res.status(400).json({ message: 'Name und E-Mail sind erforderlich.' });
   }
 
   try {
+    // Kein Verein angegeben, aber eingeloggt? Dann den Verein aus dem Konto nehmen.
+    if (!verein && optionalUser) {
+      const acc = await pool.query('SELECT verein FROM users WHERE id = $1', [optionalUser.id]);
+      verein = acc.rows[0] && acc.rows[0].verein ? acc.rows[0].verein : verein;
+    }
+
     const eventResult = await pool.query(
       'SELECT *, (date + time) < NOW() AS is_past FROM events WHERE id = $1',
       [req.params.id]

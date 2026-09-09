@@ -30,6 +30,12 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
   den *effektiven* Verein `COALESCE(trainer_profiles.verein, users.verein)` — greift also auch,
   wenn der Verein nur im Konto-Profil steht. Das Trainer-Profil-Formular belegt den Verein
   aus dem Konto-Profil vor.
+- Der Konto-Verein wird nun **überall** als Quelle genutzt, wo ein Verein gebraucht wird:
+  - Event-Anmeldung: fehlt bei eingeloggten Nutzern die Vereinsangabe, wird serverseitig
+    `users.verein` eingesetzt (Speicherung + Bestätigungs-/Admin-Mail).
+  - Hospitierungs-Mails (`hospitality_request_notification` / `_accepted`) und die
+    Hospitierungs-Übersicht zeigen `requester_verein` / `host_verein` als effektiven Verein.
+  - Admin → Event-Anmeldungen: leeres Vereinsfeld wird als „—" dargestellt.
 - API: `verein` in `GET /api/auth/me`, `PUT /api/auth/profile`, `POST /api/auth/register`,
   `GET/POST/PUT /api/admin/users[…]`.
 
