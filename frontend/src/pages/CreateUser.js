@@ -73,7 +73,10 @@ function CreateUser() {
         license_expires_at: form.license_expires_at || null
       };
 
-      const response = await axios.post('/api/admin/users', payload);
+      const token = localStorage.getItem('hpv_token');
+      await axios.post('/api/admin/users', payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       addToast('Benutzer erfolgreich erstellt', 'success');
       
       // Kurze Verzögerung, dann zurück zur Benutzerliste
