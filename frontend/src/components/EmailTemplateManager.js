@@ -1,35 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
+import { escapeHtml, simpleFormat, extractVars, substitute, highlightVars } from '../utils/emailTemplate';
+import SendTemplateModal from './SendTemplateModal';
 import '../styles/EmailTemplateManager.css';
-
-const escapeHtml = (str) =>
-  String(str || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-// Wie im Backend (templateService.toHtml): **fett** und Zeilenumbrüche.
-const simpleFormat = (escaped) =>
-  escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-
-const extractVars = (...fields) => {
-  const found = new Set();
-  const re = /\{\{(\w+)\}\}/g;
-  let m;
-  for (const field of fields) {
-    while ((m = re.exec(field || '')) !== null) found.add(m[1]);
-  }
-  return [...found].sort();
-};
-
-const substitute = (str, vars) =>
-  String(str || '').replace(/\{\{(\w+)\}\}/g, (_, key) =>
-    vars[key] !== undefined && vars[key] !== '' ? vars[key] : `{{${key}}}`
-  );
-
-// {{var}}-Tokens im (bereits escapten) Text farbig hervorheben.
-const highlightVars = (escaped) =>
-  escaped.replace(/\{\{(\w+)\}\}/g, '<span class="tpl-var">{{$1}}</span>');
 
 const emptyForm = { id: null, name: '', subject: '', content: '' };
 
@@ -41,6 +14,7 @@ function EmailTemplateManager() {
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sampleVars, setSampleVars] = useState({});
+  const [sendingTemplate, setSendingTemplate] = useState(null); // Template-Zeile oder null
 
   const token = localStorage.getItem('hpv_token');
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
@@ -178,6 +152,7 @@ function EmailTemplateManager() {
                     </small>
                   </td>
                   <td className="text-end text-nowrap">
+                    <button className="btn btn-sm btn-outline-success me-2" onClick={() => setSendingTemplate(t)}>Senden</button>
                     <button className="btn btn-sm btn-outline-primary me-2" onClick={() => openEdit(t)}>Bearbeiten</button>
                     <button className="btn btn-sm btn-outline-danger" onClick={() => remove(t)}>Löschen</button>
                   </td>
@@ -189,6 +164,14 @@ function EmailTemplateManager() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {sendingTemplate && (
+        <SendTemplateModal
+          template={sendingTemplate}
+          headers={headers}
+          onClose={() => setSendingTemplate(null)}
+        />
       )}
 
       {editing && (

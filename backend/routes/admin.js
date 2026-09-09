@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../database');
 const { sendEmail } = require('../services/emailService');
-const { sendTemplatedEmail } = require('../services/templateService');
+const { sendTemplatedEmail, renderTemplate } = require('../services/templateService');
 const { verifyToken, verifyRoles } = require('../middleware/auth');
 
 router.use(verifyToken, verifyRoles('Admin', 'Moderator'));
@@ -462,6 +462,85 @@ router.delete('/templates/:id', async (req, res) => {
       await req.audit.log({ action: 'DELETE_TEMPLATE', resource_type: 'email_template', resource_id: result.rows[0].id, old_values: result.rows[0] });
     }
     res.json({ message: 'Template gelöscht.', id: result.rows[0].id });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Template gezielt verschicken: an eine Gruppe, ausgewählte Benutzer,
+// freie E-Mail-Adressen oder als Testmail an den eingeloggten Nutzer.
+router.post('/templates/:id/send', async (req, res) => {
+  try {
+    const { vars = {}, groupId, userIds = [], emails = [], testToSelf = false } = req.body;
+
+    const tpl = await pool.query('SELECT name FROM email_templates WHERE id = $1', [req.params.id]);
+    if (tpl.rows.length === 0) {
+      return res.status(404).json({ message: 'Template nicht gefunden.' });
+    }
+
+    const recipients = new Set();
+
+    if (testToSelf && req.user.email) {
+      recipients.add(req.user.email);
+    }
+
+    if (groupId) {
+      const members = await pool.query(`
+        SELECT u.email FROM users u
+        JOIN user_groups ug ON u.id = ug.user_id
+        WHERE ug.group_id = $1 AND u.status = 'active'
+      `, [groupId]);
+      members.rows.forEach(r => recipients.add(r.email));
+    }
+
+    const ids = (Array.isArray(userIds) ? userIds : []).map(Number).filter(Number.isInteger);
+    if (ids.length > 0) {
+      const users = await pool.query('SELECT email FROM users WHERE id = ANY($1::int[])', [ids]);
+      users.rows.forEach(r => recipients.add(r.email));
+    }
+
+    for (const raw of (Array.isArray(emails) ? emails : [])) {
+      const addr = String(raw).trim();
+      if (!addr) continue;
+      if (!EMAIL_RE.test(addr)) {
+        return res.status(400).json({ message: `Ungültige E-Mail-Adresse: ${addr}` });
+      }
+      recipients.add(addr);
+    }
+
+    const list = [...recipients];
+    if (list.length === 0) {
+      return res.status(400).json({ message: 'Keine Empfänger ausgewählt.' });
+    }
+
+    const { subject, text, html } = await renderTemplate(tpl.rows[0].name, vars);
+
+    // Ein Empfänger -> direkt an "to"; mehrere -> BCC, damit sich die
+    // Empfänger untereinander nicht sehen.
+    const payload = list.length === 1
+      ? { to: list[0], subject, text, html }
+      : { to: process.env.SMTP_USER || 'noreply@hpv.local', bcc: list.join(','), subject, text, html };
+
+    const sent = await sendEmail(payload);
+
+    if (req.audit?.log) {
+      await req.audit.log({
+        action: 'SEND_TEMPLATE',
+        resource_type: 'email_template',
+        resource_id: Number(req.params.id),
+        new_values: { template: tpl.rows[0].name, recipients: list.length, groupId: groupId || null }
+      });
+    }
+
+    res.json({
+      message: process.env.SMTP_USER
+        ? `Template an ${list.length} Empfänger${list.length > 1 ? ' (BCC)' : ''} gesendet.`
+        : `Mock-Modus: Versand an ${list.length} Empfänger nur im Server-Log protokolliert (kein SMTP konfiguriert).`,
+      recipientCount: list.length,
+      sent
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
