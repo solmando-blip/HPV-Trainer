@@ -252,7 +252,7 @@ function Profile() {
                   <input
                     type="text"
                     className="form-control"
-                    value={new Date(profile.created_at).toLocaleDateString('de-DE')}
+                    value={profile.created_at ? new Date(profile.created_at).toLocaleDateString('de-DE') : '—'}
                     disabled
                   />
                 </div>

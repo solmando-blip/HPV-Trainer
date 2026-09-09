@@ -216,7 +216,7 @@ router.put('/profile', verifyToken, async (req, res) => {
 
     const result = await pool.query(
       `UPDATE users SET name = $1, email = $2, verein = $3, strasse = $4, plz = $5, ort = $6
-       WHERE id = $7 RETURNING id, name, email, role, status, verein, strasse, plz, ort`,
+       WHERE id = $7 RETURNING id, name, email, role, status, verein, strasse, plz, ort, created_at`,
       [name, email, verein || null, strasse || null, plz || null, ort || null, req.user.id]
     );
 
