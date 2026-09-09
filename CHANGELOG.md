@@ -16,6 +16,8 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 - **Admin-Panel aufklappbar**: Alle Bereiche sind standardmäßig zugeklappt; ein Klick auf die
   Kopfzeile öffnet den Bereich, eine Zähler-Badge zeigt die Anzahl der Einträge. Neue
   Komponente `components/CollapsibleCard.js`.
+- **Menüpunkt „Turniersoftware"**: externer Link in der Navigationsleiste auf
+  `https://swiss-pair-pro.base44.app/` (öffnet in neuem Tab).
 
 ### 🔧 Technische Verbesserungen
 

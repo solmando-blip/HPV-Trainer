@@ -20,6 +20,16 @@ function Header({ user, onLogout }) {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
             <li className="nav-item"><Link className="nav-link" to="/events">Events</Link></li>
+            <li className="nav-item">
+              <a
+                className="nav-link"
+                href="https://swiss-pair-pro.base44.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Turniersoftware <span aria-hidden="true">↗</span>
+              </a>
+            </li>
             <li className="nav-item"><Link className="nav-link" to="/trainer">Trainer</Link></li>
             {user && (
               <li className="nav-item"><Link className="nav-link" to="/hospitality">Hospitieren</Link></li>
