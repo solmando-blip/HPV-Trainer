@@ -16,6 +16,8 @@ user-facing strings.
 - `docs/WORKFLOWS.md` — the multi-step flows (account lifecycle, event registration, hospitality,
   contact inbox, the email pipeline) with state diagrams; keep it current when a status machine
   or an email trigger changes.
+- `docs/DB.md` — the full table/column reference derived from `backend/database.js`; keep it in
+  sync when a `CREATE TABLE`/`ALTER TABLE`/CHECK changes.
 
 ## Commands
 

@@ -182,6 +182,9 @@ Die Datenbank wird beim Start automatisch initialisiert. Dabei werden Tabellen w
 
 angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Textbausteinen).
 
+> Vollständiges Schema — alle Tabellen, Felder, Typen, Constraints und ein ER-Diagramm:
+> **[docs/DB.md](docs/DB.md)**.
+
 ### Wichtige Datenfelder
 
 - users.role: Admin, Moderator, User, Gast
