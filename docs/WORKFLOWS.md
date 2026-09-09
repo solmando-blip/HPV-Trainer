@@ -231,4 +231,22 @@ die BCC-Rundmail (Freitext).
 - Alle Template-Aktionen (`CREATE/UPDATE/DELETE_TEMPLATE`, `SEND_TEMPLATE`) landen im Audit-Log.
 - Deployment: Railway (React-Frontend, Express-Backend, PostgreSQL).
 
+---
+
+## Hinweis zu den Diagrammen
+
+Die 8 ```mermaid-Blöcke oben wurden am 2026-09-09 mit dem Mermaid-Parser **v11**
+(`mermaid.parse()` — dieselbe Major-Version, die GitHub zum Rendern nutzt) gegen
+Syntaxfehler geprüft: alle acht werden fehlerfrei geparst (`flowchart` bzw. `stateDiagram`).
+
+Beim Bearbeiten beachten:
+
+- `<br/>` nur in `flowchart`-Knoten- und Kantenlabels verwenden. In `stateDiagram`-Transitions
+  (`A --> B: Text`) stattdessen einzeilige Labels mit `·` als Trenner — mehrzeilige Labels dort
+  rendern je nach Mermaid-Version unzuverlässig.
+- Labels mit Sonderzeichen (`→`, `✉`, `„…"`, `/`, `·`) in doppelte Anführungszeichen setzen:
+  `A["Text mit / und →"]`.
+- Keine `{{platzhalter}}` in Labels — die doppelten geschweiften Klammern kollidieren mit der
+  Rhombus-Syntax; „Platzhalter" ausschreiben.
+
 **Stand:** 2026-09-09
