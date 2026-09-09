@@ -402,6 +402,7 @@ const helpContent = {
         h: 'Aktionen',
         items: [
           'Anmeldungen annehmen oder ablehnen.',
+          'Über das Papierkorb-Symbol eine Anmeldung endgültig löschen (mit Rückfrage) – z. B. Testeinträge.',
           '„CSV Export“ lädt alle Anmeldungen des Events als Datei herunter.',
         ],
       },

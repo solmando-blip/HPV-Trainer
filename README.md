@@ -59,7 +59,7 @@ Ziel der Anwendung ist die zentrale Verwaltung von:
 - Kontaktanfragen einsehen, beantworten und archivieren
 - Rechtstexte aktualisieren
 - Events anlegen/bearbeiten/löschen
-- Event-Anmeldungen verwalten (Accept/Reject, CSV-Export)
+- Event-Anmeldungen verwalten (Accept/Reject, Löschen, CSV-Export)
 - Manuelle Erinnerungs-/Feedback-Mails an Event-Teilnehmer auslösen
 - Hospitierungen einsehen, nach Status filtern, löschen
 
@@ -262,7 +262,7 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
   User-IDs, freien Adressen oder an den eingeloggten Nutzer; ein Empfänger → `to`, mehrere → BCC
 - GET /api/admin/audit-logs (nur Admin)
 - GET /api/admin/event-registrations[/:eventId] · PUT /api/admin/event-registrations/:id/status ·
-  GET /api/admin/event-registrations/:eventId/export (CSV)
+  DELETE /api/admin/event-registrations/:id · GET /api/admin/event-registrations/:eventId/export (CSV)
 - POST /api/admin/events/:id/send-reminder · /send-feedback-request · /send-registration-reminder –
   manuell ausgelöste Mails an die Event-Anmeldungen (kein automatischer Scheduler)
 - GET /api/admin/hospitality (Filter `status`) · DELETE /api/admin/hospitality/:id
@@ -333,7 +333,7 @@ Details und vollständige Template-Liste in [docs/WORKFLOWS.md](docs/WORKFLOWS.m
 - Admin/Moderator legen Events mit Titel, Beschreibung, Datum/Uhrzeit, Ort, Agenda und maximaler
   Teilnehmerzahl an (`/admin/events`).
 - Anmeldung ist bis zum Event-Zeitpunkt möglich, danach wird sie serverseitig abgelehnt.
-- Über `/admin/event-registrations/:eventId` können Anmeldungen angenommen/abgelehnt und als CSV
+- Über `/admin/event-registrations/:eventId` können Anmeldungen angenommen/abgelehnt, gelöscht und als CSV
   exportiert werden.
 
 ### Trainer-Verzeichnis & Hospitierungen

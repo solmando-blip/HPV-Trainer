@@ -219,6 +219,19 @@ router.put('/admin/event-registrations/:id/status', verifyToken, verifyRoles('Ad
   }
 });
 
+router.delete('/admin/event-registrations/:id', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM event_registrations WHERE id = $1 RETURNING id',
+      [req.params.id]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Anmeldung nicht gefunden.' });
+    res.json({ message: 'Anmeldung gelöscht.', id: result.rows[0].id });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.get('/admin/event-registrations/:eventId/export', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {
   try {
     const result = await pool.query(

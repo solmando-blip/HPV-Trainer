@@ -38,6 +38,17 @@ function AdminEventRegistrations() {
     }
   };
 
+  const deleteRegistration = async (id, name) => {
+    if (!window.confirm(`Anmeldung von "${name}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`)) return;
+    try {
+      await axios.delete(`/api/admin/event-registrations/${id}`, { headers });
+      addToast('Anmeldung gelöscht.', 'success');
+      loadRegistrations();
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Fehler beim Löschen.', 'error');
+    }
+  };
+
   const exportCsv = async () => {
     try {
       const res = await axios.get(`/api/admin/event-registrations/${eventId}/export`, { headers, responseType: 'blob' });
@@ -111,9 +122,10 @@ function AdminEventRegistrations() {
                   <td>{r.has_license ? 'Ja' : 'Nein'}</td>
                   <td>{r.experience_level}</td>
                   <td>{statusBadge(r.status)}</td>
-                  <td className="text-end">
+                  <td className="text-end text-nowrap">
                     <button className="btn btn-sm btn-success me-2" onClick={() => updateStatus(r.id, 'accepted')}>Accept</button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => updateStatus(r.id, 'rejected')}>Reject</button>
+                    <button className="btn btn-sm btn-outline-danger me-2" onClick={() => updateStatus(r.id, 'rejected')}>Reject</button>
+                    <button className="btn btn-sm btn-outline-secondary" title="Anmeldung löschen" onClick={() => deleteRegistration(r.id, r.name)}>🗑️</button>
                   </td>
                 </tr>
               ))}

@@ -6,6 +6,8 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
 ### ✨ Neue Features
 
+- **Event-Anmeldung löschen**: Papierkorb-Button je Zeile in der Event-Anmeldungen-Ansicht
+  (mit Rückfrage). Backend: `DELETE /api/admin/event-registrations/:id` (Admin + Moderator).
 - **E-Mail-Template-Verwaltung im Admin-Panel**: Neue Karte „📧 E-Mail-Templates" (Admin
   **und** Moderator) mit Liste, Anlegen, Bearbeiten, Löschen und Live-Vorschau. Die Vorschau
   hebt `{{platzhalter}}` hervor und rendert das Ergebnis mit frei änderbaren Beispielwerten

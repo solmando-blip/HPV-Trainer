@@ -64,7 +64,7 @@ flowchart LR
 |---|---|
 | **Rollen** | öffentlich (anmelden) · Admin/Moderator (Event- und Anmeldungs­verwaltung) |
 | **Status** | `pending → accepted / rejected` |
-| **Endpunkte** | `POST/PUT/DELETE /api/events[/:id]` · `POST /api/events/:id/register` · `PUT /api/admin/event-registrations/:id/status` · `GET /api/admin/event-registrations/:eventId/export` (CSV) · `POST /api/admin/events/:id/{send-reminder, send-feedback-request, send-registration-reminder}` |
+| **Endpunkte** | `POST/PUT/DELETE /api/events[/:id]` · `POST /api/events/:id/register` · `PUT /api/admin/event-registrations/:id/status` · `DELETE /api/admin/event-registrations/:id` · `GET /api/admin/event-registrations/:eventId/export` (CSV) · `POST /api/admin/events/:id/{send-reminder, send-feedback-request, send-registration-reminder}` |
 | **E-Mails** | `event_registration_confirmation`, `event_registration_admin_notification` (automatisch) · `event_registration_reminder`, `event_reminder_before`, `event_feedback_request` (manuell) |
 
 ---

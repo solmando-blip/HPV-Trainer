@@ -169,7 +169,8 @@ Unter **Admin-Panel** → **Rechtstexte** können Sie folgende Seiten anpassen:
    Event auswählen)
 2. Tabelle zeigt Name, Email, Verein, Lizenz, Level, Status
 3. Pro Zeile **Accept** / **Reject** – ändert den Status frei (kein fester Übergangs-Zwang)
-4. Button **CSV Export** lädt alle Anmeldungen als Datei herunter
+4. Papierkorb-Symbol 🗑️ – löscht die Anmeldung endgültig (mit Rückfrage), z. B. Testeinträge
+5. Button **CSV Export** lädt alle Anmeldungen als Datei herunter
 
 **Info:** Eine Anmeldung wird serverseitig abgelehnt, wenn der Anmeldeschluss überschritten ist,
 das Event bereits voll ist (`Max Participants` erreicht, gezählt werden alle nicht abgelehnten
