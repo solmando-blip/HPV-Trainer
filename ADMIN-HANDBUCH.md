@@ -292,6 +292,22 @@ der genutzten Variablen und das Datum der letzten Änderung.
 Die Liste der genutzten Variablen wird beim Speichern automatisch aus Betreff + Inhalt
 neu bestimmt.
 
+#### Template versenden
+
+1. In der Template-Liste auf **Senden**
+2. **Empfänger** wählen:
+   - **Testmail an mich** – geht an Ihre eigene Konto-Adresse
+   - **Gruppe** – an alle **aktiven** Mitglieder der gewählten Gruppe
+   - **Einzelne Benutzer** – Mehrfachauswahl aus der Benutzerliste
+   - **E-Mail-Adressen** – frei eingegeben, eine pro Zeile (oder Komma-getrennt)
+3. **Variablen einsetzen:** je Platzhalter den echten Wert eintragen. Leer gelassene
+   Platzhalter bleiben als `{{name}}` in der Mail stehen.
+4. Rechts die **Vorschau** prüfen → **Senden** (mit Rückfrage)
+
+Bei mehreren Empfängern geht die Mail per **BCC** (Empfänger sehen sich nicht). Ohne
+konfiguriertes SMTP läuft der Versand im **Mock-Modus** – die Mail wird nur ins Server-Log
+geschrieben.
+
 #### Neues Template anlegen
 
 1. **+ Neues Template**

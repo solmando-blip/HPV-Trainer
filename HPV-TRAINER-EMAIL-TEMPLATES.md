@@ -549,6 +549,10 @@ INSERT INTO email_templates (name, subject, content, created_by, created_at) VAL
 
 ## WANN WELCHES TEMPLATE VERWENDET WIRD?
 
+> Zusätzlich zu den unten gelisteten (automatischen bzw. event-gebundenen) Auslösern lässt
+> sich **jedes** Template über **Admin-Panel → 📧 E-Mail-Templates → Senden** ad hoc an eine
+> Gruppe, ausgewählte Benutzer oder freie Adressen verschicken.
+
 | Event | Template | Trigger |
 |-------|----------|---------|
 | User meldet sich zu Event an | `event_registration_confirmation` | Nach erfolgreicher Anmeldung (Auto) |

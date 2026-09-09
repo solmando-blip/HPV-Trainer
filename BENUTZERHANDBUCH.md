@@ -283,6 +283,10 @@ Willkommens-Mail, Event-Erinnerungen …). Verfügbar für **Admin und Moderator
 - **Bearbeiten:** Betreff und Inhalt anpassen. Formatierung: `**fett**`, Zeilenumbrüche,
   `{{variable}}` als Platzhalter. Rechts im Dialog: die **Vorlage** mit hervorgehobenen
   Platzhaltern und eine **Vorschau** mit frei änderbaren Beispielwerten.
+- **Senden:** ein Template gezielt verschicken – als **Testmail an mich**, an eine **Gruppe**
+  (alle aktiven Mitglieder), an **einzelne Benutzer** oder an frei eingegebene
+  **E-Mail-Adressen**. Im Dialog die Variablenwerte eintragen, Vorschau prüfen, senden. Bei
+  mehreren Empfängern per BCC.
 - **+ Neues Template:** technischen **Namen** vergeben (nur `a–z`, `0–9`, `_`) – nach dem
   Anlegen nicht mehr änderbar –, dann Betreff und Inhalt.
 - **Löschen** (mit Rückfrage). *Vorsicht:* Wird ein vom System genutztes Template gelöscht

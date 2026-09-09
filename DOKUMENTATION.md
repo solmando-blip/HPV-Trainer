@@ -108,9 +108,10 @@ Wichtig für den Betrieb:
   `backend/routes/public.js`) pflegen.
 - Textartige Dateien werden als `text/plain` ausgeliefert, `.docx` wird im Browser über
   `mammoth` in mit DOMPurify bereinigtes HTML umgewandelt, `.doc` bietet nur den Download.
-- **E-Mail-Templates:** `GET/POST/PUT/DELETE /api/admin/templates[/:id]` (Admin & Moderator) –
-  Verwaltung über die Karte „📧 E-Mail-Templates" im Admin-Panel; Details in
-  [ADMIN-HANDBUCH.md → E-Mail-Templates verwalten](ADMIN-HANDBUCH.md#e-mail-templates-verwalten).
+- **E-Mail-Templates:** `GET/POST/PUT/DELETE /api/admin/templates[/:id]` +
+  `POST /api/admin/templates/:id/send` (Admin & Moderator) – Verwaltung **und gezielter Versand**
+  (Gruppe / Benutzer / Adressen / Testmail) über die Karte „📧 E-Mail-Templates" im Admin-Panel;
+  Details in [ADMIN-HANDBUCH.md → E-Mail-Templates verwalten](ADMIN-HANDBUCH.md#e-mail-templates-verwalten).
 
 ---
 

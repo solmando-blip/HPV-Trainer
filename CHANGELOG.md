@@ -10,6 +10,9 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
   **und** Moderator) mit Liste, Anlegen, Bearbeiten, Löschen und Live-Vorschau. Die Vorschau
   hebt `{{platzhalter}}` hervor und rendert das Ergebnis mit frei änderbaren Beispielwerten
   (inkl. `**fett**` und Zeilenumbrüchen wie im echten Versand).
+- **Template gezielt versenden**: Button „Senden" je Template → Dialog mit Empfängerwahl
+  (Testmail an mich / Gruppe / einzelne Benutzer / freie E-Mail-Adressen), Variablen-Eingabe
+  und Vorschau. Mehrere Empfänger → BCC. Backend: `POST /api/admin/templates/:id/send`.
 - **Admin-Panel aufklappbar**: Alle Bereiche sind standardmäßig zugeklappt; ein Klick auf die
   Kopfzeile öffnet den Bereich, eine Zähler-Badge zeigt die Anzahl der Einträge. Neue
   Komponente `components/CollapsibleCard.js`.

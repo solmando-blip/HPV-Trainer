@@ -43,6 +43,7 @@ Die **HPV Trainer App** ist eine vollständige Full-Stack-Webanwendung für den 
 - ✅ WhatsApp-Gruppen konfigurieren
 - ✅ BCC-E-Mail-Versand an Gruppen
 - ✅ E-Mail-Templates verwalten (CRUD + Live-Vorschau, Admin & Moderator)
+- ✅ Template gezielt versenden (Gruppe / Benutzer / Adressen / Testmail, BCC bei mehreren)
 - ✅ SMTP-Einstellungen konfigurieren
 - ✅ Rechtliche Texte bearbeiten (Impressum, Datenschutz, AGB)
 - ✅ Audit-Log-Viewer mit Pagination
@@ -146,7 +147,8 @@ hpv-trainer/
 │   │   │   ├── ToastContainer.js
 │   │   │   ├── HelpButton.js
 │   │   │   ├── CollapsibleCard.js       # aufklappbarer Admin-Panel-Bereich
-│   │   │   └── EmailTemplateManager.js  # E-Mail-Template-CRUD + Vorschau
+│   │   │   ├── EmailTemplateManager.js  # E-Mail-Template-CRUD + Vorschau
+│   │   │   └── SendTemplateModal.js     # Template an Gruppe/Benutzer/Adressen senden
 │   │   ├── pages/
 │   │   │   ├── Home.js
 │   │   │   ├── Login.js

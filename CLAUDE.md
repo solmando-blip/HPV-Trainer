@@ -118,8 +118,11 @@ the backend.
   `system_settings`), full email-template CRUD (`GET /templates`, `GET /templates/:id`,
   `POST /templates`, `PUT /templates/:id`, `DELETE /templates/:id` — all Admin **and** Moderator;
   `variables` is recomputed from `subject`+`content` on every write via `extractTemplateVars`,
-  `name` is only settable on `POST` and validated `^[a-z0-9_]+$`, `updated_at` bumped on `PUT`).
-  Consumed by the `EmailTemplateManager` card in `AdminPanel.js`. `GET /audit-logs`.
+  `name` is only settable on `POST` and validated `^[a-z0-9_]+$`, `updated_at` bumped on `PUT`),
+  `POST /templates/:id/send` (renders via `templateService.renderTemplate`, sends to any mix of
+  `groupId` active members / `userIds` / raw `emails` / `testToSelf`; 1 recipient → `to`, many →
+  BCC; audit `SEND_TEMPLATE`). Consumed by `EmailTemplateManager` + `SendTemplateModal` in
+  `AdminPanel.js`. `GET /audit-logs`.
 - `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename
   with no extension; metadata incl. `file_type` in DB), contact messages, legal texts, image serving.
   Read endpoints are public; writes require Admin/Moderator. **All three file-serving routes
@@ -171,7 +174,9 @@ the backend.
   (header click toggles the body, collapsed by default, optional count `badge`); the three
   overview tiles stay always-visible. The email-templates section renders
   `components/EmailTemplateManager` (list / create-edit modal / delete / live `{{var}}` preview,
-  talks to `/api/admin/templates*`). `pages/CreateUser.js` is a separate `/admin/create-user`
+  talks to `/api/admin/templates*`) plus `components/SendTemplateModal` (recipient picker +
+  per-var inputs → `POST /templates/:id/send`). Shared render helpers live in
+  `utils/emailTemplate.js`. `pages/CreateUser.js` is a separate `/admin/create-user`
   route, **Admin-only** (Moderators are redirected); like every other admin write it must send the
   `Authorization: Bearer` header explicitly — there is no global axios default. `pages/Documents.js` renders an in-browser preview for whitelisted
   file types via the backend `view/:id` endpoint; `.docx` is converted with `mammoth` and the

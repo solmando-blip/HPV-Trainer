@@ -272,6 +272,7 @@ const helpContent = {
         h: 'Inhalte & Konfiguration',
         items: [
           '„E-Mail-Templates“: Textbausteine für automatische E-Mails ansehen, bearbeiten, neu anlegen oder löschen (Admin und Moderator). Platzhalter in der Form {{name}} werden beim Versand durch echte Daten ersetzt; die Vorschau im Bearbeiten-Dialog zeigt das Ergebnis mit Beispielwerten.',
+          '„E-Mail-Templates“ → „Senden“: ein Template gezielt verschicken – als Testmail an sich selbst, an eine ganze Gruppe, an einzeln ausgewählte Benutzer oder an frei eingegebene E-Mail-Adressen. Im Dialog die Variablenwerte eintragen; bei mehreren Empfängern geht die Mail per BCC.',
           '„Rechtstexte“: Impressum, Datenschutz und AGB bearbeiten (nur Admin).',
           '„Posteingang: Kontaktanfragen“: antworten (per E-Mail-Link), als beantwortet/archiviert markieren oder löschen.',
           '„SMTP-Konfiguration“: Zugangsdaten für den E-Mail-Versand hinterlegen (nur Admin).',

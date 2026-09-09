@@ -250,6 +250,9 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
   POST /api/admin/templates · PUT /api/admin/templates/:id · DELETE /api/admin/templates/:id –
   E-Mail-Template-Verwaltung (Admin **und** Moderator). `variables` wird beim Speichern
   serverseitig aus `subject`+`content` abgeleitet; `name` ist nur bei POST setzbar
+- POST /api/admin/templates/:id/send – Template gerendert verschicken; Body
+  `{ vars, groupId?, userIds?, emails?, testToSelf? }`. Empfänger aus Gruppe (nur `active`),
+  User-IDs, freien Adressen oder an den eingeloggten Nutzer; ein Empfänger → `to`, mehrere → BCC
 - GET /api/admin/audit-logs (nur Admin)
 - GET /api/admin/event-registrations[/:eventId] · PUT /api/admin/event-registrations/:id/status ·
   GET /api/admin/event-registrations/:eventId/export (CSV)
