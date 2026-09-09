@@ -1,6 +1,6 @@
 # Changelog
 
-Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
+Alle wichtigen Änderungen am Trainer-Portal werden hier dokumentiert.
 
 ## [2.3.0] - 2026-09-09
 
@@ -45,22 +45,25 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 - API: `verein` in `GET /api/auth/me`, `PUT /api/auth/profile`, `POST /api/auth/register`,
   `GET/POST/PUT /api/admin/users[…]`.
 
-### 🏷️ Umbenennung „HPV" → „Trainer-Portal"
+### 🏷️ Umbenennung „HPV Trainer" → „Trainer-Portal"
 
 - **Sichtbare UI**: Navigations-Brand, Startseiten-Titel, Seitentitel/Meta, In-App-Hilfe.
 - **E-Mail-Templates** (alle 12) und die Registrierungs-/Reset-Mails: Signatur
   „dein Trainer-Portal-Team", Betreffzeilen, `platform_name`, Absendername, „das Präsidium".
-- **Geseedete Rechtstexte** (Impressum ohne „(HPV)", AGB), Seed-Event-Beschreibung.
+- **Geseedete Rechtstexte** (Impressum ohne den Kürzel-Zusatz, AGB), Seed-Event-Beschreibung.
   Der Vereinsname „Hessischer Pétanque Verband e.V." bleibt unverändert.
-- **Interne Bezeichner**: `localStorage` `hpv_token`/`hpv_user` → `trainer_token`/`trainer_user`
+- **Interne Bezeichner**: `localStorage`-Schlüssel `hpv_token`/`hpv_user` → `trainer_token`/`trainer_user`
   (mit einmaliger Migration in `App.js`, kein Zwangs-Logout), JWT-Fallback-Secret,
   `*.local`-Fallback-Adressen, DB-Name-Default, `docker-compose`-Container-/DB-Namen,
   CI-Image-Tags, npm-Paketnamen.
 - Die Standard-Konten der Seed-Daten heißen jetzt `admin@trainer.local` /
   `moderator@trainer.local` und werden **nur noch auf einer frischen DB** angelegt
   (`WHERE NOT EXISTS ...`) — bestehende Installationen bekommen kein Zusatzkonto.
-- **Nicht** umbenannt: die Doku-Dateien und ihre Verweise, der Repo-Name, die
-  Railway-Backend-Domain im `nginx-frontend.conf`-Proxy.
+- Die **gesamte Dokumentation** (README, Handbücher, `docs/`, CLAUDE.md …) auf
+  „Trainer-Portal" umgestellt; `HPV-TRAINER-EMAIL-TEMPLATES.md` → `EMAIL-TEMPLATES.md`,
+  `HPV-TRAINER-POST-REBUILD-CHECKLIST.md` → `POST-REBUILD-CHECKLIST.md`.
+- **Nicht** umbenannt: der GitHub-Repo-Name und die von Railway vergebene Backend-Domain
+  im `nginx-frontend.conf`-Proxy.
 
 ### 🔧 Technische Verbesserungen
 
@@ -316,7 +319,7 @@ Keine Breaking Changes - vollständig abwärtskompatibel.
 Falls Sie von einem älteren System migrieren:
 
 1. **Datenbank-Backup erstellen** aus altem System
-2. **Neue HPV Trainer v2.0 installieren**
+2. **Neue Trainer-Portal v2.0 installieren**
 3. **Manuelle Datenmigration** für Benutzer, News, Dokumente durchführen
 4. **Testen** Sie alle Funktionen vor Produktivschaltung
 
@@ -370,4 +373,4 @@ Intern verwendet für Hessischer Pétanque Verband e.V.
 
 ---
 
-**Letzte Aktualisierung**: 2026-09-09
+**Letzte Aktualisierung**: 2026-09-10

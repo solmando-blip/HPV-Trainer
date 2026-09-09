@@ -187,7 +187,7 @@ curl -X POST "http://localhost:5000/api/admin/users" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Anna Schmidt",
-    "email": "anna.schmidt@hpv.de",
+    "email": "anna.schmidt@example.de",
     "password": "sicheresPW2024",
     "role": "Moderator",
     "status": "active",
@@ -200,14 +200,14 @@ curl -X POST "http://localhost:5000/api/admin/users" \
 ### Mit PowerShell (Windows):
 ```powershell
 $token = (Invoke-WebRequest -Uri "http://localhost:5000/api/auth/login" -Method POST `
-  -Body (@{email="admin@hpv.local"; password="admin123"} | ConvertTo-Json) `
+  -Body (@{email="admin@trainer.local"; password="admin123"} | ConvertTo-Json) `
   -ContentType "application/json" | ConvertFrom-Json).token
 
 Invoke-WebRequest -Uri "http://localhost:5000/api/admin/users" -Method POST `
   -Headers @{"Authorization"="Bearer $token"} `
   -Body (@{
     name="Anna Schmidt"
-    email="anna.schmidt@hpv.de"
+    email="anna.schmidt@example.de"
     password="sicheresPW2024"
     role="Moderator"
     status="active"

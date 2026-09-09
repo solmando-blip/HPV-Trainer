@@ -1,4 +1,4 @@
-# Workflows im HPV-Trainer-Portal
+# Workflows im Trainer-Portal
 
 Übersicht der mehrstufigen Abläufe, die die Plattform selbst führt – mit Statuswechseln
 und den E-Mails, die dabei automatisch verschickt werden.

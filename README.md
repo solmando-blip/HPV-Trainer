@@ -1,6 +1,6 @@
-# HPV Trainer
+# Trainer-Portal
 
-Vollständige Webanwendung für die Verwaltung von Mitgliedern, News, Dokumenten, Kontaktanfragen, Events, dem Trainer-Verzeichnis, Hospitierungen und Admin-Aufgaben für den Hessischen Pétanque Verband (HPV).
+Vollständige Webanwendung für die Verwaltung von Mitgliedern, News, Dokumenten, Kontaktanfragen, Events, dem Trainer-Verzeichnis, Hospitierungen und Admin-Aufgaben für den Hessischen Pétanque Verband.
 
 > 📚 **Gesamte Dokumentation:** [DOKUMENTATION.md](DOKUMENTATION.md) – Übersicht und Einstieg.
 > Anwender: [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md) · Admins: [ADMIN-HANDBUCH.md](ADMIN-HANDBUCH.md).
@@ -78,7 +78,7 @@ Ziel der Anwendung ist die zentrale Verwaltung von:
 ## Projektstruktur
 
 ```text
-hpv-trainer/
+trainer-portal/
 ├─ backend/
 │  ├─ routes/
 │  │  ├─ admin.js
@@ -158,8 +158,8 @@ npm start
 
 Die Anwendung wird mit Standardkonten seedingiert:
 
-- Admin: admin@hpv.local / admin123
-- Moderator: moderator@hpv.local / moderator123
+- Admin: admin@trainer.local / admin123
+- Moderator: moderator@trainer.local / moderator123
 
 ## Datenbank
 
@@ -421,7 +421,7 @@ Bei neuen Datenfeldern in der Datenbank:
 
 ## Lizenz
 
-Das Projekt steht für interne und projektbezogene Nutzung im Rahmen des HPV-Workflows bereit.
+Das Projekt steht für interne und projektbezogene Nutzung im Rahmen des Vereins-Workflows bereit.
 
 ## Kontakt
 

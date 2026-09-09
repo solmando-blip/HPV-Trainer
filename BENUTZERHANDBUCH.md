@@ -1,6 +1,6 @@
-# Benutzerhandbuch – HPV Trainer Portal
+# Benutzerhandbuch – Trainer-Portal
 
-Dieses Handbuch beschreibt alle Seiten und Funktionen des HPV-Trainer-Portals.
+Dieses Handbuch beschreibt alle Seiten und Funktionen des Trainer-Portals.
 Es ist nach Seiten gegliedert und entspricht 1:1 der **In-App-Hilfe** (der „?“-Schaltfläche
 unten rechts auf jeder Seite).
 
@@ -44,7 +44,7 @@ unten rechts auf jeder Seite).
 
 ## 1. Überblick
 
-Das HPV-Trainer-Portal ist die zentrale Plattform des Hessischen Pétanque Verbandes zur
+Das Trainer-Portal ist die zentrale Plattform des Hessischen Pétanque Verbandes zur
 Verwaltung von:
 
 - Mitgliedern, Rollen und Trainer-Lizenzen

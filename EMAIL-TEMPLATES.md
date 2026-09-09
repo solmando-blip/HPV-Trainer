@@ -1,4 +1,4 @@
-# HPV-TRAINER: EMAIL-TEXTBAUSTEINE
+# E-Mail-Textbausteine – Trainer-Portal
 
 Diese Vorlagen sind Textbausteine für das Email-Template-System. Sie können direkt in die `email_templates` Tabelle eingefügt werden und können vom Admin angepasst werden.
 
@@ -29,10 +29,10 @@ vielen Dank für deine Anmeldung zu unserem Event!
 
 Wir freuen uns auf dich!
 
-Falls du Fragen hast oder deine Anmeldung stornieren möchtest, schreib uns gerne eine Email oder kontaktiere uns über die HPV-Trainer Plattform.
+Falls du Fragen hast oder deine Anmeldung stornieren möchtest, schreib uns gerne eine Email oder kontaktiere uns über die Trainer-Portal.
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert. Bitte antworte nicht direkt auf diese Email.
@@ -63,7 +63,7 @@ Weitere Infos zum Event findest du hier:
 {{event_details_link}}
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert. Bitte antworte nicht direkt auf diese Email.
@@ -130,7 +130,7 @@ Zur Verwaltung deiner Hospitierungs-Anfragen:
 Falls du offene Fragen hast, kontaktiere uns gerne!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -165,7 +165,7 @@ Zur Verwaltung deiner Hospitierungen:
 Wir wünschen dir viel Spaß beim Hospitieren und viel Erfolg beim gegenseitigen Austausch von Erfahrungen und Best Practices!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -197,7 +197,7 @@ Zum Trainer-Verzeichnis:
 {{trainer_directory_link}}
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -230,7 +230,7 @@ perfekt! Eure Hospitierung ist bestätigt! 📅
 Viel Spaß beim Hospitieren und beim gegenseitigen Austausch von Wissen und Erfahrungen!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -270,7 +270,7 @@ Bei Fragen oder Ausfallgrund:
 Bis morgen!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -304,7 +304,7 @@ Damit wir zukünftige Events noch besser machen können, freuen wir uns über de
 Deine Antworten helfen uns sehr!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -321,7 +321,7 @@ Diese Nachricht wurde automatisch generiert.
 ```
 Hallo {{user_name}},
 
-herzlich willkommen auf der HPV-Trainer Plattform! 👋
+herzlich willkommen auf der Trainer-Portal! 👋
 
 Dein Trainer-Profil wurde automatisch erstellt. Es hilft anderen Trainern, dich zu finden und mit dir in Kontakt zu treten.
 
@@ -346,7 +346,7 @@ Dein Trainer-Profil wurde automatisch erstellt. Es hilft anderen Trainern, dich 
 Bei Fragen: {{support_email}}
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -358,12 +358,12 @@ Diese Nachricht wurde automatisch generiert.
 
 **Template-Name:** `welcome_email_new_user`
 
-**Betreff:** Willkommen bei HPV-Trainer! Dein Konto ist freigeschaltet
+**Betreff:** Willkommen bei Trainer-Portal! Dein Konto ist freigeschaltet
 
 ```
 Hallo {{user_name}},
 
-herzlich willkommen bei HPV-Trainer! 🎉
+herzlich willkommen bei Trainer-Portal! 🎉
 
 Dein Benutzerkonto wurde aktiviert. Du kannst dich jetzt anmelden und an der Community teilnehmen.
 
@@ -393,7 +393,7 @@ Bei Fragen oder Problemen:
 Viel Spaß auf der Plattform!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.
@@ -405,12 +405,12 @@ Diese Nachricht wurde automatisch generiert.
 
 **Template-Name:** `admin_invitation`
 
-**Betreff:** Du wurdest zum Admin/Moderator eingeladen – HPV-Trainer
+**Betreff:** Du wurdest zum Admin/Moderator eingeladen – Trainer-Portal
 
 ```
 Hallo {{user_name}},
 
-das HPV-Präsidium hat dich als {{new_role}} für die HPV-Trainer Plattform ernannt! 🎖️
+das Präsidium hat dich als {{new_role}} für die Trainer-Portal ernannt! 🎖️
 
 **Deine neuen Rechte:**
 - Events erstellen und verwalten
@@ -430,7 +430,7 @@ Bei Fragen zur Rolle: {{admin_contact_email}}
 Danke für dein Engagement!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Dies ist eine automatische Benachrichtigung für Administratoren.
@@ -443,10 +443,10 @@ Dies ist eine automatische Benachrichtigung für Administratoren.
 ### Globale Variablen (immer verfügbar):
 ```
 {{current_year}}           – Aktuelles Jahr (z.B. 2026)
-{{platform_name}}          – "HPV-Trainer"
-{{platform_url}}           – z.B. https://hpv-trainer.local
-{{support_email}}          – z.B. support@hpv-trainer.local
-{{admin_email}}            – z.B. admin@hpv-trainer.local
+{{platform_name}}          – "Trainer-Portal"
+{{platform_url}}           – z.B. https://trainer-portal.local
+{{support_email}}          – z.B. support@trainer-portal.local
+{{admin_email}}            – z.B. admin@trainer-portal.local
 ```
 
 ### User-Variablen:
@@ -541,8 +541,8 @@ INSERT INTO email_templates (name, subject, content, created_by, created_at) VAL
 ('event_reminder_before', 'Finaler Reminder: {{event_title}} morgen um {{event_time}}!', '...', 1, NOW()),
 ('event_feedback_request', 'Dein Feedback zu {{event_title}} – Hilf uns, besser zu werden!', '...', 1, NOW()),
 ('trainer_profile_created', 'Willkommen! Dein Trainer-Profil wurde erstellt', '...', 1, NOW()),
-('welcome_email_new_user', 'Willkommen bei HPV-Trainer! Dein Konto ist freigeschaltet', '...', 1, NOW()),
-('admin_invitation', 'Du wurdest zum Admin/Moderator eingeladen – HPV-Trainer', '...', 1, NOW());
+('welcome_email_new_user', 'Willkommen bei Trainer-Portal! Dein Konto ist freigeschaltet', '...', 1, NOW()),
+('admin_invitation', 'Du wurdest zum Admin/Moderator eingeladen – Trainer-Portal', '...', 1, NOW());
 ```
 
 ---
@@ -579,7 +579,7 @@ hervorgehoben.
 1. **Personalisierung:** Variablen wie `{{user_name}}` verwenden für persönliche Note
 2. **Kürze:** Kurze, prägnante Emails (kein Roman)
 3. **Links:** Immer klare CTAs ("Jetzt anmelden", "Profil bearbeiten")
-4. **Branding:** HPV-Logo/Farben optional im Header/Footer
+4. **Branding:** Vereins-Logo/Farben optional im Header/Footer
 5. **Testen:** Vorschau-Beispielwerte anpassen und das gerenderte Ergebnis prüfen
 6. **Ton:** Freundlich, professionell, auf Du-Basis
 7. **Formatierung:** `**fett**` und Zeilenumbrüche werden unterstützt; der technische

@@ -257,7 +257,7 @@ router.get('/admin/event-registrations/:eventId/export', verifyToken, verifyRole
 
 // Diese drei Routen (send-reminder, send-feedback-request,
 // send-registration-reminder) werden manuell durch Admin/Moderator ausgelöst
-// (siehe HPV-TRAINER-EMAIL-TEMPLATES.md, "WANN WELCHES TEMPLATE VERWENDET
+// (siehe EMAIL-TEMPLATES.md, "WANN WELCHES TEMPLATE VERWENDET
 // WIRD") – kein automatischer Scheduler. Empfänger sind jeweils die aktuell
 // nicht abgelehnten Anmeldungen des Events.
 router.post('/admin/events/:id/send-reminder', verifyToken, verifyRoles('Admin', 'Moderator'), async (req, res) => {

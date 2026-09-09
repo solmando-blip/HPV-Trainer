@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# HPV Trainer Database Backup Script
-# Usage: ./backup.sh or docker exec hpv_db /backup.sh
+# Trainer-Portal Database Backup Script
+# Usage: ./backup.sh or docker exec trainer_db /backup.sh
 
 BACKUP_DIR="/backups"
-DB_NAME="hpv_trainer"
+DB_NAME="trainer_portal"
 DB_USER="postgres"
 DB_HOST="localhost"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILE="$BACKUP_DIR/hpv_trainer_$TIMESTAMP.sql"
+BACKUP_FILE="$BACKUP_DIR/trainer_portal_$TIMESTAMP.sql"
 RETENTION_DAYS=30
 
 # Create backup directory
@@ -27,7 +27,7 @@ if [ $? -eq 0 ]; then
     
     # Remove old backups (older than RETENTION_DAYS)
     echo "Removing old backups (older than $RETENTION_DAYS days)..."
-    find $BACKUP_DIR -name "hpv_trainer_*.sql.gz" -mtime +$RETENTION_DAYS -delete
+    find $BACKUP_DIR -name "trainer_portal_*.sql.gz" -mtime +$RETENTION_DAYS -delete
     echo "✓ Cleanup completed"
 else
     echo "✗ Backup failed!"

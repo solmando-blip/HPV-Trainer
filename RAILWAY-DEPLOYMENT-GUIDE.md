@@ -1,7 +1,7 @@
-# RAILWAY DEPLOYMENT: HPV-TRAINER STEP-BY-STEP
+# RAILWAY DEPLOYMENT: TRAINER-PORTAL STEP-BY-STEP
 
 **Zeit:** ~1-2 Stunden  
-**Kosten:** €0 (Free Tier, wahrscheinlich kostenlos für HPV's Load)  
+**Kosten:** €0 (Free Tier, wahrscheinlich kostenlos für die Vereins-Last)  
 **Schwierigkeit:** Einfach (Ja/Nein Klicks)
 
 ---
@@ -22,7 +22,7 @@
 1. Dashboard öffnen
 2. Klick "Create New Project"
 3. Wähle: **"Deploy from GitHub"**
-4. Repo auswählen: `hpv-trainer` (dein GitHub Repo)
+4. Repo auswählen: `trainer-portal` (dein GitHub Repo)
 5. Branch: `main`
 6. Fertig ✅
 
@@ -47,13 +47,13 @@ Railway erstellt automatisch Services aus `docker-compose.yml`:
 
 ```
 NODE_ENV=production
-DATABASE_URL=postgresql://user:password@postgres:5432/hpv_db
+DATABASE_URL=postgresql://user:password@postgres:5432/trainer_db
 JWT_SECRET=your-secret-key-here (generate random)
 SMTP_HOST=smtp.gmail.com (oder dein SMTP Provider)
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-app-password
-SMTP_FROM=noreply@hpv-trainer.local
+SMTP_FROM=noreply@trainer-portal.local
 ```
 
 **Wo finden?**
@@ -106,17 +106,17 @@ REACT_APP_API_URL=https://your-backend-url.railway.app/api
 2. Gehe zu **"Settings"**
 3. Suche **"Domains"**
 4. Klick **"Generate Domain"**
-5. Railway gibt dir: `hpv-trainer-xxxxx.railway.app`
+5. Railway gibt dir: `<projekt>.up.railway.app`
 6. Kopier dir die URL
 
 ### 5b. Backend Domain
 
 1. Klick auf **"backend"** Service
 2. Gleich wie oben
-3. Railway gibt dir: `hpv-trainer-backend-xxxxx.railway.app`
+3. Railway gibt dir: `<backend>.up.railway.app`
 4. Diese URL in Frontend-Service `REACT_APP_API_URL` eintragen:
    ```
-   REACT_APP_API_URL=https://hpv-trainer-backend-xxxxx.railway.app/api
+   REACT_APP_API_URL=https://<backend>.up.railway.app/api
    ```
 5. Frontend neu deployen (Auto-Rebuild startet)
 
@@ -124,7 +124,7 @@ REACT_APP_API_URL=https://your-backend-url.railway.app/api
 
 ## SCHRITT 6: CUSTOM DOMAIN (OPTIONAL, 5 MIN)
 
-Wenn ihr eure eigene Domain habt (z.B. `hpv-trainer.de`):
+Wenn ihr eure eigene Domain habt (z.B. `trainer-portal.de`):
 
 ### 6a. Domain bei Registrar vorbereiten
 
@@ -136,7 +136,7 @@ Wenn ihr eure eigene Domain habt (z.B. `hpv-trainer.de`):
 
 1. Im Railway Dashboard: Frontend Service → Settings → Domains
 2. Klick **"Add Custom Domain"**
-3. Gib ein: `hpv-trainer.de` (oder Subdomain wie `trainer.hpv-verband.de`)
+3. Gib ein: `trainer-portal.de` (oder Subdomain wie `trainer.example.de`)
 4. Railway zeigt dir CNAME Target: `cname.railway.app`
 
 ### 6c. DNS Record setzen
@@ -144,7 +144,7 @@ Wenn ihr eure eigene Domain habt (z.B. `hpv-trainer.de`):
 Im Registrar:
 ```
 Type:  CNAME
-Name:  hpv-trainer (oder @)
+Name:  trainer-portal (oder @)
 Value: cname.railway.app
 TTL:   3600
 ```
@@ -157,15 +157,15 @@ TTL:   3600
 
 ### Frontend testen
 
-1. Öffne: `https://hpv-trainer-xxxxx.railway.app` (oder deine Custom Domain)
+1. Öffne: `https://<projekt>.up.railway.app` (oder deine Custom Domain)
 2. Seite sollte laden
-3. Versuche Login: `admin@hpv.local` / `admin123`
+3. Versuche Login: `admin@trainer.local` / `admin123`
 4. Sollte funktionieren ✅
 
 ### Backend testen
 
 ```bash
-curl https://hpv-trainer-backend-xxxxx.railway.app/api/health
+curl https://<backend>.up.railway.app/api/health
 # Sollte antworten: {"status":"ok"}
 ```
 
@@ -264,7 +264,7 @@ Wenn etwas nicht funktioniert:
 
 ## 🎉 FERTIG!
 
-HPV-Trainer läuft jetzt live auf Railway.
+Trainer-Portal läuft jetzt live auf Railway.
 
 **Kosten:** €0-5/Monat  
 **Wartung:** Null (alles automatisch)  

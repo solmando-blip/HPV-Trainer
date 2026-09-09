@@ -1,4 +1,4 @@
-# Implementation Summary - HPV Trainer v2.1
+# Implementation Summary - Trainer-Portal v2.1
 
 **Status**: ✅ **COMPLETE & DEPLOYED**  
 **Last Updated**: 2026-09-03  
@@ -8,7 +8,7 @@
 
 ## 📋 Project Overview
 
-Die **HPV Trainer App** ist eine vollständige Full-Stack-Webanwendung für den Hessischen Pétanque Verband zur Verwaltung von:
+Die **Trainer-Portal** ist eine vollständige Full-Stack-Webanwendung für den Hessischen Pétanque Verband zur Verwaltung von:
 - Mitgliedern und Benutzern
 - News und Mitteilungen
 - Dokumenten und Downloads
@@ -115,7 +115,7 @@ Die **HPV Trainer App** ist eine vollständige Full-Stack-Webanwendung für den 
 ## 📁 Project Structure
 
 ```
-hpv-trainer/
+trainer-portal/
 ├── backend/
 │   ├── routes/
 │   │   ├── auth.js          # Login, Register, Password-Reset, Email-Verify
@@ -208,7 +208,7 @@ hpv-trainer/
 ```bash
 # 1. Clone repository
 git clone https://github.com/solmando-blip/HPV-Trainer.git
-cd hpv-trainer
+cd trainer-portal
 
 # 2. Start with Docker
 docker-compose up --build -d
@@ -223,8 +223,8 @@ docker-compose up --build -d
 
 | Account | Email | Password |
 |---------|-------|----------|
-| **Admin** | admin@hpv.local | admin123 |
-| **Moderator** | moderator@hpv.local | moderator123 |
+| **Admin** | admin@trainer.local | admin123 |
+| **Moderator** | moderator@trainer.local | moderator123 |
 
 ---
 
@@ -318,7 +318,7 @@ docker-compose up --build -d
 
 ```bash
 # Tägliches Backup (2:00 AM)
-0 2 * * * docker exec hpv_db pg_dump -U postgres hpv_trainer | gzip > /backups/backup_$(date +\%Y\%m\%d).sql.gz
+0 2 * * * docker exec trainer_db pg_dump -U postgres trainer_portal | gzip > /backups/backup_$(date +\%Y\%m\%d).sql.gz
 
 # Alte Backups löschen (älter als 30 Tage)
 0 3 * * * find /backups -name "*.sql.gz" -mtime +30 -delete
@@ -393,7 +393,7 @@ Intern für Hessischer Pétanque Verband e.V.
 
 **Team:**
 - Development: GitHub Copilot
-- Project Lead: HPV Verband
+- Project Lead: Hessischer Pétanque Verband
 
 ---
 

@@ -1,6 +1,6 @@
 # Quick-Start-Checkliste
 
-Schnelle Anleitung zum Starten und Verwalten der HPV Trainer App.
+Schnelle Anleitung zum Starten und Verwalten der Trainer-Portal.
 
 ## 1. App starten
 
@@ -36,11 +36,11 @@ npm start
 ## 2. Login
 
 **Admin-Account:**
-- E-Mail: `admin@hpv.local`
+- E-Mail: `admin@trainer.local`
 - Passwort: `admin123`
 
 **Moderator-Account:**
-- E-Mail: `moderator@hpv.local`
+- E-Mail: `moderator@trainer.local`
 - Passwort: `moderator123`
 
 ---

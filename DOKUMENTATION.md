@@ -1,4 +1,4 @@
-# Dokumentation – HPV Trainer Portal
+# Dokumentation – Trainer-Portal
 
 Zentrale Übersicht über die gesamte Dokumentation des Projekts. Dieses Dokument ist der
 Einstiegspunkt und verweist auf die passenden Detaildokumente.
@@ -22,9 +22,9 @@ Einstiegspunkt und verweist auf die passenden Detaildokumente.
 
 ---
 
-## 2. Was ist das HPV Trainer Portal?
+## 2. Was ist das Trainer-Portal?
 
-Full-Stack-Webanwendung für den Hessischen Pétanque Verband (HPV) zur zentralen Verwaltung
+Full-Stack-Webanwendung für den Hessischen Pétanque Verband zur zentralen Verwaltung
 von Mitgliedern, Rollen, Trainer-Lizenzen, News, Dokumenten, Kontaktanfragen sowie
 Trainings- und Kommunikationsgruppen.
 
@@ -127,8 +127,8 @@ docker-compose up --build -d
 
 Standard-Konten (nach dem ersten Start automatisch angelegt):
 
-- Admin: `admin@hpv.local` / `admin123`
-- Moderator: `moderator@hpv.local` / `moderator123`
+- Admin: `admin@trainer.local` / `admin123`
+- Moderator: `moderator@trainer.local` / `moderator123`
 
 > In Produktion diese Konten ersetzen und echte SMTP-Daten hinterlegen. Ohne SMTP-Daten
 > läuft der E-Mail-Versand im **Mock-Modus** (nur Server-Log).
@@ -152,8 +152,11 @@ Ausführlich: [QUICK-START.md](QUICK-START.md) · Entwicklung: [CLAUDE.md](CLAUD
 | `CHANGELOG.md` | Versionshistorie |
 | `IMPLEMENTATION_SUMMARY.md` | Statusbericht des Funktionsumfangs |
 | `FEATURE-CREATE-USER.md` | Detaildoku zur „Neuer Benutzer“-Funktion |
+| `EMAIL-TEMPLATES.md` | die 12 E-Mail-Textbausteine im Wortlaut + Platzhalter-Referenz |
+| `POST-REBUILD-CHECKLIST.md` | manuelles Test-Skript nach dem Events/Trainer/Hospitieren-Rebuild |
+| `RAILWAY-DEPLOYMENT-GUIDE.md` | Schritt-für-Schritt-Anleitung für ein Railway-Deployment |
 | `CLAUDE.md` | Leitfaden für die Arbeit am Code (Architektur, Befehle, Konventionen) |
 
 ---
 
-**Letzte Aktualisierung:** 2026-09-03
+**Letzte Aktualisierung:** 2026-09-10

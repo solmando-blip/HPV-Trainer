@@ -1,6 +1,6 @@
 # Database Backups
 
-Diese Anleitung erklärt, wie man die PostgreSQL-Datenbank der HPV Trainer App sichert.
+Diese Anleitung erklärt, wie man die PostgreSQL-Datenbank der Trainer-Portal sichert.
 
 ## Automatisierte Backups mit Docker
 
@@ -8,13 +8,13 @@ Diese Anleitung erklärt, wie man die PostgreSQL-Datenbank der HPV Trainer App s
 
 ```bash
 # Backup erstellen
-docker exec hpv_db pg_dump -U postgres hpv_trainer > backup_$(date +%Y%m%d_%H%M%S).sql
+docker exec trainer_db pg_dump -U postgres trainer_portal > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Backup komprimieren (optional)
 gzip backup_2026-08-29_120000.sql
 
 # Backup wiederherstellen
-docker exec -i hpv_db psql -U postgres hpv_trainer < backup.sql
+docker exec -i trainer_db psql -U postgres trainer_portal < backup.sql
 ```
 
 ### Option 2: Backup-Script verwenden
@@ -24,7 +24,7 @@ docker exec -i hpv_db psql -U postgres hpv_trainer < backup.sql
 chmod +x scripts/backup.sh
 
 # Backup erstellen
-docker exec hpv_db /backup.sh
+docker exec trainer_db /backup.sh
 ```
 
 ### Option 3: Automatische tägliche Backups mit Cron
@@ -33,7 +33,7 @@ Fügen Sie dies zu Ihrer Crontab hinzu (`crontab -e`):
 
 ```bash
 # Täglich um 2:00 Uhr Backup erstellen
-0 2 * * * docker exec hpv_db pg_dump -U postgres hpv_trainer | gzip > /path/to/backups/hpv_trainer_$(date +\%Y\%m\%d_\%H\%M\%S).sql.gz
+0 2 * * * docker exec trainer_db pg_dump -U postgres trainer_portal | gzip > /path/to/backups/trainer_portal_$(date +\%Y\%m\%d_\%H\%M\%S).sql.gz
 ```
 
 ## Backup im docker-compose erweitern
@@ -57,25 +57,25 @@ volumes:
 Dann Backup erstellen:
 
 ```bash
-docker-compose exec db pg_dump -U postgres hpv_trainer > ./backups/backup.sql
+docker-compose exec db pg_dump -U postgres trainer_portal > ./backups/backup.sql
 ```
 
 ## Backup-Verwaltung
 
 ### Backups auflisten
 ```bash
-docker exec hpv_db ls -lah /backups
+docker exec trainer_db ls -lah /backups
 ```
 
 ### Backup-Größe prüfen
 ```bash
-docker exec hpv_db du -sh /backups
+docker exec trainer_db du -sh /backups
 ```
 
 ### Alte Backups löschen
 ```bash
 # Alle älter als 30 Tage
-docker exec hpv_db find /backups -name "*.sql.gz" -mtime +30 -delete
+docker exec trainer_db find /backups -name "*.sql.gz" -mtime +30 -delete
 ```
 
 ## Backup & Restore Best Practices
@@ -90,18 +90,18 @@ docker exec hpv_db find /backups -name "*.sql.gz" -mtime +30 -delete
 
 ```bash
 #!/bin/bash
-BACKUP_FILE="/path/to/backups/hpv_trainer_$(date +%Y%m%d_%H%M%S).sql.gz"
-docker exec hpv_db pg_dump -U postgres hpv_trainer | gzip > $BACKUP_FILE
+BACKUP_FILE="/path/to/backups/trainer_portal_$(date +%Y%m%d_%H%M%S).sql.gz"
+docker exec trainer_db pg_dump -U postgres trainer_portal | gzip > $BACKUP_FILE
 
 if [ -f "$BACKUP_FILE" ]; then
   echo "✓ Backup erstellt: $BACKUP_FILE ($(du -h $BACKUP_FILE | cut -f1))" | \
-  mail -s "HPV Trainer Backup erfolgreich" admin@hpv.local
+  mail -s "Trainer-Portal Backup erfolgreich" admin@trainer.local
   
   # Alte Backups löschen
   find /path/to/backups -name "*.sql.gz" -mtime +30 -delete
 else
   echo "✗ Backup fehlgeschlagen!" | \
-  mail -s "HPV Trainer Backup ERROR" admin@hpv.local
+  mail -s "Trainer-Portal Backup ERROR" admin@trainer.local
 fi
 ```
 
@@ -120,13 +120,13 @@ Falls die Produktionsdatenbank beschädigt ist:
 docker-compose stop db
 
 # Volumen löschen (VORSICHT!)
-docker volume rm hpv-trainer_db_data
+docker volume rm trainer-portal_db_data
 
 # Container neu starten (leere DB)
 docker-compose up -d db
 
 # Backup einspielen
-docker exec -i hpv_db psql -U postgres hpv_trainer < backup.sql
+docker exec -i trainer_db psql -U postgres trainer_portal < backup.sql
 
 # App neu starten
 docker-compose up -d
@@ -147,17 +147,17 @@ danach ins Volume kopieren:
 
 ```bash
 # 1. Dateien aus dem noch laufenden alten Container sichern
-docker cp hpv_backend:/app/uploads ./uploads-backup
+docker cp trainer_backend:/app/uploads ./uploads-backup
 
 # 2. Update ziehen und Stack neu bauen (legt das leere Volume an)
 git pull
 docker-compose up -d --build
 
 # 3. Gesicherte Dateien ins neue Volume kopieren
-docker cp ./uploads-backup/. hpv_backend:/app/uploads/
+docker cp ./uploads-backup/. trainer_backend:/app/uploads/
 
 # 4. Kontrolle
-docker exec hpv_backend ls -lah /app/uploads
+docker exec trainer_backend ls -lah /app/uploads
 ```
 
 Bei einer Neuinstallation ist nichts zu tun.

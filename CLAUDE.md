@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Full-stack membership-management web app for the Hessischer Pétanque Verband (HPV): user/role
+Full-stack membership-management web app for the Hessischer Pétanque Verband: user/role
 administration, trainer licenses, news, document downloads, contact requests, WhatsApp group links,
 legal texts, group BCC mailing, events with registration, a trainer directory, and a hospitality
 (shadowing) request workflow. UI text and most docs are in German — match that when touching
@@ -59,7 +59,7 @@ Actions' `CI=true`, so any ESLint warning (unused var, missing hook dep, …) fa
 `npm run build` warning-free locally before pushing.
 
 ### DB backup
-`scripts/backup.sh` runs `pg_dump` (designed to run inside the `hpv_db` container). See `BACKUPS.md`.
+`scripts/backup.sh` runs `pg_dump` (designed to run inside the `trainer_db` container). See `BACKUPS.md`.
 
 ## Architecture
 
@@ -76,8 +76,8 @@ the backend.
   `public.js`/`events.js`/`trainer.js`/`hospitality.js` all at the bare `/api` prefix.
 - `database.js` — single `pg` Pool + `initDb()`. Owns the **entire schema and seed data** inline:
   tables, `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` migrations (e.g. `email_templates.variables`
-  JSONB + `updated_at`), seeded groups, legal texts, the default `admin@hpv.local` /
-  `moderator@hpv.local` accounts (`admin123` / `moderator123`), a seeded test event, and the 12
+  JSONB + `updated_at`), seeded groups, legal texts, the default `admin@trainer.local` /
+  `moderator@trainer.local` accounts (`admin123` / `moderator123`), a seeded test event, and the 12
   email templates from `data/emailTemplates.js` (kept in a separate file so `database.js` doesn't
   balloon; seeded via `ON CONFLICT (name) DO NOTHING` so admin edits to the texts survive restarts).
   After seeding it backfills `email_templates.variables` for any row still `[]` by parsing
@@ -171,7 +171,7 @@ the backend.
   (see `routes/hospitality.js`'s `ALLOWED_TRANSITIONS`).
 
 ### Frontend structure (`frontend/src/`)
-- `App.js` — all routes; auth state is `user` in `localStorage` (`hpv_user` + `hpv_token`). Route
+- `App.js` — all routes; auth state is `user` in `localStorage` (`trainer_user` + `trainer_token`). Route
   guards are inline `user && ['Admin','Moderator'].includes(user.role)` checks.
 - `hooks/useAuthTimeout.js` — 30-min inactivity → clears localStorage → redirect to `/login`.
 - `pages/AdminPanel.js` — large single-file admin UI (users, groups + members, WhatsApp, mail,
@@ -217,7 +217,7 @@ the backend.
 
 Backend (see `.env.example`; also set in `docker-compose.yml`):
 - `DATABASE_URL` — postgres connection string (required)
-- `JWT_SECRET` — falls back to `'hpv_secret_key'` if unset (keep in sync between deploys or tokens break)
+- `JWT_SECRET` — falls back to `'trainer_secret_key'` if unset (keep in sync between deploys or tokens break)
 - `PORT` — default 5000
 - `FRONTEND_URL` — base for links in emails (verify/reset). Defaults are inconsistent across the code
   (`http://localhost:8080` in register, `http://localhost:3000` in forgot-password) — set it explicitly.

@@ -26,7 +26,7 @@ function escapeHtml(str) {
 }
 
 // Templates sind einfacher Text mit **fett** und Zeilenumbrüchen (siehe
-// HPV-TRAINER-EMAIL-TEMPLATES.md) – für HTML-Mails escapen wir zuerst
+// EMAIL-TEMPLATES.md) – für HTML-Mails escapen wir zuerst
 // (Variablenwerte können Nutzereingaben enthalten) und wandeln danach die
 // einfache Markdown-artige Formatierung um.
 function toHtml(text) {

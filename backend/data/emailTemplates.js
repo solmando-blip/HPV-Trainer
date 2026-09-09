@@ -1,4 +1,4 @@
-// Offizielle Email-Textbausteine (siehe HPV-TRAINER-EMAIL-TEMPLATES.md).
+// Offizielle Email-Textbausteine (siehe EMAIL-TEMPLATES.md).
 // Platzhalter-Syntax: {{variable_name}}. Wird per ON CONFLICT (name) DO NOTHING
 // geseedet, damit spätere Admin-Bearbeitungen der Texte erhalten bleiben.
 

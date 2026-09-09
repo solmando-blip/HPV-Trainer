@@ -270,7 +270,7 @@ Sendet E-Mails an alle Gruppenmitglieder (BCC = Blind Carbon Copy).
 
 **Info:** 
 - Alle Empfänger sind füreinander unsichtbar (BCC)
-- E-Mail wird von `noreply@hpv-trainer.local` versendet
+- E-Mail wird von `noreply@trainer-portal.local` versendet
 - Im Mock-Modus: E-Mails werden in Logs angezeigt, nicht real versendet
 
 ---
@@ -351,7 +351,7 @@ Für echten E-Mail-Versand braucht die App Zugang zu einem E-Mail-Server.
    - **SMTP-Port:** Meist `587` (TLS) oder `465` (SSL)
    - **Benutzername:** E-Mail-Adresse
    - **Passwort:** App-Passwort (nicht Ihr Passwort!)
-   - **Von-E-Mail:** Absenderadresse, Z.B. `noreply@hpv.de`
+   - **Von-E-Mail:** Absenderadresse, Z.B. `noreply@trainer-portal.de`
 3. **Speichern**
 
 **Wichtig:**

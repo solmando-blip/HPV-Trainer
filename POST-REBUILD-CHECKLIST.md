@@ -1,4 +1,4 @@
-# HPV-TRAINER: POST-REBUILD CHECKLISTE
+# Post-Rebuild-Checkliste – Trainer-Portal
 
 Nach dem Rebuild mit Claude Code diese Punkte systematisch durchgehen.
 
@@ -8,14 +8,14 @@ Nach dem Rebuild mit Claude Code diese Punkte systematisch durchgehen.
 
 ### 1.1 Docker Compose hochfahren
 ```bash
-cd hpv-trainer
+cd trainer-portal
 docker-compose up -d
 ```
 
 **Zu prüfen:**
-- [ ] Backend startet auf Port 5000 (logs prüfen: `docker logs hpv-trainer-backend-1`)
-- [ ] Frontend startet auf Port 3000 (logs prüfen: `docker logs hpv-trainer-frontend-1`)
-- [ ] PostgreSQL läuft healthy (logs: `docker logs hpv-trainer-postgres-1`)
+- [ ] Backend startet auf Port 5000 (logs prüfen: `docker logs trainer-portal-backend-1`)
+- [ ] Frontend startet auf Port 3000 (logs prüfen: `docker logs trainer-portal-frontend-1`)
+- [ ] PostgreSQL läuft healthy (logs: `docker logs trainer-portal-postgres-1`)
 - [ ] Keine Connection-Errors in Logs
 
 ### 1.2 Health-Checks
@@ -38,7 +38,7 @@ curl http://localhost:3000
 
 ### 2.1 Neue Tabellen existieren
 ```bash
-docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "\dt"
+docker exec -it trainer-portal-postgres-1 psql -U trainer_user -d trainer_db -c "\dt"
 ```
 
 **Zu prüfen:**
@@ -50,7 +50,7 @@ docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "\dt"
 
 ### 2.2 Schema-Struktur
 ```bash
-docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "\d events"
+docker exec -it trainer-portal-postgres-1 psql -U trainer_user -d trainer_db -c "\d events"
 ```
 
 **Zu prüfen:**
@@ -61,7 +61,7 @@ docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "\d events"
 
 ### 2.3 Default-Daten (Test-Event)
 ```bash
-docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT * FROM events;"
+docker exec -it trainer-portal-postgres-1 psql -U trainer_user -d trainer_db -c "SELECT * FROM events;"
 ```
 
 **Zu prüfen:**
@@ -76,8 +76,8 @@ docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT * F
 ### 3.1 Default-Credentials testen
 ```bash
 # Login im Frontend mit:
-# admin@hpv.local / admin123
-# moderator@hpv.local / moderator123
+# admin@trainer.local / admin123
+# moderator@trainer.local / moderator123
 ```
 
 **Frontend Test:**
@@ -91,7 +91,7 @@ docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT * F
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin@hpv.local","password":"admin123"}'
+  -d '{"username":"admin@trainer.local","password":"admin123"}'
 ```
 
 **Zu prüfen:**
@@ -339,7 +339,7 @@ HOME | EVENTS | TRAINER | HOSPITIEREN | MATERIALIEN | NEWS | DOCS | KONTAKT | [A
 
 ### 9.1 Templates in DB
 ```bash
-docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT id, name, subject FROM email_templates ORDER BY id;"
+docker exec -it trainer-portal-postgres-1 psql -U trainer_user -d trainer_db -c "SELECT id, name, subject FROM email_templates ORDER BY id;"
 ```
 
 **Zu prüfen:**
@@ -360,7 +360,7 @@ docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT id,
 ### 9.2 Email-Versand (Dev-Test)
 ```bash
 # Logs ansehen:
-docker logs hpv-trainer-backend-1 | grep -i "email\|mail"
+docker logs trainer-portal-backend-1 | grep -i "email\|mail"
 ```
 
 **Zu prüfen:**
@@ -427,7 +427,7 @@ docker logs hpv-trainer-backend-1 | grep -i "email\|mail"
 - [ ] Kann status manually verändern (optional)
 
 ### 10.5 Moderator-Rechte
-1. Logout und anmelden als `moderator@hpv.local`
+1. Logout und anmelden als `moderator@trainer.local`
 2. Gehe zu `/admin`
 
 **Zu prüfen:**
@@ -491,7 +491,7 @@ Browser-DevTools öffnen (F12), Mobile-View (iPhone 12):
 
 ### 13.1 Migration erfolgreich
 ```bash
-docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT COUNT(*) FROM events; SELECT COUNT(*) FROM event_registrations; SELECT COUNT(*) FROM trainer_profiles; SELECT COUNT(*) FROM hospitality_requests;"
+docker exec -it trainer-portal-postgres-1 psql -U trainer_user -d trainer_db -c "SELECT COUNT(*) FROM events; SELECT COUNT(*) FROM event_registrations; SELECT COUNT(*) FROM trainer_profiles; SELECT COUNT(*) FROM hospitality_requests;"
 ```
 
 **Zu prüfen:**
@@ -500,7 +500,7 @@ docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT COU
 
 ### 13.2 Bestehende Daten erhalten
 ```bash
-docker exec -it hpv-trainer-postgres-1 psql -U hpv_user -d hpv_db -c "SELECT COUNT(*) FROM users; SELECT COUNT(*) FROM articles; SELECT COUNT(*) FROM documents;"
+docker exec -it trainer-portal-postgres-1 psql -U trainer_user -d trainer_db -c "SELECT COUNT(*) FROM users; SELECT COUNT(*) FROM articles; SELECT COUNT(*) FROM documents;"
 ```
 
 **Zu prüfen:**
@@ -517,14 +517,14 @@ Backend testen:
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin@hpv.local","password":"admin123"}'
+  -d '{"username":"admin@trainer.local","password":"admin123"}'
 ```
 
 Token auf jwt.io decoden:
 ```json
 {
   "userId": 1,
-  "username": "admin@hpv.local",
+  "username": "admin@trainer.local",
   "role": "Admin",
   "iat": 1234567890
 }
@@ -555,7 +555,7 @@ curl -H "Authorization: Bearer invalid_token" http://localhost:5000/api/events
 
 ### 15.1 Backend Logs
 ```bash
-docker logs -f hpv-trainer-backend-1
+docker logs -f trainer-portal-backend-1
 ```
 
 **Zu prüfen:**
@@ -566,7 +566,7 @@ docker logs -f hpv-trainer-backend-1
 
 ### 15.2 Frontend Logs
 ```bash
-docker logs -f hpv-trainer-frontend-1
+docker logs -f trainer-portal-frontend-1
 ```
 
 **Zu prüfen:**
@@ -576,7 +576,7 @@ docker logs -f hpv-trainer-frontend-1
 
 ### 15.3 PostgreSQL Logs
 ```bash
-docker logs -f hpv-trainer-postgres-1
+docker logs -f trainer-portal-postgres-1
 ```
 
 **Zu prüfen:**
@@ -651,7 +651,7 @@ Kurzes End-to-End Szenario:
 |--------|-------|--------|
 | Backend startet nicht | Port 5000 busy | `lsof -i :5000` → PID killen |
 | DB-Connection Error | PostgreSQL nicht bereit | `start_period: 40s` prüfen, Backend-Retry-Logic |
-| Frontend blank | React nicht kompiliert | Logs: `docker logs hpv-trainer-frontend-1` |
+| Frontend blank | React nicht kompiliert | Logs: `docker logs trainer-portal-frontend-1` |
 | Tabelle nicht gefunden | Migration nicht gelaufen | `init-db.sql` in Volume prüfen |
 | 401 Unauthorized | JWT ungültig | Token aus localStorage entfernen, neu login |
 | CORS Error | Frontend-Backend Mismatch | Backend CORS-Header prüfen |
