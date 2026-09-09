@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+﻿FROM node:18-alpine AS builder
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm install
@@ -12,13 +12,6 @@ RUN cat > /etc/nginx/conf.d/default.conf << 'EOF'
 server {
     listen 80;
     server_name localhost;
-    
-    location /health {
-        access_log off;
-        return 200 "healthy";
-        add_header Content-Type text/plain;
-    }
-    
     location / {
         root /usr/share/nginx/html;
         index index.html index.htm;
@@ -28,5 +21,4 @@ server {
 EOF
 
 EXPOSE 80
-HEALTHCHECK --interval=10s --timeout=3s CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
 CMD ["nginx", "-g", "daemon off;"]
