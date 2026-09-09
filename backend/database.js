@@ -231,11 +231,36 @@ const initDb = async () => {
       WHERE NOT EXISTS (SELECT 1 FROM events WHERE title = 'Trainings-Community 24.10.26');
     `);
 
+    // email_templates: Metadaten-Spalten nachrüsten (idempotent)
+    await pool.query(`
+      ALTER TABLE email_templates ADD COLUMN IF NOT EXISTS variables JSONB NOT NULL DEFAULT '[]'::jsonb;
+      ALTER TABLE email_templates ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+    `);
+
     for (const t of emailTemplates) {
       await pool.query(
         'INSERT INTO email_templates (name, subject, content) VALUES ($1, $2, $3) ON CONFLICT (name) DO NOTHING',
         [t.name, t.subject, t.content]
       );
+    }
+
+    // variables-Spalte aus den {{platzhaltern}} in subject+content ableiten,
+    // solange sie noch leer ist (Erstbefüllung der bestehenden Templates).
+    const tplRows = await pool.query('SELECT id, subject, content, variables FROM email_templates');
+    for (const row of tplRows.rows) {
+      const current = Array.isArray(row.variables) ? row.variables : [];
+      if (current.length > 0) continue;
+      const found = new Set();
+      const re = /\{\{(\w+)\}\}/g;
+      let m;
+      for (const field of [row.subject, row.content]) {
+        while ((m = re.exec(field || '')) !== null) found.add(m[1]);
+      }
+      if (found.size === 0) continue;
+      await pool.query('UPDATE email_templates SET variables = $1 WHERE id = $2', [
+        JSON.stringify([...found].sort()),
+        row.id
+      ]);
     }
 
     const adminPass = await bcrypt.hash('admin123', 10);

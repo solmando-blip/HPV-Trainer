@@ -364,10 +364,104 @@ router.post('/settings/smtp', verifyRoles('Admin'), async (req, res) => {
   }
 });
 
+// {{platzhalter}} aus subject + content extrahieren (sortiert, ohne Duplikate)
+const extractTemplateVars = (subject, content) => {
+  const found = new Set();
+  const re = /\{\{(\w+)\}\}/g;
+  let m;
+  for (const field of [subject, content]) {
+    while ((m = re.exec(field || '')) !== null) found.add(m[1]);
+  }
+  return [...found].sort();
+};
+
+const TEMPLATE_NAME_RE = /^[a-z0-9_]+$/;
+
 router.get('/templates', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM email_templates ORDER BY name ASC');
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/templates/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM email_templates WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Template nicht gefunden.' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/templates', async (req, res) => {
+  try {
+    const { name, subject, content } = req.body;
+    if (!name || !subject || !content) {
+      return res.status(400).json({ message: 'Name, Betreff und Inhalt sind erforderlich.' });
+    }
+    if (!TEMPLATE_NAME_RE.test(name)) {
+      return res.status(400).json({ message: 'Name darf nur Kleinbuchstaben, Ziffern und _ enthalten.' });
+    }
+    const variables = extractTemplateVars(subject, content);
+    const result = await pool.query(
+      `INSERT INTO email_templates (name, subject, content, variables, created_by, updated_at)
+       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
+       RETURNING *`,
+      [name, subject, content, JSON.stringify(variables), req.user.id]
+    );
+    if (req.audit?.log) {
+      await req.audit.log({ action: 'CREATE_TEMPLATE', resource_type: 'email_template', resource_id: result.rows[0].id, new_values: result.rows[0] });
+    }
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ message: 'Ein Template mit diesem Namen existiert bereits.' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.put('/templates/:id', async (req, res) => {
+  try {
+    const { subject, content } = req.body;
+    if (!subject || !content) {
+      return res.status(400).json({ message: 'Betreff und Inhalt sind erforderlich.' });
+    }
+    const variables = extractTemplateVars(subject, content);
+    const result = await pool.query(
+      `UPDATE email_templates
+       SET subject = $1, content = $2, variables = $3, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $4
+       RETURNING *`,
+      [subject, content, JSON.stringify(variables), req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Template nicht gefunden.' });
+    }
+    if (req.audit?.log) {
+      await req.audit.log({ action: 'UPDATE_TEMPLATE', resource_type: 'email_template', resource_id: result.rows[0].id, new_values: result.rows[0] });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.delete('/templates/:id', async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM email_templates WHERE id = $1 RETURNING id, name', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Template nicht gefunden.' });
+    }
+    if (req.audit?.log) {
+      await req.audit.log({ action: 'DELETE_TEMPLATE', resource_type: 'email_template', resource_id: result.rows[0].id, old_values: result.rows[0] });
+    }
+    res.json({ message: 'Template gelöscht.', id: result.rows[0].id });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

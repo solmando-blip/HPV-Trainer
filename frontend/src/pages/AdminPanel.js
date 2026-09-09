@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import CollapsibleCard from '../components/CollapsibleCard';
+import EmailTemplateManager from '../components/EmailTemplateManager';
 
 function AdminPanel() {
   const [pendingUsers, setPendingUsers] = useState([]);
@@ -423,6 +424,14 @@ function AdminPanel() {
             </div>
             <button className="btn btn-info text-white" type="submit">BCC-Mail Senden</button>
           </form>
+      </CollapsibleCard>
+
+      <CollapsibleCard
+        title="📧 E-Mail-Templates"
+        headerClass="bg-info text-white"
+        borderClass="border-info"
+      >
+        <EmailTemplateManager />
       </CollapsibleCard>
 
       <CollapsibleCard
