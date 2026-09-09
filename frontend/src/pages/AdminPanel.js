@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import CollapsibleCard from '../components/CollapsibleCard';
 
 function AdminPanel() {
   const [pendingUsers, setPendingUsers] = useState([]);
@@ -220,14 +221,11 @@ function AdminPanel() {
         </div>
       </div>
 
-      <div className="card mb-4 shadow-sm border-secondary">
-        <div className="card-header bg-secondary text-white fw-bold">Weitere Verwaltung</div>
-        <div className="card-body d-flex gap-2 flex-wrap">
-          <Link to="/admin/events" className="btn btn-outline-primary btn-sm">📅 Events</Link>
-          <Link to="/admin/event-registrations" className="btn btn-outline-primary btn-sm">📋 Event-Anmeldungen</Link>
-          <Link to="/admin/hospitality" className="btn btn-outline-primary btn-sm">🤝 Hospitierungen</Link>
-        </div>
-      </div>
+      <CollapsibleCard title="Weitere Verwaltung" bodyClass="d-flex gap-2 flex-wrap">
+        <Link to="/admin/events" className="btn btn-outline-primary btn-sm">📅 Events</Link>
+        <Link to="/admin/event-registrations" className="btn btn-outline-primary btn-sm">📋 Event-Anmeldungen</Link>
+        <Link to="/admin/hospitality" className="btn btn-outline-primary btn-sm">🤝 Hospitierungen</Link>
+      </CollapsibleCard>
 
       <div className="row g-3 mb-4">
         <div className="col-md-4">
@@ -262,55 +260,57 @@ function AdminPanel() {
         </div>
       </div>
 
-      <div className="card mb-4 shadow-sm border-warning">
-        <div className="card-header bg-warning text-dark fw-bold">Ausstehende Freischaltungen</div>
-        <div className="card-body">
-          {pendingUsers.length === 0 ? <p className="mb-0 text-muted">Keine ausstehenden Anfragen.</p> : (
-            <ul className="list-group list-group-flush">
-              {pendingUsers.map(u => (
-                <li key={u.id} className="list-group-item d-flex justify-content-between align-items-center px-0">
-                  <div>
-                    <strong>{u.name}</strong><br />
-                    <small className="text-muted">{u.email}</small>
-                  </div>
-                  <button onClick={() => approveUser(u.id)} className="btn btn-sm btn-success">Freischalten</button>
-                </li>
+      <CollapsibleCard
+        title="Ausstehende Freischaltungen"
+        headerClass="bg-warning text-dark"
+        borderClass="border-warning"
+        badge={<span className="badge bg-dark">{pendingUsers.length}</span>}
+      >
+        {pendingUsers.length === 0 ? <p className="mb-0 text-muted">Keine ausstehenden Anfragen.</p> : (
+          <ul className="list-group list-group-flush">
+            {pendingUsers.map(u => (
+              <li key={u.id} className="list-group-item d-flex justify-content-between align-items-center px-0">
+                <div>
+                  <strong>{u.name}</strong><br />
+                  <small className="text-muted">{u.email}</small>
+                </div>
+                <button onClick={() => approveUser(u.id)} className="btn btn-sm btn-success">Freischalten</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CollapsibleCard>
+
+      <CollapsibleCard
+        title="Alle Benutzer"
+        headerClass="bg-primary text-white"
+        borderClass="border-primary"
+        badge={<span className="badge bg-light text-dark">{users.length}</span>}
+      >
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Rolle</th><th>Status</th><th className="text-end">Aktion</th></tr>
+            </thead>
+            <tbody>
+              {users.map(u => (
+                <tr key={u.id}>
+                  <td>{u.name}</td>
+                  <td>{u.email}</td>
+                  <td>{u.role}</td>
+                  <td>{statusBadge(u.status)}</td>
+                  <td className="text-end">
+                    <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setEditUser(u)}>Bearbeiten</button>
+                    {u.status === 'active' && <button onClick={() => blockUser(u.id)} className="btn btn-sm btn-danger">Sperren</button>}
+                  </td>
+                </tr>
               ))}
-            </ul>
-          )}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </CollapsibleCard>
 
-      <div className="card mb-4 shadow-sm border-primary">
-        <div className="card-header bg-primary text-white fw-bold">Alle Benutzer</div>
-        <div className="card-body">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
-              <thead>
-                <tr><th>Name</th><th>Email</th><th>Rolle</th><th>Status</th><th className="text-end">Aktion</th></tr>
-              </thead>
-              <tbody>
-                {users.map(u => (
-                  <tr key={u.id}>
-                    <td>{u.name}</td>
-                    <td>{u.email}</td>
-                    <td>{u.role}</td>
-                    <td>{statusBadge(u.status)}</td>
-                    <td className="text-end">
-                      <button className="btn btn-sm btn-outline-primary me-2" onClick={() => setEditUser(u)}>Bearbeiten</button>
-                      {u.status === 'active' && <button onClick={() => blockUser(u.id)} className="btn btn-sm btn-danger">Sperren</button>}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div className="card mb-4 shadow-sm border-secondary">
-        <div className="card-header bg-secondary text-white fw-bold">Gruppenverwaltung</div>
-        <div className="card-body">
+      <CollapsibleCard title="Gruppenverwaltung" badge={<span className="badge bg-light text-dark">{groups.length}</span>}>
           <form className="mb-3 row g-2" onSubmit={createGroup}>
             <div className="col-md-10">
               <input className="form-control" placeholder="Neue Gruppe..." value={groupName} onChange={e => setGroupName(e.target.value)} required />
@@ -374,12 +374,14 @@ function AdminPanel() {
               </li>
             ))}
           </ul>
-        </div>
-      </div>
+      </CollapsibleCard>
 
-      <div className="card mb-4 shadow-sm border-success">
-        <div className="card-header bg-success text-white fw-bold">📲 WhatsApp-Gruppen (Interne Links)</div>
-        <div className="card-body">
+      <CollapsibleCard
+        title="📲 WhatsApp-Gruppen (Interne Links)"
+        headerClass="bg-success text-white"
+        borderClass="border-success"
+        badge={<span className="badge bg-light text-dark">{waList.length}</span>}
+      >
           <form onSubmit={createWhatsApp} className="row g-2 mb-3">
             <div className="col-md-5">
               <input className="form-control" placeholder="Gruppen-Name (z.B. C-Trainer Hessen)" value={waName} onChange={e => setWaName(e.target.value)} required />
@@ -399,12 +401,13 @@ function AdminPanel() {
               </li>
             ))}
           </ul>
-        </div>
-      </div>
+      </CollapsibleCard>
 
-      <div className="card mb-4 shadow-sm border-info">
-        <div className="card-header bg-info text-white fw-bold">✉️ E-Mail an Gruppe senden (BCC)</div>
-        <div className="card-body">
+      <CollapsibleCard
+        title="✉️ E-Mail an Gruppe senden (BCC)"
+        headerClass="bg-info text-white"
+        borderClass="border-info"
+      >
           <form onSubmit={sendGroupMail}>
             <div className="mb-2">
               <select className="form-select" value={selectedGroup} onChange={e => setSelectedGroup(e.target.value)} required>
@@ -420,25 +423,29 @@ function AdminPanel() {
             </div>
             <button className="btn btn-info text-white" type="submit">BCC-Mail Senden</button>
           </form>
-        </div>
-      </div>
+      </CollapsibleCard>
 
-      <div className="card mb-4 shadow-sm border-dark">
-        <div className="card-header bg-dark text-white fw-bold">📄 Rechtstexte</div>
-        <div className="card-body">
-          {legalData.map(item => (
-            <div key={item.key} className="mb-3 border rounded p-3 bg-light">
-              <h6 className="fw-bold text-uppercase mb-2">{item.key}</h6>
-              <p className="mb-1"><strong>Titel:</strong> {item.title}</p>
-              <small className="text-muted">{item.content.slice(0, 120)}...</small>
-            </div>
-          ))}
-        </div>
-      </div>
+      <CollapsibleCard
+        title="📄 Rechtstexte"
+        headerClass="bg-dark text-white"
+        borderClass="border-dark"
+        badge={<span className="badge bg-light text-dark">{legalData.length}</span>}
+      >
+        {legalData.map(item => (
+          <div key={item.key} className="mb-3 border rounded p-3 bg-light">
+            <h6 className="fw-bold text-uppercase mb-2">{item.key}</h6>
+            <p className="mb-1"><strong>Titel:</strong> {item.title}</p>
+            <small className="text-muted">{item.content.slice(0, 120)}...</small>
+          </div>
+        ))}
+      </CollapsibleCard>
 
-      <div className="card mb-4 shadow-sm border-dark">
-        <div className="card-header bg-dark text-white fw-bold">📥 Posteingang: Kontaktanfragen</div>
-        <div className="card-body">
+      <CollapsibleCard
+        title="📥 Posteingang: Kontaktanfragen"
+        headerClass="bg-dark text-white"
+        borderClass="border-dark"
+        badge={<span className="badge bg-light text-dark">{contacts.length}</span>}
+      >
           {contacts.length === 0 ? <p className="mb-0 text-muted">Keine Kontaktanfragen vorhanden.</p> : (
             <div className="table-responsive">
               <table className="table align-middle mb-0">
@@ -467,12 +474,13 @@ function AdminPanel() {
               </table>
             </div>
           )}
-        </div>
-      </div>
+      </CollapsibleCard>
 
-      <div className="card shadow-sm border-light">
-        <div className="card-header bg-light fw-bold">⚙️ SMTP-Konfiguration</div>
-        <div className="card-body">
+      <CollapsibleCard
+        title="⚙️ SMTP-Konfiguration"
+        headerClass="bg-light text-dark"
+        borderClass="border-light"
+      >
           <form onSubmit={saveSmtpSettings} className="row g-2">
             <div className="col-md-6">
               <input className="form-control" placeholder="SMTP Host" value={smtpHost} onChange={e => setSmtpHost(e.target.value)} />
@@ -490,8 +498,7 @@ function AdminPanel() {
               <button className="btn btn-primary" type="submit">SMTP speichern</button>
             </div>
           </form>
-        </div>
-      </div>
+      </CollapsibleCard>
 
       {editUser && (
         <div className="modal d-block bg-dark bg-opacity-50" style={{ position: 'fixed', inset: 0 }}>
