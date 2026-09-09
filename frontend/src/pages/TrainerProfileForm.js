@@ -21,17 +21,25 @@ function TrainerProfileForm() {
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
-    axios.get('/api/trainer-profiles/me', { headers }).then(res => {
-      if (res.data) {
+    Promise.all([
+      axios.get('/api/trainer-profiles/me', { headers }),
+      axios.get('/api/auth/me', { headers }).catch(() => ({ data: {} }))
+    ]).then(([tpRes, meRes]) => {
+      const tp = tpRes.data;
+      const accountVerein = meRes.data?.verein || '';
+      if (tp) {
         setForm({
-          verein: res.data.verein || '',
-          region: res.data.region || '',
-          has_license: res.data.has_license,
-          experience_level: res.data.experience_level,
-          description: res.data.description || '',
-          is_visible: res.data.is_visible,
-          accepts_hospitality: res.data.accepts_hospitality
+          verein: tp.verein || accountVerein,
+          region: tp.region || '',
+          has_license: tp.has_license,
+          experience_level: tp.experience_level,
+          description: tp.description || '',
+          is_visible: tp.is_visible,
+          accepts_hospitality: tp.accepts_hospitality
         });
+      } else if (accountVerein) {
+        // Noch kein Trainer-Profil: Verein aus dem Konto-Profil vorbelegen.
+        setForm(f => ({ ...f, verein: accountVerein }));
       }
     }).catch(err => console.error(err));
   }, []);
@@ -65,6 +73,7 @@ function TrainerProfileForm() {
             <div className="col-md-6">
               <label className="form-label">Verein</label>
               <input className="form-control" name="verein" value={form.verein} onChange={handleChange} />
+              <div className="form-text">Vorbelegt aus deinem Konto-Profil – hier überschreibbar.</div>
             </div>
             <div className="col-md-6">
               <label className="form-label">Region</label>

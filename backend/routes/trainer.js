@@ -10,9 +10,16 @@ const EXPERIENCE_LEVELS = ['Anfänger', 'Fortgeschritten', 'Erfahren', 'Experte'
 // "vereine" als :id-Parameter.
 router.get('/trainer-profiles/vereine', async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT DISTINCT verein FROM trainer_profiles WHERE is_visible = true AND verein IS NOT NULL AND verein <> '' ORDER BY verein"
-    );
+    // Effektiver Verein = der im Trainer-Profil gesetzte, sonst der aus dem Konto.
+    const result = await pool.query(`
+      SELECT DISTINCT COALESCE(NULLIF(tp.verein, ''), u.verein) AS verein
+      FROM trainer_profiles tp
+      JOIN users u ON u.id = tp.user_id
+      WHERE tp.is_visible = true
+        AND COALESCE(NULLIF(tp.verein, ''), u.verein) IS NOT NULL
+        AND COALESCE(NULLIF(tp.verein, ''), u.verein) <> ''
+      ORDER BY verein
+    `);
     res.json(result.rows.map(r => r.verein));
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -31,8 +38,12 @@ router.get('/trainer-profiles/me', verifyToken, async (req, res) => {
 
 router.get('/trainer-profiles', async (req, res) => {
   const { verein, region, license, experience, q } = req.query;
+  // "verein" = effektiver Verein: der im Trainer-Profil gesetzte, sonst der aus dem Konto.
   let query = `
-    SELECT tp.*, u.name AS user_name
+    SELECT tp.id, tp.user_id, tp.region, tp.has_license, tp.experience_level,
+           tp.description, tp.is_visible, tp.accepts_hospitality, tp.created_at, tp.updated_at,
+           u.name AS user_name,
+           COALESCE(NULLIF(tp.verein, ''), u.verein) AS verein
     FROM trainer_profiles tp
     JOIN users u ON u.id = tp.user_id
     WHERE tp.is_visible = true
@@ -40,7 +51,7 @@ router.get('/trainer-profiles', async (req, res) => {
   const params = [];
 
   if (verein) {
-    query += ` AND tp.verein = $${params.length + 1}`;
+    query += ` AND COALESCE(NULLIF(tp.verein, ''), u.verein) = $${params.length + 1}`;
     params.push(verein);
   }
   if (region) {
@@ -56,7 +67,7 @@ router.get('/trainer-profiles', async (req, res) => {
     params.push(experience);
   }
   if (q) {
-    query += ` AND (tp.verein ILIKE $${params.length + 1} OR tp.region ILIKE $${params.length + 1} OR tp.description ILIKE $${params.length + 1} OR u.name ILIKE $${params.length + 1})`;
+    query += ` AND (COALESCE(NULLIF(tp.verein, ''), u.verein) ILIKE $${params.length + 1} OR tp.region ILIKE $${params.length + 1} OR tp.description ILIKE $${params.length + 1} OR u.name ILIKE $${params.length + 1})`;
     params.push(`%${q}%`);
   }
 
@@ -73,7 +84,11 @@ router.get('/trainer-profiles', async (req, res) => {
 router.get('/trainer-profiles/:id', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT tp.*, u.name AS user_name FROM trainer_profiles tp JOIN users u ON u.id = tp.user_id WHERE tp.id = $1`,
+      `SELECT tp.id, tp.user_id, tp.region, tp.has_license, tp.experience_level,
+              tp.description, tp.is_visible, tp.accepts_hospitality, tp.created_at, tp.updated_at,
+              u.name AS user_name,
+              COALESCE(NULLIF(tp.verein, ''), u.verein) AS verein
+       FROM trainer_profiles tp JOIN users u ON u.id = tp.user_id WHERE tp.id = $1`,
       [req.params.id]
     );
     if (result.rows.length === 0) return res.status(404).json({ message: 'Trainer-Profil nicht gefunden.' });

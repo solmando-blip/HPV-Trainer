@@ -223,6 +223,9 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
 - POST /api/events/:id/register – Anmeldung (Gast oder eingeloggt), prüft Deadline/Kapazität/Duplikat
 - GET /api/trainer-profiles (Filter: `verein`, `region`, `license`, `experience`, `q`) ·
   GET /api/trainer-profiles/:id (auch wenn `is_visible=false`) · GET /api/trainer-profiles/vereine
+  — der `verein`-Filter, das ausgelieferte `verein`-Feld und `/vereine` nutzen den
+  **effektiven Verein**: `COALESCE(trainer_profiles.verein, users.verein)`, also den
+  Konto-Verein als Fallback
 
 > Hochgeladene Dateien sind **ausschließlich** über die drei `/api/...`-Endpunkte oben
 > erreichbar. Jeder Zugriff wird gegen das `uploads/`-Verzeichnis geprüft (Schutz vor

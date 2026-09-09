@@ -343,7 +343,8 @@ const helpContent = {
       {
         h: 'Filtern',
         items: [
-          'Nach Verein, Region, Lizenz und Erfahrungslevel filtern oder per Freitextsuche suchen.',
+          'Nach Verein (Auswahlliste), Region, Lizenz und Erfahrungslevel filtern oder per Freitextsuche suchen.',
+          'Der Verein wird aus dem Trainer-Profil übernommen; ist dort keiner gesetzt, gilt der Verein aus dem Konto-Profil.',
           'Auf ein Profil klicken für Details und – bei Login – eine Hospitier-Anfrage.',
         ],
       },

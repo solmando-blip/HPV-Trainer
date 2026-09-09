@@ -26,6 +26,10 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
   **Neuer Benutzer**, **Registrierung** (optional). Neue Spalte „Verein" in der Benutzer-Tabelle.
 - Die Event-Anmeldung (`EventRegistrationModal`) füllt das Verein-Feld bei eingeloggten
   Nutzern automatisch aus dem Konto-Profil vor (überschreibbar).
+- **Trainer-Verzeichnis**: Verein-Filter, Verein-Anzeige und die Vereins-Auswahlliste nutzen
+  den *effektiven* Verein `COALESCE(trainer_profiles.verein, users.verein)` — greift also auch,
+  wenn der Verein nur im Konto-Profil steht. Das Trainer-Profil-Formular belegt den Verein
+  aus dem Konto-Profil vor.
 - API: `verein` in `GET /api/auth/me`, `PUT /api/auth/profile`, `POST /api/auth/register`,
   `GET/POST/PUT /api/admin/users[…]`.
 
