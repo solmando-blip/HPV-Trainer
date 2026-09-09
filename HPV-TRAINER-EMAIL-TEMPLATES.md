@@ -520,6 +520,13 @@ Dies ist eine automatische Benachrichtigung für Administratoren.
 
 ## EINBINDEN IN DATABASE
 
+> **Hinweis:** Diese 12 Vorlagen werden bereits beim ersten Start automatisch aus
+> `backend/data/emailTemplates.js` in die Tabelle `email_templates` geseedet
+> (`ON CONFLICT (name) DO NOTHING`). Danach werden sie **im Admin-Panel** unter
+> „📧 E-Mail-Templates" gepflegt (Admin & Moderator) – Betreff/Inhalt bearbeiten,
+> neue Templates anlegen, löschen, Vorschau. Das folgende SQL ist nur für einen
+> manuellen Erst-Import ohne den Seed-Mechanismus gedacht.
+
 **SQL zum Einfügen:**
 
 ```sql
@@ -561,12 +568,20 @@ INSERT INTO email_templates (name, subject, content, created_by, created_at) VAL
 
 ## ANPASSUNGS-TIPPS FÜR ADMIN
 
+Bearbeitung im **Admin-Panel → „📧 E-Mail-Templates" → Bearbeiten**. Rechts im Dialog
+zeigt die Vorschau das Ergebnis mit Beispielwerten; `{{platzhalter}}` sind farblich
+hervorgehoben.
+
 1. **Personalisierung:** Variablen wie `{{user_name}}` verwenden für persönliche Note
 2. **Kürze:** Kurze, prägnante Emails (kein Roman)
 3. **Links:** Immer klare CTAs ("Jetzt anmelden", "Profil bearbeiten")
 4. **Branding:** HPV-Logo/Farben optional im Header/Footer
-5. **Testen:** Vor dem Versand mit Test-Variablen prüfen
+5. **Testen:** Vorschau-Beispielwerte anpassen und das gerenderte Ergebnis prüfen
 6. **Ton:** Freundlich, professionell, auf Du-Basis
+7. **Formatierung:** `**fett**` und Zeilenumbrüche werden unterstützt; der technische
+   `name` eines Templates lässt sich nach dem Anlegen nicht mehr ändern
+8. **Vorsicht beim Löschen:** Ein vom Code referenziertes Template (z. B.
+   `welcome_email_new_user`) zu löschen, deaktiviert die zugehörige Mail stillschweigend
 
 ---
 

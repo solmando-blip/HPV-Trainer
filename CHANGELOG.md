@@ -2,6 +2,44 @@
 
 Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 
+## [2.3.0] - 2026-09-09
+
+### ✨ Neue Features
+
+- **E-Mail-Template-Verwaltung im Admin-Panel**: Neue Karte „📧 E-Mail-Templates" (Admin
+  **und** Moderator) mit Liste, Anlegen, Bearbeiten, Löschen und Live-Vorschau. Die Vorschau
+  hebt `{{platzhalter}}` hervor und rendert das Ergebnis mit frei änderbaren Beispielwerten
+  (inkl. `**fett**` und Zeilenumbrüchen wie im echten Versand).
+- **Admin-Panel aufklappbar**: Alle Bereiche sind standardmäßig zugeklappt; ein Klick auf die
+  Kopfzeile öffnet den Bereich, eine Zähler-Badge zeigt die Anzahl der Einträge. Neue
+  Komponente `components/CollapsibleCard.js`.
+
+### 🔧 Technische Verbesserungen
+
+- Backend: CRUD unter `/api/admin/templates` – `GET /:id`, `POST`, `PUT /:id`, `DELETE /:id`
+  (schon durch `router.use(verifyRoles('Admin','Moderator'))` geschützt). `variables` wird bei
+  jedem Schreibvorgang serverseitig aus `subject`+`content` abgeleitet; `name` ist nur bei
+  `POST` setzbar (`^[a-z0-9_]+$`, Duplikat → `409`) und danach unveränderlich, um die im Code
+  fest verdrahteten Template-Referenzen zu schützen. Audit-Logging via `req.audit.log`.
+- DB-Migration (idempotent beim Start): `email_templates.variables` (JSONB) und `updated_at`
+  per `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`; `variables` der 12 bestehenden Templates
+  einmalig aus den Platzhaltern befüllt.
+- Frontend: `components/EmailTemplateManager.js` + `styles/EmailTemplateManager.css`.
+
+### 🐛 Bug-Fixes
+
+- **„Neuer Benutzer" anlegen schlug fehl**: `CreateUser.js` schickte den JWT nicht mit
+  (`axios.post('/api/admin/users', payload)` ohne `Authorization`-Header) → Backend `401`,
+  der Button wirkte wirkungslos. Header wird jetzt wie bei allen anderen Admin-Seiten gesetzt.
+
+### 🚀 Deployment (Railway)
+
+- Frontend-Absturz behoben: UTF-8-BOM aus `frontend.Dockerfile` und `nginx-frontend.conf`
+  entfernt (Docker/Nginx brachen an Zeile 1 ab), `.gitattributes` erzwingt jetzt LF.
+- `nginx-frontend.conf`: `listen [::]:80` (Railway-Edge verbindet über IPv6) und `/api`-Proxy
+  auf die öffentliche Backend-Domain; Service-Variable `PORT=80`.
+- Backend-Service mit GitHub verbunden (`main`) → deployt jetzt automatisch bei Push.
+
 ## [2.2.1] - 2026-09-03
 
 ### ⚠️ Hinweise
@@ -284,4 +322,4 @@ Intern verwendet für Hessischer Pétanque Verband e.V.
 
 ---
 
-**Letzte Aktualisierung**: 2026-09-03
+**Letzte Aktualisierung**: 2026-09-09

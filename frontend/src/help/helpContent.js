@@ -242,7 +242,7 @@ const helpContent = {
   '/admin': {
     title: 'Admin-Panel',
     intro:
-      'Zentrale Verwaltung. Sichtbar für Admin und Moderator; einige Aktionen sind nur für Admins verfügbar.',
+      'Zentrale Verwaltung. Sichtbar für Admin und Moderator; einige Aktionen sind nur für Admins verfügbar. Jeder Bereich ist zugeklappt – ein Klick auf die farbige Kopfzeile öffnet ihn, die Zahl in der Kopfzeile zeigt die Anzahl der Einträge.',
     sections: [
       {
         h: 'Benutzer',
@@ -271,6 +271,7 @@ const helpContent = {
       {
         h: 'Inhalte & Konfiguration',
         items: [
+          '„E-Mail-Templates“: Textbausteine für automatische E-Mails ansehen, bearbeiten, neu anlegen oder löschen (Admin und Moderator). Platzhalter in der Form {{name}} werden beim Versand durch echte Daten ersetzt; die Vorschau im Bearbeiten-Dialog zeigt das Ergebnis mit Beispielwerten.',
           '„Rechtstexte“: Impressum, Datenschutz und AGB bearbeiten (nur Admin).',
           '„Posteingang: Kontaktanfragen“: antworten (per E-Mail-Link), als beantwortet/archiviert markieren oder löschen.',
           '„SMTP-Konfiguration“: Zugangsdaten für den E-Mail-Versand hinterlegen (nur Admin).',
@@ -279,6 +280,7 @@ const helpContent = {
     ],
     tips: [
       'Ohne hinterlegte SMTP-Daten werden E-Mails nur simuliert (im Server-Log protokolliert) und nicht wirklich versendet.',
+      'E-Mail-Templates: Der technische Name (z. B. welcome_email_new_user) lässt sich nach dem Anlegen nicht mehr ändern und wird vom System fest referenziert. Wird ein solches Template gelöscht, versendet die App die zugehörige Mail einfach nicht mehr.',
     ],
   },
 

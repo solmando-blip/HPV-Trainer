@@ -70,10 +70,13 @@ the backend.
 - `server.js` — wires middleware and mounts six router files: `/api/auth`, `/api/admin`, and
   `public.js`/`events.js`/`trainer.js`/`hospitality.js` all at the bare `/api` prefix.
 - `database.js` — single `pg` Pool + `initDb()`. Owns the **entire schema and seed data** inline:
-  tables, `ALTER TABLE` migrations, seeded groups, legal texts, the default `admin@hpv.local` /
+  tables, `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` migrations (e.g. `email_templates.variables`
+  JSONB + `updated_at`), seeded groups, legal texts, the default `admin@hpv.local` /
   `moderator@hpv.local` accounts (`admin123` / `moderator123`), a seeded test event, and the 12
   email templates from `data/emailTemplates.js` (kept in a separate file so `database.js` doesn't
   balloon; seeded via `ON CONFLICT (name) DO NOTHING` so admin edits to the texts survive restarts).
+  After seeding it backfills `email_templates.variables` for any row still `[]` by parsing
+  `{{placeholders}}` out of `subject`+`content`.
 - `routes/events.js` — public `GET /events`, `GET /events/:id` (both include a `registered_count`
   via `LEFT JOIN event_registrations`), `POST /events/:id/register` (public, optional auth via
   `getOptionalUser` so a logged-in user's `user_id` is attached without requiring it); enforces
@@ -112,9 +115,11 @@ the backend.
   groups + **group membership** (`GET/POST /groups/:id/members`,
   `DELETE /groups/:id/members/:userId`), `POST /groups/:id/send-email` (BCC to active members only),
   WhatsApp groups, `PUT /legal/:key`, `POST /settings/smtp` (writes `smtp_*` rows to
-  `system_settings`), `GET /templates` (`email_templates` table — no admin UI consumes this; editing
-  a template today means updating `data/emailTemplates.js` and re-running `initDb`, or a direct SQL
-  `UPDATE`), `GET /audit-logs`.
+  `system_settings`), full email-template CRUD (`GET /templates`, `GET /templates/:id`,
+  `POST /templates`, `PUT /templates/:id`, `DELETE /templates/:id` — all Admin **and** Moderator;
+  `variables` is recomputed from `subject`+`content` on every write via `extractTemplateVars`,
+  `name` is only settable on `POST` and validated `^[a-z0-9_]+$`, `updated_at` bumped on `PUT`).
+  Consumed by the `EmailTemplateManager` card in `AdminPanel.js`. `GET /audit-logs`.
 - `routes/public.js` — news, documents (multer upload to `backend/uploads/`, dest = random filename
   with no extension; metadata incl. `file_type` in DB), contact messages, legal texts, image serving.
   Read endpoints are public; writes require Admin/Moderator. **All three file-serving routes
@@ -134,9 +139,11 @@ the backend.
   verify-email.
 - `services/emailService.js` — nodemailer. **If `SMTP_USER` is unset, emails are mock-logged to
   console** and `sendEmail` returns success — this is the default local behavior.
-- `services/auditService.js` — `auditMiddleware` sets `req.audit = { log: fn }`. Note: `admin.js`
-  guards audit calls with `typeof req.audit === 'function'`, which is never true, so admin audit
-  logging is currently dead code. The `audit_logs` table and `/api/admin/audit-logs` viewer exist.
+- `services/auditService.js` — `auditMiddleware` sets `req.audit = { log: fn }`, so the correct
+  call is `req.audit.log({ action, resource_type, resource_id, old_values, new_values })` (the
+  email-template CRUD routes use `req.audit?.log`). Note: the **older** user CRUD calls in
+  `admin.js` guard with `typeof req.audit === 'function'`, which is never true, so *those* audit
+  writes are dead code. The `audit_logs` table and `/api/admin/audit-logs` viewer exist.
 
 ### User model
 - `role`: `Admin` | `Moderator` | `User` | `Gast`
@@ -159,9 +166,14 @@ the backend.
 - `App.js` — all routes; auth state is `user` in `localStorage` (`hpv_user` + `hpv_token`). Route
   guards are inline `user && ['Admin','Moderator'].includes(user.role)` checks.
 - `hooks/useAuthTimeout.js` — 30-min inactivity → clears localStorage → redirect to `/login`.
-- `pages/AdminPanel.js` — large single-file admin UI (users, groups + members, WhatsApp, mail, SMTP,
-  legal, contacts). `pages/CreateUser.js` is a separate `/admin/create-user` route, **Admin-only**
-  (Moderators are redirected). `pages/Documents.js` renders an in-browser preview for whitelisted
+- `pages/AdminPanel.js` — large single-file admin UI (users, groups + members, WhatsApp, mail,
+  email templates, SMTP, legal, contacts). Every section is wrapped in `components/CollapsibleCard`
+  (header click toggles the body, collapsed by default, optional count `badge`); the three
+  overview tiles stay always-visible. The email-templates section renders
+  `components/EmailTemplateManager` (list / create-edit modal / delete / live `{{var}}` preview,
+  talks to `/api/admin/templates*`). `pages/CreateUser.js` is a separate `/admin/create-user`
+  route, **Admin-only** (Moderators are redirected); like every other admin write it must send the
+  `Authorization: Bearer` header explicitly — there is no global axios default. `pages/Documents.js` renders an in-browser preview for whitelisted
   file types via the backend `view/:id` endpoint; `.docx` is converted with `mammoth` and the
   resulting HTML **must** be run through `DOMPurify.sanitize` before `dangerouslySetInnerHTML`
   (both libs are `<script defer>` in `public/index.html`, so preview code waits for them via

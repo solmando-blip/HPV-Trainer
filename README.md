@@ -104,7 +104,8 @@ hpv-trainer/
 ├─ docker-compose.yml
 ├─ backend.Dockerfile
 ├─ frontend.Dockerfile
-├─ nginx.conf
+├─ nginx.conf              # nur docker-compose (Frontend + /api-Proxy aufs Backend)
+├─ nginx-frontend.conf     # Railway-Frontend-Image: SPA-Fallback + /api-Proxy
 ├─ .env.example
 ├─ .gitignore
 ├─ README.md
@@ -193,6 +194,9 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
 - event_registrations.status: pending, accepted, rejected — `UNIQUE(event_id, email)`
 - trainer_profiles.is_visible / accepts_hospitality: Sichtbarkeit im Verzeichnis bzw. ob Hospitier-Anfragen angenommen werden
 - hospitality_requests.status: pending → accepted/rejected → confirmed (keine Rück-Übergänge)
+- email_templates.name: eindeutiger technischer Schlüssel (`[a-z0-9_]+`), vom Code fest referenziert – nach dem Anlegen nicht mehr änderbar
+- email_templates.variables: JSON-Array der im Template genutzten `{{platzhalter}}`, wird bei jedem Speichern automatisch neu aus `subject`+`content` abgeleitet
+- email_templates.updated_at: letzte Änderung über die Admin-Oberfläche
 
 ## API-Übersicht
 
@@ -242,7 +246,11 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
 - POST /api/admin/groups/:id/send-email (BCC an alle aktiven Mitglieder)
 - GET /api/admin/whatsapp · POST /api/admin/whatsapp · DELETE /api/admin/whatsapp/:id
 - PUT /api/admin/legal/:key (nur Admin) · POST /api/admin/settings/smtp (nur Admin)
-- GET /api/admin/templates · GET /api/admin/audit-logs (nur Admin)
+- GET /api/admin/templates · GET /api/admin/templates/:id ·
+  POST /api/admin/templates · PUT /api/admin/templates/:id · DELETE /api/admin/templates/:id –
+  E-Mail-Template-Verwaltung (Admin **und** Moderator). `variables` wird beim Speichern
+  serverseitig aus `subject`+`content` abgeleitet; `name` ist nur bei POST setzbar
+- GET /api/admin/audit-logs (nur Admin)
 - GET /api/admin/event-registrations[/:eventId] · PUT /api/admin/event-registrations/:id/status ·
   GET /api/admin/event-registrations/:eventId/export (CSV)
 - POST /api/admin/events/:id/send-reminder · /send-feedback-request · /send-registration-reminder –
@@ -300,10 +308,19 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
 ### E-Mail-Textbausteine
 
 - 12 Templates in `backend/data/emailTemplates.js`, geseedet in die `email_templates`-Tabelle
-  (`ON CONFLICT DO NOTHING`, spätere Admin-Bearbeitungen bleiben also erhalten).
+  (`ON CONFLICT (name) DO NOTHING`, spätere Admin-Bearbeitungen bleiben also erhalten).
 - 9 werden automatisch verschickt (Anmeldebestätigung, Hospitierungs-Lifecycle, Willkommens-Mail, …).
 - 3 (Vor-Event-Erinnerung, Feedback-Anfrage, Anmelde-Erinnerung) werden manuell per Button auf
   `/admin/events` ausgelöst und gehen an die aktuellen Event-Anmeldungen.
+- **Verwaltung über das Admin-Panel** (Karte „📧 E-Mail-Templates", Admin und Moderator):
+  Liste, Anlegen, Bearbeiten, Löschen und Live-Vorschau mit Beispielwerten. Platzhalter-Syntax
+  `{{variable}}`; die genutzten Platzhalter werden pro Template als `variables` gespeichert und
+  bei jeder Änderung automatisch aus Betreff + Inhalt aktualisiert.
+- Der `content` ist einfacher Text mit `**fett**` und Zeilenumbrüchen; `templateService.js`
+  escapt Variablenwerte und erzeugt daraus HTML- **und** Plain-Text-Teil der Mail.
+- Migration: `variables` (JSONB) und `updated_at` werden beim Start per
+  `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` nachgerüstet und für die bestehenden Templates
+  einmalig aus den Platzhaltern befüllt.
 
 ## Umgebungsvariablen
 

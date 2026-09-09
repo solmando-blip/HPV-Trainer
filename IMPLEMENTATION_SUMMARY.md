@@ -42,9 +42,11 @@ Die **HPV Trainer App** ist eine vollständige Full-Stack-Webanwendung für den 
 - ✅ Gruppen-Verwaltung
 - ✅ WhatsApp-Gruppen konfigurieren
 - ✅ BCC-E-Mail-Versand an Gruppen
+- ✅ E-Mail-Templates verwalten (CRUD + Live-Vorschau, Admin & Moderator)
 - ✅ SMTP-Einstellungen konfigurieren
 - ✅ Rechtliche Texte bearbeiten (Impressum, Datenschutz, AGB)
 - ✅ Audit-Log-Viewer mit Pagination
+- ✅ Alle Panel-Bereiche aufklappbar (standardmäßig zugeklappt)
 
 ### **Events, Trainer-Verzeichnis & Hospitierungen (v2.1)**
 - ✅ Öffentliche Event-Übersicht + Detailseite mit Teilnehmerzähler
@@ -141,7 +143,10 @@ hpv-trainer/
 │   │   │   ├── Header.js
 │   │   │   ├── Pagination.js
 │   │   │   ├── SearchFilter.js
-│   │   │   └── ToastContainer.js
+│   │   │   ├── ToastContainer.js
+│   │   │   ├── HelpButton.js
+│   │   │   ├── CollapsibleCard.js       # aufklappbarer Admin-Panel-Bereich
+│   │   │   └── EmailTemplateManager.js  # E-Mail-Template-CRUD + Vorschau
 │   │   ├── pages/
 │   │   │   ├── Home.js
 │   │   │   ├── Login.js
@@ -150,7 +155,8 @@ hpv-trainer/
 │   │   │   ├── ForgotPassword.js
 │   │   │   ├── ResetPassword.js
 │   │   │   ├── VerifyEmail.js
-│   │   │   ├── AdminPanel.js
+│   │   │   ├── AdminPanel.js           # Bereiche via CollapsibleCard, inkl. EmailTemplateManager
+│   │   │   ├── CreateUser.js
 │   │   │   ├── News.js
 │   │   │   ├── Documents.js
 │   │   │   ├── Contact.js
@@ -238,7 +244,8 @@ docker-compose up --build -d
 - `event_registrations` - Anmeldungen (Gast oder eingeloggt), `UNIQUE(event_id, email)`
 - `trainer_profiles` - Selbstauskunft-Profile (ein Profil pro User), Sichtbarkeits-/Hospitierungs-Flags
 - `hospitality_requests` - Hospitierungs-Anfragen mit Status-Workflow (pending→accepted/rejected→confirmed)
-- `email_templates` - 12 Textbausteine mit `{{variable}}`-Platzhaltern, admin-editierbar
+- `email_templates` - Textbausteine mit `{{variable}}`-Platzhaltern (12 Seeds), im Admin-Panel voll
+  bearbeitbar; Spalten `variables` (JSONB, auto-abgeleitet) und `updated_at`
 
 ---
 

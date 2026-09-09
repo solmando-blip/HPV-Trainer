@@ -34,8 +34,9 @@ unten rechts auf jeder Seite).
    - [E-Mail an Gruppe (BCC)](#64-e-mail-an-gruppe-bcc)
    - [WhatsApp-Gruppen](#65-whatsapp-gruppen)
    - [Rechtstexte](#66-rechtstexte)
-   - [Posteingang: Kontaktanfragen](#67-posteingang-kontaktanfragen)
-   - [SMTP-Konfiguration](#68-smtp-konfiguration)
+   - [E-Mail-Templates](#67-e-mail-templates)
+   - [Posteingang: Kontaktanfragen](#68-posteingang-kontaktanfragen)
+   - [SMTP-Konfiguration](#69-smtp-konfiguration)
 7. [Typische Arbeitsabläufe](#7-typische-arbeitsabläufe)
 8. [Fehlerbehebung](#8-fehlerbehebung)
 
@@ -65,8 +66,8 @@ dort zusätzlich **Profil**, **Abmelden** und – für Admin/Moderator – **Adm
 
 | Rolle | Rechte |
 |---|---|
-| **Admin** | Alle Funktionen: Benutzer, Rollen, Gruppen, News, Dokumente, Rechtstexte, SMTP, Kontaktanfragen, Benutzer direkt anlegen |
-| **Moderator** | News, Dokumente, Kontaktanfragen, Gruppen und Gruppenmitglieder, WhatsApp-Links, BCC-Mails. **Nicht:** Benutzer bearbeiten/löschen/anlegen, Rechtstexte, SMTP |
+| **Admin** | Alle Funktionen: Benutzer, Rollen, Gruppen, News, Dokumente, Rechtstexte, E-Mail-Templates, SMTP, Kontaktanfragen, Benutzer direkt anlegen |
+| **Moderator** | News, Dokumente, Kontaktanfragen, Gruppen und Gruppenmitglieder, WhatsApp-Links, BCC-Mails, E-Mail-Templates. **Nicht:** Benutzer bearbeiten/löschen/anlegen, Rechtstexte, SMTP |
 | **User** | Anmeldung, eigenes Profil, öffentliche Inhalte lesen, Kontaktformular |
 | **Gast** | Wie User; für eingeschränkte/temporäre Zugänge gedacht |
 
@@ -223,6 +224,10 @@ Erreichbar nach Anmeldung über **Profil** oben rechts.
 Sichtbar für **Admin** und **Moderator** über **Admin Panel** in der Navigationsleiste.
 Mit *(nur Admin)* markierte Aktionen sind für Moderatoren ausgeblendet bzw. gesperrt.
 
+Alle Bereiche sind **zugeklappt** – ein Klick auf die farbige Kopfzeile öffnet den jeweiligen
+Bereich (die Zahl darin zeigt die Anzahl der Einträge). Die drei Kacheln ganz oben bleiben
+immer sichtbar.
+
 ### 6.1 Benutzerfreischaltung & -verwaltung
 
 - **Ausstehende Freischaltungen:** Liste neuer Konten – **Freischalten** setzt den Status auf `active`.
@@ -269,7 +274,25 @@ Interne Einladungslinks hinterlegen:
 Bearbeitung von **Impressum**, **Datenschutz** und **AGB**. Die Inhalte erscheinen sofort
 öffentlich unter *Rechtliche Hinweise*.
 
-### 6.7 Posteingang: Kontaktanfragen
+### 6.7 E-Mail-Templates
+
+Textbausteine für die automatischen E-Mails der App (Anmeldebestätigung, Hospitierungs-Ablauf,
+Willkommens-Mail, Event-Erinnerungen …). Verfügbar für **Admin und Moderator**.
+
+- **Liste:** technischer Name, Betreff, Anzahl Variablen, letzte Änderung.
+- **Bearbeiten:** Betreff und Inhalt anpassen. Formatierung: `**fett**`, Zeilenumbrüche,
+  `{{variable}}` als Platzhalter. Rechts im Dialog: die **Vorlage** mit hervorgehobenen
+  Platzhaltern und eine **Vorschau** mit frei änderbaren Beispielwerten.
+- **+ Neues Template:** technischen **Namen** vergeben (nur `a–z`, `0–9`, `_`) – nach dem
+  Anlegen nicht mehr änderbar –, dann Betreff und Inhalt.
+- **Löschen** (mit Rückfrage). *Vorsicht:* Wird ein vom System genutztes Template gelöscht
+  (z. B. `welcome_email_new_user`), versendet die App die zugehörige Mail nicht mehr.
+
+Die Liste der genutzten Variablen wird beim Speichern automatisch aus Betreff + Inhalt bestimmt.
+Immer verfügbar (ohne dass sie gesetzt werden müssen): `{{current_year}}`, `{{platform_name}}`,
+`{{platform_url}}`, `{{support_email}}`, `{{admin_email}}`.
+
+### 6.8 Posteingang: Kontaktanfragen
 
 Alle über das Kontaktformular eingegangenen Nachrichten. Status: `new` · `read` · `answered` · `archived`.
 
@@ -277,7 +300,7 @@ Alle über das Kontaktformular eingegangenen Nachrichten. Status: `new` · `read
 - **📦 Archiv** / **↩️ Aktivieren:** archivierte Anfragen aus- bzw. wieder einblenden.
 - **🗑️:** Anfrage löschen.
 
-### 6.8 SMTP-Konfiguration *(nur Admin)*
+### 6.9 SMTP-Konfiguration *(nur Admin)*
 
 Zugangsdaten für den E-Mail-Versand: **Host**, **Port**, **Benutzer**, **Passwort**.
 

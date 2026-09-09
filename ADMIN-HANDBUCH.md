@@ -16,6 +16,15 @@ Vollständiges Referenz-Handbuch für Administrator und Moderator.
 
 ---
 
+## Bedienung des Admin-Panels
+
+Alle Bereiche im Admin-Panel sind standardmäßig **zugeklappt**. Ein Klick auf die farbige
+Kopfzeile eines Bereichs klappt ihn auf bzw. wieder zu; die Zahl rechts in der Kopfzeile
+zeigt die Anzahl der Einträge (Benutzer, Gruppen, Templates …). Die drei Kacheln ganz oben
+(Ausstehende Freischaltungen / Mitglieder gesamt / Kontaktanfragen) bleiben immer sichtbar.
+
+---
+
 ## Benutzerbasierte Verwaltung
 
 ### Benutzer-Überblick
@@ -260,6 +269,52 @@ Sendet E-Mails an alle Gruppenmitglieder (BCC = Blind Carbon Copy).
 
 ---
 
+### E-Mail-Templates verwalten
+
+Die App verschickt automatische E-Mails (Anmeldebestätigung, Hospitierungs-Ablauf,
+Willkommens-Mail, Event-Erinnerungen …) auf Basis von Textbausteinen. Diese werden im
+Admin-Panel in der Karte **„📧 E-Mail-Templates"** verwaltet – für **Admin und Moderator**.
+
+**Übersicht:** Die Liste zeigt je Template den technischen Namen, den Betreff, die Anzahl
+der genutzten Variablen und das Datum der letzten Änderung.
+
+#### Template bearbeiten
+
+1. **Admin-Panel** → **📧 E-Mail-Templates** aufklappen → **Bearbeiten**
+2. **Betreff** und **Inhalt** anpassen. Formatierung im Inhalt:
+   - `**Text**` → **fett**
+   - Zeilenumbruch = neue Zeile
+   - `{{variable}}` = Platzhalter, wird beim Versand durch echte Daten ersetzt
+3. Rechts sehen Sie die **Vorlage** mit hervorgehobenen Platzhaltern sowie eine
+   **Vorschau** mit Beispielwerten. Die Beispielwerte lassen sich zum Testen ändern.
+4. **Speichern**
+
+Die Liste der genutzten Variablen wird beim Speichern automatisch aus Betreff + Inhalt
+neu bestimmt.
+
+#### Neues Template anlegen
+
+1. **+ Neues Template**
+2. **Name** vergeben: nur Kleinbuchstaben, Ziffern und `_` (z. B. `event_cancellation`).
+   Der Name ist der technische Schlüssel und **nach dem Anlegen nicht mehr änderbar**.
+3. Betreff und Inhalt eingeben → **Speichern**
+
+Ein selbst angelegtes Template wird nur dann automatisch verschickt, wenn im Code eine
+Stelle darauf verweist – ansonsten dient es als Vorlage für den manuellen Versand.
+
+#### Template löschen
+
+**Löschen** (mit Rückfrage) entfernt das Template endgültig. **Vorsicht:** Wird ein
+Template gelöscht, auf das der Code verweist (z. B. `welcome_email_new_user`), versendet
+die App die zugehörige Mail einfach nicht mehr – ein Fehler wird nur im Server-Log
+protokolliert.
+
+**Immer verfügbare Platzhalter** (in jedem Template nutzbar, ohne dass sie gesetzt werden
+müssen): `{{current_year}}`, `{{platform_name}}`, `{{platform_url}}`, `{{support_email}}`,
+`{{admin_email}}`.
+
+---
+
 ## Konfiguration
 
 ### SMTP-Einstellungen
@@ -332,8 +387,8 @@ Jede Anfrage hat einen Status:
 
 | Rolle | Zugriff | Berechtigungen |
 |-------|--------|----------------|
-| **Admin** | Alle Funktionen | ✅ Benutzer verwalten, News/Docs bearbeiten, Mail-Versand, SMTP-Einstellungen, Gruppen, Rechtstexte, Events/Anmeldungen/Hospitierungen |
-| **Moderator** | Admin-Panel (eingeschränkt) | ✅ Benutzer freischalten (nicht anlegen/löschen/bearbeiten), News schreiben, Kontaktanfragen, Events/Anmeldungen/Hospitierungen verwalten; ❌ keine SMTP/Gruppen/Benutzerverwaltung |
+| **Admin** | Alle Funktionen | ✅ Benutzer verwalten, News/Docs bearbeiten, Mail-Versand, E-Mail-Templates, SMTP-Einstellungen, Gruppen, Rechtstexte, Events/Anmeldungen/Hospitierungen |
+| **Moderator** | Admin-Panel (eingeschränkt) | ✅ Benutzer freischalten (nicht anlegen/löschen/bearbeiten), News schreiben, Kontaktanfragen, E-Mail-Templates, Events/Anmeldungen/Hospitierungen verwalten; ❌ keine SMTP-Einstellungen/Benutzerverwaltung/Rechtstexte |
 | **Benutzer** | Dashboard | ✅ News lesen, Dokumente runterladen, Kontaktformular nutzen |
 | **Gast** | Öffentliche Seiten | ✅ News lesen, Dokumente runterladen, Kontaktformular |
 
