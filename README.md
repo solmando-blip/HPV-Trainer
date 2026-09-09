@@ -260,6 +260,35 @@ angelegt und mit Initialdaten befüllt (inkl. eines Test-Events und 12 E-Mail-Te
   manuell ausgelöste Mails an die Event-Anmeldungen (kein automatischer Scheduler)
 - GET /api/admin/hospitality (Filter `status`) · DELETE /api/admin/hospitality/:id
 
+## Workflows
+
+Die Plattform führt mehrere mehrstufige Abläufe eigenständig. Vollständige Übersicht mit
+Diagrammen und Endpunkten: **[docs/WORKFLOWS.md](docs/WORKFLOWS.md)**.
+
+### Abläufe mit Statuswechsel
+
+| Workflow | Kurzbeschreibung | Status |
+|---|---|---|
+| **Konto-Lebenszyklus** | Registrierung → E-Mail-Bestätigung → Freischaltung durch Admin/Moderator → Login (Konten werden nie automatisch aktiv) | `pending → active → blocked` |
+| **Event-Anmeldung** | Öffentliche Anmeldung (Gast oder eingeloggt), serverseitige Prüfung von Anmeldeschluss/Kapazität/Duplikat, Annahme durch Admin | `pending → accepted / rejected` |
+| **Hospitieren** | Anfrage zwischen zwei im Verzeichnis sichtbaren Trainer-Profilen, Annahme durch den Host, Terminbestätigung | `pending → accepted/rejected → confirmed` |
+| **Kontaktanfragen** | Kontaktformular → Admin-Posteingang | `new → read → answered → archived` |
+
+### Verwaltung & Kommunikation
+
+- **E-Mail-Templates** – die 12 Textbausteine verwalten und gezielt versenden (Testmail / Gruppe / einzelne Benutzer / freie Adressen)
+- **Gruppen & Rundmail** – BCC-Freitext an alle aktiven Mitglieder einer Gruppe
+- **Redaktion** – News & Dokumente pflegen (sofort öffentlich, keine E-Mail)
+- **Konfiguration** – Rechtstexte, SMTP-Zugang, Audit-Log (nur Admin)
+
+### E-Mail-Pipeline
+
+Jede E-Mail (automatisch, manuell oder gezielt gesendet) läuft durch
+`templateService.renderTemplate` → `emailService.sendEmail`. Ohne hinterlegtes SMTP wird der
+Versand nur ins Server-Log geschrieben (Mock-Modus); ein Empfänger → `To`, mehrere → BCC.
+9 der 12 Templates werden automatisch verschickt, 3 manuell per Button auf `/admin/events` –
+Details und vollständige Template-Liste in [docs/WORKFLOWS.md](docs/WORKFLOWS.md#e-mail-pipeline).
+
 ## Nutzung
 
 ### News verwalten

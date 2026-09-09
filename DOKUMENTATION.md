@@ -11,6 +11,7 @@ Einstiegspunkt und verweist auf die passenden Detaildokumente.
 |---|---|
 | die Anwendung als Mitglied/Trainer bedienen | [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md) |
 | als Admin/Moderator verwalten | [ADMIN-HANDBUCH.md](ADMIN-HANDBUCH.md) · [BENUTZERHANDBUCH.md §6](BENUTZERHANDBUCH.md#6-admin-bereich) |
+| die mehrstufigen Abläufe verstehen (mit Diagrammen) | [docs/WORKFLOWS.md](docs/WORKFLOWS.md) |
 | das System erstmalig einrichten | [QUICK-START.md](QUICK-START.md) · [README.md](README.md) |
 | am Code arbeiten | [CLAUDE.md](CLAUDE.md) · [README.md](README.md) |
 | Datenbank sichern/wiederherstellen | [BACKUPS.md](BACKUPS.md) |
@@ -140,7 +141,8 @@ Ausführlich: [QUICK-START.md](QUICK-START.md) · Entwicklung: [CLAUDE.md](CLAUD
 | Datei | Inhalt |
 |---|---|
 | `DOKUMENTATION.md` | dieses Übersichtsdokument |
-| `README.md` | Projektüberblick, Stack, Setup, API-Liste |
+| `README.md` | Projektüberblick, Stack, Setup, API-Liste, Workflow-Kurzübersicht |
+| `docs/WORKFLOWS.md` | mehrstufige Abläufe mit Diagrammen (Status, E-Mails, Endpunkte) |
 | `BENUTZERHANDBUCH.md` | seitenweises Anwenderhandbuch (= In-App-Hilfe) |
 | `ADMIN-HANDBUCH.md` | ausführliches Admin-/Moderator-Referenzhandbuch |
 | `QUICK-START.md` | Kurz-Checkliste für die Inbetriebnahme |

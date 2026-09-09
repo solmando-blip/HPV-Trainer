@@ -13,6 +13,9 @@ user-facing strings.
 - `backend/` — Node.js + Express REST API, PostgreSQL via `pg`
 - `frontend/` — React 18 (Create React App / react-scripts) + Bootstrap 5, plain CSS
 - Deployment — Docker Compose: `db` (postgres:15), `backend` (:5000), `frontend` (nginx :8080 → :80)
+- `docs/WORKFLOWS.md` — the multi-step flows (account lifecycle, event registration, hospitality,
+  contact inbox, the email pipeline) with state diagrams; keep it current when a status machine
+  or an email trigger changes.
 
 ## Commands
 
