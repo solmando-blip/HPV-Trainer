@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { ToastContext } from '../context/ToastContext';
 
@@ -15,6 +15,21 @@ function EventRegistrationModal({ event, user, onClose, onSuccess }) {
     experience_level: 'Anfänger',
     description: ''
   });
+
+  // Bei eingeloggten Nutzern den Verein aus dem Konto-Profil vorbefüllen.
+  useEffect(() => {
+    if (!user) return;
+    const token = localStorage.getItem('trainer_token');
+    if (!token) return;
+    axios
+      .get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
+        if (res.data?.verein) {
+          setForm((f) => (f.verein ? f : { ...f, verein: res.data.verein }));
+        }
+      })
+      .catch(() => {});
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

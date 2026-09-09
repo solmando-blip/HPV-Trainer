@@ -24,6 +24,8 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 - Neue Spalte `users.verein` (varchar(255), optional, per `ALTER TABLE … ADD COLUMN IF NOT EXISTS`).
 - Bearbeitbar/erfassbar in: **Mein Profil**, **Admin-Panel → Benutzer bearbeiten**,
   **Neuer Benutzer**, **Registrierung** (optional). Neue Spalte „Verein" in der Benutzer-Tabelle.
+- Die Event-Anmeldung (`EventRegistrationModal`) füllt das Verein-Feld bei eingeloggten
+  Nutzern automatisch aus dem Konto-Profil vor (überschreibbar).
 - API: `verein` in `GET /api/auth/me`, `PUT /api/auth/profile`, `POST /api/auth/register`,
   `GET/POST/PUT /api/admin/users[…]`.
 
