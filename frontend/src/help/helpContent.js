@@ -10,7 +10,7 @@ const helpContent = {
   '/': {
     title: 'Startseite',
     intro:
-      'Die Startseite ist der Einstiegspunkt in das HPV-Trainer-Portal und verlinkt die wichtigsten Bereiche.',
+      'Die Startseite ist der Einstiegspunkt in das Trainer-Portal und verlinkt die wichtigsten Bereiche.',
     sections: [
       {
         h: 'Was Sie hier tun können',

@@ -12,7 +12,7 @@ function AdminEvents() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
-  const token = localStorage.getItem('hpv_token');
+  const token = localStorage.getItem('trainer_token');
   const headers = { Authorization: `Bearer ${token}` };
 
   const loadEvents = () => {

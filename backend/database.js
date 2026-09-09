@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const emailTemplates = require('./data/emailTemplates');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@db:5432/hpv_trainer'
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@db:5432/trainer_portal'
 });
 
 const initDb = async () => {
@@ -211,7 +211,7 @@ const initDb = async () => {
 
     await pool.query(`
       INSERT INTO legal_texts (key, title, content) VALUES
-      ('impressum', 'Impressum', '### Impressum\n\n**Hessischer Pétanque Verband e.V. (HPV)**\n\n**Vertreten durch:**\n[Vorstand Name / 1. Vorsitzender]\n\n**Kontakt:**\nE-Mail: [info@hpv-petanque.de]\nTelefon: [01234 / 56789]\n\n**Registereintrag:**\nEingetragen im Vereinsregister.\nRegistergericht: [Amtsgericht Musterstadt]\nRegisternummer: [VR 12345]\n\n**Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:**\n[Name, Anschrift des Verantwortlichen]')
+      ('impressum', 'Impressum', '### Impressum\n\n**Hessischer Pétanque Verband e.V.**\n\n**Vertreten durch:**\n[Vorstand Name / 1. Vorsitzender]\n\n**Kontakt:**\nE-Mail: [info@hpv-petanque.de]\nTelefon: [01234 / 56789]\n\n**Registereintrag:**\nEingetragen im Vereinsregister.\nRegistergericht: [Amtsgericht Musterstadt]\nRegisternummer: [VR 12345]\n\n**Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:**\n[Name, Anschrift des Verantwortlichen]')
       ON CONFLICT (key) DO NOTHING;
 
       INSERT INTO legal_texts (key, title, content) VALUES
@@ -219,15 +219,15 @@ const initDb = async () => {
       ON CONFLICT (key) DO NOTHING;
 
       INSERT INTO legal_texts (key, title, content) VALUES
-      ('agb', 'Allgemeine Nutzungsbedingungen', '### Nutzungsbedingungen\n\n**1. Geltungsbereich**\nDiese Nutzungsbedingungen gelten für die Nutzung der Online-Plattform "HPV Trainer" des Hessischen Pétanque Verbandes e.V.\n\n**2. Registrierung & Freischaltung**\nEin Anspruch auf Freischaltung besteht nicht. Der Zugangsstatus wird durch Administratoren oder Moderatoren geprüft und freigeschaltet.\n\n**3. Pflichten der Nutzer**\nNutzer verpflichten sich, keine rechtswidrigen Inhalte zu veröffentlichen und Zugangsdaten vertraulich zu behandeln.')
+      ('agb', 'Allgemeine Nutzungsbedingungen', '### Nutzungsbedingungen\n\n**1. Geltungsbereich**\nDiese Nutzungsbedingungen gelten für die Nutzung der Online-Plattform "Trainer-Portal" des Hessischen Pétanque Verbandes e.V.\n\n**2. Registrierung & Freischaltung**\nEin Anspruch auf Freischaltung besteht nicht. Der Zugangsstatus wird durch Administratoren oder Moderatoren geprüft und freigeschaltet.\n\n**3. Pflichten der Nutzer**\nNutzer verpflichten sich, keine rechtswidrigen Inhalte zu veröffentlichen und Zugangsdaten vertraulich zu behandeln.')
       ON CONFLICT (key) DO NOTHING;
     `);
 
     await pool.query(`
       INSERT INTO events (title, description, date, time, location, agenda, max_participants, created_by)
-      SELECT 'Trainings-Community 24.10.26', 'Regelmäßiges Trainings-Community-Treffen des HPV.',
+      SELECT 'Trainings-Community 24.10.26', 'Regelmäßiges Trainings-Community-Treffen des Vereins.',
              '2026-10-24', '11:30', 'TBD', 'TBD', 30,
-             (SELECT id FROM users WHERE email = 'admin@hpv.local')
+             (SELECT id FROM users WHERE role = 'Admin' ORDER BY id LIMIT 1)
       WHERE NOT EXISTS (SELECT 1 FROM events WHERE title = 'Trainings-Community 24.10.26');
     `);
 
@@ -266,16 +266,18 @@ const initDb = async () => {
     const adminPass = await bcrypt.hash('admin123', 10);
     const modPass = await bcrypt.hash('moderator123', 10);
 
+    // Standard-Konten nur auf einer frischen DB anlegen (kein zusätzliches
+    // Admin-/Moderator-Konto, wenn bereits eines existiert).
     await pool.query(`
       INSERT INTO users (name, email, password, role, status)
-      VALUES ('Admin User', 'admin@hpv.local', $1, 'Admin', 'active')
-      ON CONFLICT (email) DO NOTHING;
+      SELECT 'Admin User', 'admin@trainer.local', $1, 'Admin', 'active'
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE role = 'Admin');
     `, [adminPass]);
 
     await pool.query(`
       INSERT INTO users (name, email, password, role, status)
-      VALUES ('Moderator User', 'moderator@hpv.local', $1, 'Moderator', 'active')
-      ON CONFLICT (email) DO NOTHING;
+      SELECT 'Moderator User', 'moderator@trainer.local', $1, 'Moderator', 'active'
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE role = 'Moderator');
     `, [modPass]);
 
     console.log('Database initialized successfully.');

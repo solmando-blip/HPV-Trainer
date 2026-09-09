@@ -9,7 +9,7 @@ const verifyToken = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET || 'hpv_secret_key');
+    const verified = jwt.verify(token, process.env.JWT_SECRET || 'trainer_secret_key');
     req.user = verified;
     next();
   } catch (err) {
@@ -31,7 +31,7 @@ const getOptionalUser = (req) => {
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return null;
   try {
-    return jwt.verify(token, process.env.JWT_SECRET || 'hpv_secret_key');
+    return jwt.verify(token, process.env.JWT_SECRET || 'trainer_secret_key');
   } catch (err) {
     return null;
   }

@@ -27,7 +27,7 @@ function AdminPanel() {
   const [availableUsersForGroup, setAvailableUsersForGroup] = useState([]);
   const [userToAdd, setUserToAdd] = useState('');
 
-  const token = localStorage.getItem('hpv_token');
+  const token = localStorage.getItem('trainer_token');
   const headers = { Authorization: `Bearer ${token}` };
 
   const loadData = async () => {

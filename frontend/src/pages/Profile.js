@@ -5,7 +5,7 @@ import '../styles/Profile.css';
 
 function Profile() {
   const navigate = useNavigate();
-  const token = localStorage.getItem('hpv_token');
+  const token = localStorage.getItem('trainer_token');
   
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -75,10 +75,10 @@ function Profile() {
       setProfile(response.data.user);
 
       // Update localStorage
-      const storedUser = JSON.parse(localStorage.getItem('hpv_user'));
+      const storedUser = JSON.parse(localStorage.getItem('trainer_user'));
       storedUser.name = response.data.user.name;
       storedUser.email = response.data.user.email;
-      localStorage.setItem('hpv_user', JSON.stringify(storedUser));
+      localStorage.setItem('trainer_user', JSON.stringify(storedUser));
     } catch (error) {
       setSaveError(error.response?.data?.message || 'Fehler beim Speichern.');
     }

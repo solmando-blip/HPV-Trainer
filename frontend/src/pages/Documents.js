@@ -156,7 +156,7 @@ function Documents({ user }) {
     formData.append('file', file);
 
     try {
-      const token = localStorage.getItem('hpv_token');
+      const token = localStorage.getItem('trainer_token');
       await axios.post('/api/documents', formData, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });
@@ -170,7 +170,7 @@ function Documents({ user }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Datei löschen?')) return;
-    const token = localStorage.getItem('hpv_token');
+    const token = localStorage.getItem('trainer_token');
     await axios.delete(`/api/documents/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     fetchDocs();
   };

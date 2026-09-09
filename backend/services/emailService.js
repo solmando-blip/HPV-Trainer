@@ -18,7 +18,7 @@ const sendEmail = async ({ to, bcc, subject, text, html }) => {
     }
 
     await transporter.sendMail({
-      from: `"HPV Trainer" <${process.env.SMTP_USER}>`,
+      from: `"Trainer-Portal" <${process.env.SMTP_USER}>`,
       to,
       bcc,
       subject,

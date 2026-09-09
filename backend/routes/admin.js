@@ -187,7 +187,7 @@ router.post('/users', verifyRoles('Admin'), async (req, res) => {
           new_role: result.rows[0].role,
           login_link: `${frontendUrl}/login`,
           admin_link: `${frontendUrl}/admin`,
-          admin_contact_email: process.env.SMTP_USER || 'admin@hpv-trainer.local'
+          admin_contact_email: process.env.SMTP_USER || 'admin@trainer-portal.local'
         }
       });
     } else {
@@ -294,7 +294,7 @@ router.post('/groups/:id/send-email', async (req, res) => {
     }
 
     await sendEmail({
-      to: process.env.SMTP_USER || 'noreply@hpv.local',
+      to: process.env.SMTP_USER || 'noreply@trainer.local',
       bcc: emails.join(','),
       subject,
       text: content,
@@ -521,7 +521,7 @@ router.post('/templates/:id/send', async (req, res) => {
     // Empfänger untereinander nicht sehen.
     const payload = list.length === 1
       ? { to: list[0], subject, text, html }
-      : { to: process.env.SMTP_USER || 'noreply@hpv.local', bcc: list.join(','), subject, text, html };
+      : { to: process.env.SMTP_USER || 'noreply@trainer.local', bcc: list.join(','), subject, text, html };
 
     const sent = await sendEmail(payload);
 

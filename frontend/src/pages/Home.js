@@ -5,7 +5,7 @@ function Home() {
   return (
     <div>
       <div className="p-5 mb-4 bg-light rounded-3 shadow-sm text-center">
-        <h1 className="display-4 fw-bold">Willkommen beim HPV Trainer Portal</h1>
+        <h1 className="display-4 fw-bold">Willkommen im Trainer-Portal</h1>
         <p className="lead">Die zentrale Plattform des Hessischen Pétanque Verbandes zur Verwaltung von Mitgliedern, Trainingseinheiten und Terminen.</p>
         <Link to="/register" className="btn btn-primary btn-lg">Jetzt Registrieren</Link>
       </div>

@@ -16,8 +16,25 @@ Alle wichtigen Änderungen an der HPV Trainer App werden hier dokumentiert.
 - **Admin-Panel aufklappbar**: Alle Bereiche sind standardmäßig zugeklappt; ein Klick auf die
   Kopfzeile öffnet den Bereich, eine Zähler-Badge zeigt die Anzahl der Einträge. Neue
   Komponente `components/CollapsibleCard.js`.
-- **Menüpunkt „Turniersoftware"**: externer Link in der Navigationsleiste auf
+- **Menüpunkt „Turniersoftware"**: externer Link ganz links in der Navigationsleiste auf
   `https://swiss-pair-pro.base44.app/` (öffnet in neuem Tab).
+
+### 🏷️ Umbenennung „HPV" → „Trainer-Portal"
+
+- **Sichtbare UI**: Navigations-Brand, Startseiten-Titel, Seitentitel/Meta, In-App-Hilfe.
+- **E-Mail-Templates** (alle 12) und die Registrierungs-/Reset-Mails: Signatur
+  „dein Trainer-Portal-Team", Betreffzeilen, `platform_name`, Absendername, „das Präsidium".
+- **Geseedete Rechtstexte** (Impressum ohne „(HPV)", AGB), Seed-Event-Beschreibung.
+  Der Vereinsname „Hessischer Pétanque Verband e.V." bleibt unverändert.
+- **Interne Bezeichner**: `localStorage` `hpv_token`/`hpv_user` → `trainer_token`/`trainer_user`
+  (mit einmaliger Migration in `App.js`, kein Zwangs-Logout), JWT-Fallback-Secret,
+  `*.local`-Fallback-Adressen, DB-Name-Default, `docker-compose`-Container-/DB-Namen,
+  CI-Image-Tags, npm-Paketnamen.
+- Die Standard-Konten der Seed-Daten heißen jetzt `admin@trainer.local` /
+  `moderator@trainer.local` und werden **nur noch auf einer frischen DB** angelegt
+  (`WHERE NOT EXISTS ...`) — bestehende Installationen bekommen kein Zusatzkonto.
+- **Nicht** umbenannt: die Doku-Dateien und ihre Verweise, der Repo-Name, die
+  Railway-Backend-Domain im `nginx-frontend.conf`-Proxy.
 
 ### 🔧 Technische Verbesserungen
 

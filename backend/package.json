@@ -1,5 +1,5 @@
 {
-  "name": "hpv-trainer-backend",
+  "name": "trainer-portal-backend",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {

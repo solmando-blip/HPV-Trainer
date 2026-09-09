@@ -16,7 +16,7 @@ function EmailTemplateManager() {
   const [sampleVars, setSampleVars] = useState({});
   const [sendingTemplate, setSendingTemplate] = useState(null); // Template-Zeile oder null
 
-  const token = localStorage.getItem('hpv_token');
+  const token = localStorage.getItem('trainer_token');
   const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
   const load = useCallback(async () => {

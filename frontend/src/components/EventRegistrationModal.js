@@ -25,7 +25,7 @@ function EventRegistrationModal({ event, user, onClose, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = localStorage.getItem('hpv_token');
+      const token = localStorage.getItem('trainer_token');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       await axios.post(`/api/events/${event.id}/register`, form, { headers });
       addToast('Anmeldung erfolgreich.', 'success');

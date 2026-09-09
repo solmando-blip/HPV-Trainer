@@ -12,7 +12,7 @@ function Header({ user, onLogout }) {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/">🎯 HPV Trainer</Link>
+        <Link className="navbar-brand fw-bold" to="/">🎯 Trainer-Portal</Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
           <span className="navbar-toggler-icon"></span>
         </button>

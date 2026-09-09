@@ -12,7 +12,7 @@ function HospitalityRequestModal({ host, onClose, onSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = localStorage.getItem('hpv_token');
+      const token = localStorage.getItem('trainer_token');
       const headers = { Authorization: `Bearer ${token}` };
       await axios.post(
         '/api/hospitality',

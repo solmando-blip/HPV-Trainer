@@ -24,10 +24,10 @@ vielen Dank für deine Anmeldung zu unserem Event!
 
 Wir freuen uns auf dich!
 
-Falls du Fragen hast oder deine Anmeldung stornieren möchtest, schreib uns gerne eine Email oder kontaktiere uns über die HPV-Trainer Plattform.
+Falls du Fragen hast oder deine Anmeldung stornieren möchtest, schreib uns gerne eine Email oder kontaktiere uns über das Trainer-Portal.
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert. Bitte antworte nicht direkt auf diese Email.`
@@ -51,7 +51,7 @@ Weitere Infos zum Event findest du hier:
 {{event_details_link}}
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert. Bitte antworte nicht direkt auf diese Email.`
@@ -104,7 +104,7 @@ Zur Verwaltung deiner Hospitierungs-Anfragen:
 Falls du offene Fragen hast, kontaktiere uns gerne!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
@@ -132,7 +132,7 @@ Zur Verwaltung deiner Hospitierungen:
 Wir wünschen dir viel Spaß beim Hospitieren und viel Erfolg beim gegenseitigen Austausch von Erfahrungen und Best Practices!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
@@ -157,7 +157,7 @@ Zum Trainer-Verzeichnis:
 {{trainer_directory_link}}
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
@@ -183,7 +183,7 @@ perfekt! Eure Hospitierung ist bestätigt! 📅
 Viel Spaß beim Hospitieren und beim gegenseitigen Austausch von Wissen und Erfahrungen!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
@@ -216,7 +216,7 @@ Bei Fragen oder Ausfallgrund:
 Bis morgen!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
@@ -243,7 +243,7 @@ Damit wir zukünftige Events noch besser machen können, freuen wir uns über de
 Deine Antworten helfen uns sehr!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
@@ -253,7 +253,7 @@ Diese Nachricht wurde automatisch generiert.`
     subject: 'Willkommen! Dein Trainer-Profil wurde erstellt',
     content: `Hallo {{user_name}},
 
-herzlich willkommen auf der HPV-Trainer Plattform! 👋
+herzlich willkommen im Trainer-Portal! 👋
 
 Dein Trainer-Profil wurde automatisch erstellt. Es hilft anderen Trainern, dich zu finden und mit dir in Kontakt zu treten.
 
@@ -274,17 +274,17 @@ Dein Trainer-Profil wurde automatisch erstellt. Es hilft anderen Trainern, dich 
 Bei Fragen: {{support_email}}
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
   },
   {
     name: 'welcome_email_new_user',
-    subject: 'Willkommen bei HPV-Trainer! Dein Konto ist freigeschaltet',
+    subject: 'Willkommen im Trainer-Portal! Dein Konto ist freigeschaltet',
     content: `Hallo {{user_name}},
 
-herzlich willkommen bei HPV-Trainer! 🎉
+herzlich willkommen im Trainer-Portal! 🎉
 
 Dein Benutzerkonto wurde aktiviert. Du kannst dich jetzt anmelden und an der Community teilnehmen.
 
@@ -312,17 +312,17 @@ Bei Fragen oder Problemen:
 Viel Spaß auf der Plattform!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Diese Nachricht wurde automatisch generiert.`
   },
   {
     name: 'admin_invitation',
-    subject: 'Du wurdest zum Admin/Moderator eingeladen – HPV-Trainer',
+    subject: 'Du wurdest zum Admin/Moderator eingeladen – Trainer-Portal',
     content: `Hallo {{user_name}},
 
-das HPV-Präsidium hat dich als {{new_role}} für die HPV-Trainer Plattform ernannt! 🎖️
+das Präsidium hat dich als {{new_role}} für das Trainer-Portal ernannt! 🎖️
 
 **Deine neuen Rechte:**
 - Events erstellen und verwalten
@@ -340,7 +340,7 @@ Bei Fragen zur Rolle: {{admin_contact_email}}
 Danke für dein Engagement!
 
 Viele Grüße,
-dein HPV-Trainer Team
+dein Trainer-Portal-Team
 
 ---
 Dies ist eine automatische Benachrichtigung für Administratoren.`

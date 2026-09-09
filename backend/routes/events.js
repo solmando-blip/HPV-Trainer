@@ -100,7 +100,7 @@ router.post('/events/:id/register', async (req, res) => {
     const adminEmails = admins.rows.map(a => a.email);
     if (adminEmails.length > 0) {
       await sendTemplatedEmail({
-        to: process.env.SMTP_USER || 'noreply@hpv.local',
+        to: process.env.SMTP_USER || 'noreply@trainer.local',
         bcc: adminEmails.join(','),
         templateName: 'event_registration_admin_notification',
         vars: {

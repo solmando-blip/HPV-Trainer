@@ -73,7 +73,7 @@ function CreateUser() {
         license_expires_at: form.license_expires_at || null
       };
 
-      const token = localStorage.getItem('hpv_token');
+      const token = localStorage.getItem('trainer_token');
       await axios.post('/api/admin/users', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });

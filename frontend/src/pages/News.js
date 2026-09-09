@@ -50,7 +50,7 @@ function News({ user }) {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('hpv_token');
+      const token = localStorage.getItem('trainer_token');
       const headers = { Authorization: `Bearer ${token}` };
       const formData = new FormData();
       formData.append('title', title);
@@ -78,7 +78,7 @@ function News({ user }) {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Artikel wirklich löschen?')) return;
-    const token = localStorage.getItem('hpv_token');
+    const token = localStorage.getItem('trainer_token');
     await axios.delete(`/api/news/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     fetchNews();
   };

@@ -10,7 +10,7 @@ function AdminEventRegistrations() {
   const [event, setEvent] = useState(null);
   const [registrations, setRegistrations] = useState([]);
 
-  const token = localStorage.getItem('hpv_token');
+  const token = localStorage.getItem('trainer_token');
   const headers = { Authorization: `Bearer ${token}` };
 
   const loadPicker = () => {

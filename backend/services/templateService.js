@@ -5,10 +5,10 @@ const { sendEmail } = require('./emailService');
 function globalVars() {
   return {
     current_year: new Date().getFullYear(),
-    platform_name: 'HPV-Trainer',
+    platform_name: 'Trainer-Portal',
     platform_url: process.env.FRONTEND_URL || 'http://localhost:8080',
-    support_email: process.env.SMTP_USER || 'support@hpv-trainer.local',
-    admin_email: process.env.SMTP_USER || 'admin@hpv-trainer.local'
+    support_email: process.env.SMTP_USER || 'support@trainer-portal.local',
+    admin_email: process.env.SMTP_USER || 'admin@trainer-portal.local'
   };
 }
 

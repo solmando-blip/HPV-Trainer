@@ -94,27 +94,39 @@ function AppContent({ user, handleLogout, handleLogin }) {
   );
 }
 
+// Einmalige Migration der localStorage-Schlüssel (hpv_* -> trainer_*),
+// damit bestehende Sitzungen nach dem Rebranding nicht ausgeloggt werden.
+try {
+  ['token', 'user'].forEach((k) => {
+    const old = localStorage.getItem(`hpv_${k}`);
+    if (old !== null && localStorage.getItem(`trainer_${k}`) === null) {
+      localStorage.setItem(`trainer_${k}`, old);
+    }
+    localStorage.removeItem(`hpv_${k}`);
+  });
+} catch (err) { /* localStorage nicht verfügbar */ }
+
 function App() {
   const [user, setUser] = useState(() => {
     try {
-      const storedUser = localStorage.getItem('hpv_user');
+      const storedUser = localStorage.getItem('trainer_user');
       return storedUser ? JSON.parse(storedUser) : null;
     } catch (err) {
-      localStorage.removeItem('hpv_user');
-      localStorage.removeItem('hpv_token');
+      localStorage.removeItem('trainer_user');
+      localStorage.removeItem('trainer_token');
       return null;
     }
   });
 
   const handleLogin = (userData, token) => {
-    localStorage.setItem('hpv_token', token);
-    localStorage.setItem('hpv_user', JSON.stringify(userData));
+    localStorage.setItem('trainer_token', token);
+    localStorage.setItem('trainer_user', JSON.stringify(userData));
     setUser(userData);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('hpv_token');
-    localStorage.removeItem('hpv_user');
+    localStorage.removeItem('trainer_token');
+    localStorage.removeItem('trainer_user');
     setUser(null);
   };
 

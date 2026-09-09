@@ -41,8 +41,8 @@ function Login({ onLogin }) {
     }
 
     setLoading(true);
-    localStorage.removeItem('hpv_token');
-    localStorage.removeItem('hpv_user');
+    localStorage.removeItem('trainer_token');
+    localStorage.removeItem('trainer_user');
     
     try {
       const res = await axios.post('/api/auth/login', { email, password });

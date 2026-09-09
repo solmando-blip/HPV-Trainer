@@ -15,10 +15,10 @@ jobs:
       # The frontend image runs `npm run build`; GitHub Actions sets CI=true,
       # so any lint warning fails the build.
       - name: Build frontend image
-        run: docker build -f frontend.Dockerfile -t hpv-frontend:ci .
+        run: docker build -f frontend.Dockerfile -t trainer-frontend:ci .
 
       - name: Build backend image
-        run: docker build -f backend.Dockerfile -t hpv-backend:ci .
+        run: docker build -f backend.Dockerfile -t trainer-backend:ci .
 
       - name: Validate docker-compose
         run: docker compose config -q

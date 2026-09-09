@@ -1,11 +1,11 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: hpv_db
+    container_name: trainer_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: hpv_trainer
+      POSTGRES_DB: trainer_portal
     ports:
       - "5432:5432"
     volumes:
@@ -16,12 +16,12 @@ services:
     build:
       context: .
       dockerfile: backend.Dockerfile
-    container_name: hpv_backend
+    container_name: trainer_backend
     ports:
       - "5000:5000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgrespassword@db:5432/hpv_trainer
-      JWT_SECRET: supersecret_hpv_token_key
+      DATABASE_URL: postgresql://postgres:postgrespassword@db:5432/trainer_portal
+      JWT_SECRET: supersecret_trainer_token_key
       PORT: 5000
     volumes:
       # Hochgeladene Dateien liegen im Named Volume "uploads". Bei einer
@@ -38,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: frontend.Dockerfile
-    container_name: hpv_frontend
+    container_name: trainer_frontend
     ports:
       - "8080:80"
     depends_on:

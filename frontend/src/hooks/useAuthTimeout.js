@@ -14,14 +14,14 @@ export const useAuthTimeout = (timeout = 30 * 60 * 1000) => { // 30 minutes defa
 
     timeoutRef.current = setTimeout(() => {
       // Session abgelaufen - logout
-      localStorage.removeItem('hpv_token');
-      localStorage.removeItem('hpv_user');
+      localStorage.removeItem('trainer_token');
+      localStorage.removeItem('trainer_user');
       navigate('/login');
     }, timeout);
   }, [timeout, navigate]);
 
   useEffect(() => {
-    const token = localStorage.getItem('hpv_token');
+    const token = localStorage.getItem('trainer_token');
     if (!token) return;
 
     resetTimeout();

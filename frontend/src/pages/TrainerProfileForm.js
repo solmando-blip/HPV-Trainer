@@ -17,7 +17,7 @@ function TrainerProfileForm() {
     accepts_hospitality: true
   });
 
-  const token = localStorage.getItem('hpv_token');
+  const token = localStorage.getItem('trainer_token');
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {

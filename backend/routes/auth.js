@@ -43,13 +43,13 @@ router.post('/register', async (req, res) => {
     const verifyLink = `${process.env.FRONTEND_URL || 'http://localhost:8080'}/verify-email?token=${verificationToken}`;
     await sendEmail({
       to: email,
-      subject: 'E-Mail-Bestätigung - HPV Trainer',
+      subject: 'E-Mail-Bestätigung – Trainer-Portal',
       html: `
         <p>Hallo ${name},</p>
         <p>danke für die Registrierung! Bitte bestätigen Sie Ihre E-Mail-Adresse:</p>
         <p><a href="${verifyLink}">E-Mail jetzt bestätigen</a></p>
         <p>Der Link ist 24 Stunden gültig.</p>
-        <p>Viele Grüße,<br>HPV Trainer Team</p>
+        <p>Viele Grüße,<br>Trainer-Portal-Team</p>
       `
     });
 
@@ -58,7 +58,7 @@ router.post('/register', async (req, res) => {
     if (adminEmails.length > 0) {
       await sendEmail({
         to: adminEmails.join(','),
-        subject: 'Neue Registrierung - HPV Trainer',
+        subject: 'Neue Registrierung – Trainer-Portal',
         text: `Ein neuer Benutzer (${name} - ${email}) wartet auf E-Mail-Bestätigung und Freischaltung.`
       });
     }
@@ -95,7 +95,7 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, role: user.role, email: user.email },
-      process.env.JWT_SECRET || 'hpv_secret_key',
+      process.env.JWT_SECRET || 'trainer_secret_key',
       { expiresIn: '24h' }
     );
 
@@ -134,7 +134,7 @@ router.post('/forgot-password', async (req, res) => {
     const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
     await sendEmail({
       to: user.email,
-      subject: 'Passwort-Reset - HPV Trainer',
+      subject: 'Passwort-Reset – Trainer-Portal',
       html: `<p>Klicken Sie auf den folgenden Link, um Ihr Passwort zurückzusetzen:</p><a href="${resetLink}">${resetLink}</a>`
     });
 
