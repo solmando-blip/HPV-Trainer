@@ -31,9 +31,6 @@ function Header({ user, onLogout }) {
             <li className="nav-item"><NavLink className="nav-link" to="/" end>Home</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link" to="/events">Events</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link" to="/trainer">Trainer</NavLink></li>
-            {user && (
-              <li className="nav-item"><NavLink className="nav-link" to="/hospitality">Hospitieren</NavLink></li>
-            )}
             <li className="nav-item"><NavLink className="nav-link" to="/news">News</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link" to="/documents">Dokumente</NavLink></li>
             <li className="nav-item"><NavLink className="nav-link" to="/contact">Kontakt</NavLink></li>
@@ -42,20 +39,32 @@ function Header({ user, onLogout }) {
               <li className="nav-item"><NavLink className="nav-link tp-nav-admin" to="/admin">Admin</NavLink></li>
             )}
           </ul>
-          <div className="d-flex align-items-center gap-2">
-            {user ? (
-              <>
-                <span className="text-light me-1 d-none d-xxl-inline">Hallo, <strong>{user.name}</strong></span>
-                <Link className="btn btn-outline-light btn-sm me-2" to="/profile">Profil</Link>
-                <button className="btn btn-outline-light btn-sm" onClick={handleLogoutClick}>Abmelden</button>
-              </>
-            ) : (
-              <>
-                <Link className="btn btn-outline-light btn-sm me-2" to="/login">Login</Link>
-                <Link className="btn btn-light btn-sm" to="/register">Registrieren</Link>
-              </>
-            )}
-          </div>
+          {user ? (
+            <ul className="navbar-nav">
+              <li className="nav-item dropdown">
+                <button
+                  className="nav-link dropdown-toggle tp-nav-user"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  {user.name}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li><Link className="dropdown-item" to="/profile">Mein Konto</Link></li>
+                  <li><Link className="dropdown-item" to="/trainer/profile">Mein Trainer-Profil</Link></li>
+                  <li><Link className="dropdown-item" to="/hospitality">Hospitieren</Link></li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li><button type="button" className="dropdown-item" onClick={handleLogoutClick}>Abmelden</button></li>
+                </ul>
+              </li>
+            </ul>
+          ) : (
+            <div className="d-flex align-items-center gap-2">
+              <Link className="btn btn-outline-light btn-sm" to="/login">Login</Link>
+              <Link className="btn btn-light btn-sm" to="/register">Registrieren</Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>

@@ -21,6 +21,9 @@ Alle wichtigen Änderungen am Trainer-Portal werden hier dokumentiert.
 - **Emoji entfernt** aus Wortmarke, allen Seitentiteln und Buttons.
 - **Navbar** klappt jetzt unter 1200px in ein Menü ein (vorher gedrängt bis 992px);
   die pro Seite leckenden `CreateUser.css` / `Profile.css` sind auf ihre Seiten gescopet.
+- **Benutzer-Menü**: Name oben rechts ist ein Dropdown mit *Mein Konto*,
+  *Mein Trainer-Profil* (vorher nur per Direkt-URL erreichbar), *Hospitieren*
+  und *Abmelden*. „Hospitieren" ist damit aus der Hauptnavigation entfernt.
 - Design-Referenz: `docs/DESIGN.md`.
 
 ## [2.3.0] - 2026-09-09
