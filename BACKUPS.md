@@ -2,6 +2,97 @@
 
 Diese Anleitung erklärt, wie man die PostgreSQL-Datenbank der Trainer-Portal sichert.
 
+---
+
+## Produktion (Railway)
+
+> **Wichtig – einmalige Absicherung:** Der PostgreSQL-Service auf Railway lief
+> ursprünglich **ohne persistentes Volume**. Ohne Volume liegen alle Daten nur im
+> flüchtigen Container-Layer und sind bei jedem Container-Neustart (Deploy,
+> Wartung, Crash) **weg**. Das muss zuerst behoben werden (Schritt 0), sonst
+> nützt kein Backup dauerhaft etwas.
+
+### Schritt 0 – Persistentes Volume anhängen (einmalig, Pflicht)
+
+Im Railway-Dashboard, Service **PostgreSQL**:
+
+1. **Variables** → neue Variable
+   `PGDATA` = `/var/lib/postgresql/data/pgdata`
+   (nötig, damit `initdb` nicht am `lost+found` des frischen Volumes scheitert)
+2. **Settings → Volumes → + Volume** → Mount path: `/var/lib/postgresql/data`
+3. Oben **Deploy** (staged changes committen). PostgreSQL startet einmalig neu und
+   initialisiert das Volume; das Backend seedet danach die Default-Daten.
+4. **HPV-Trainer Backend** → letztes Deployment → **Redeploy**, damit `initDb()`
+   sauber gegen die neue DB läuft.
+
+Ab jetzt überlebt die DB Neustarts und Deploys.
+
+> Der aktuelle Stand vor Schritt 0 (nur Seed-Daten) geht dabei einmalig verloren.
+> Falls doch etwas drin ist: vorher einmal manuell sichern (siehe unten).
+
+### Schritt 1 – TCP-Proxy für externen Zugriff (einmalig)
+
+Backup/Restore von außerhalb Railways braucht eine öffentlich erreichbare
+Verbindung:
+
+1. Railway → **PostgreSQL → Settings → Networking → TCP Proxy** → Port `5432`.
+   Railway zeigt einen Endpunkt `HOST:PORT` (z. B. `monorail.proxy.rlwy.net:12345`).
+2. **PostgreSQL → Variables** → `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` ablesen.
+3. Verbindungsstring bauen:
+   `postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB>?sslmode=disable`
+
+> Der Verkehr über den TCP-Proxy ist unverschlüsselt (das Image `postgres:15`
+> hat kein TLS konfiguriert). Für dauerhaft sensible Daten langfristig auf
+> **Railways managed PostgreSQL** umziehen – das hat TLS **und** eingebaute
+> automatische Snapshots.
+
+### Schritt 2 – Automatische tägliche Backups (GitHub Actions)
+
+Der Workflow `.github/workflows/db-backup.yml` macht täglich um 03:00 UTC ein
+`pg_dump` und legt es (gzip) auf dem Branch **`db-backups`** ab (die letzten 30
+werden behalten). Auch manuell auslösbar über den **Actions**-Tab → *DB Backup*
+→ *Run workflow*.
+
+Einrichtung: **GitHub → Repo → Settings → Secrets and variables → Actions → New
+repository secret**
+`RAILWAY_DATABASE_URL` = der Verbindungsstring aus Schritt 1.
+
+Danach den Workflow einmal manuell starten – das ist das erste Backup.
+
+### Manuelles Backup / Restore (lokal, mit Docker)
+
+```bash
+export DATABASE_URL='postgresql://USER:PASS@HOST:PORT/DB?sslmode=disable'
+
+# Backup -> ./backups/hpv_<ts>.sql.gz
+./scripts/railway-backup.sh
+
+# Restore (überschreibt die Ziel-DB!)
+./scripts/railway-restore.sh backups/hpv_<ts>.sql.gz
+```
+
+Backups aus dem `db-backups`-Branch holen:
+
+```bash
+git fetch origin db-backups
+git show origin/db-backups:dumps/hpv_<ts>.sql.gz > restore.sql.gz
+./scripts/railway-restore.sh restore.sql.gz
+```
+
+### Notfall-Restore (Railway)
+
+```bash
+# 1. Neuestes Backup besorgen (Branch db-backups oder GitHub-Actions-Run)
+# 2. DATABASE_URL auf den TCP-Proxy setzen (Schritt 1)
+# 3. Restore – der Dump enthält DROP ... IF EXISTS, räumt also selbst auf
+./scripts/railway-restore.sh dumps/hpv_<ts>.sql.gz
+# 4. Backend redeploy (initDb ist idempotent, ON CONFLICT DO NOTHING)
+```
+
+---
+
+## Lokal / Docker
+
 ## Automatisierte Backups mit Docker
 
 ### Option 1: Manuelles Backup via Docker
