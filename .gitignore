@@ -4,3 +4,8 @@ build/
 uploads/*
 !.gitkeep
 .DS_Store
+
+# lokale DB-Dumps (enthalten Mitglieder-PII) – nie committen
+hpv-backup*.sql
+hpv-backup*.sql.gz
+backups/
