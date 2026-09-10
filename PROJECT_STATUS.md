@@ -62,6 +62,15 @@ Details + Service-IDs: siehe Memory `hpv-trainer-railway-deploy`. Kurz:
   (Build brach). Bei Wiederauftreten: `head -c3 <file> | xxd`.
 - Prod-Admin-Login: `admin@hpv.local` (Passwort vom Nutzer gesetzt/ggf. geändert).
 
+## ⚠️ Offen & kritisch: DB-Persistenz (Railway)
+
+Der Railway-**PostgreSQL**-Service läuft als `postgres:15` **ohne Volume** →
+jeder Container-Neustart löscht die komplette DB. `database.js` ist nicht schuld.
+**Muss manuell im Railway-Dashboard behoben werden** (Volume + `PGDATA`), Anleitung
+in `BACKUPS.md` → „Produktion (Railway)". Backup-Automatik liegt bereit
+(`.github/workflows/db-backup.yml`, braucht TCP-Proxy + Secret `RAILWAY_DATABASE_URL`).
+Nächster Schritt langfristig: auf Railways managed PostgreSQL umziehen.
+
 ## Offene Punkte / bekannte Grenzen (alle bewusst akzeptiert)
 
 - **Kein Job-Scheduler**: 3 der 12 E-Mail-Templates (`event_reminder_before`,
