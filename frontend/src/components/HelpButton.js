@@ -51,7 +51,7 @@ function HelpButton() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="help-dialog-header">
-              <h5 id="help-dialog-title" className="mb-0">❓ Hilfe: {help.title}</h5>
+              <h5 id="help-dialog-title" className="mb-0">Hilfe: {help.title}</h5>
               <button
                 type="button"
                 className="btn-close"

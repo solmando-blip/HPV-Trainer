@@ -17,7 +17,7 @@ function Contact() {
   };
 
   return (
-    <div className="max-w-md mx-auto card card-body shadow-sm">
+    <div className="card card-body tp-authcard">
       <h2>Kontakt</h2>
       {msg && <div className="alert alert-info">{msg}</div>}
       <form onSubmit={handleSubmit}>

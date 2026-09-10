@@ -11,14 +11,14 @@ function Events() {
 
   return (
     <div>
-      <h2 className="mb-4">📅 Events</h2>
+      <h2 className="mb-4">Veranstaltungen</h2>
       {events.length === 0 ? (
         <p className="text-muted">Aktuell sind keine Events geplant.</p>
       ) : (
         <div className="row g-3">
           {events.map(ev => (
             <div className="col-md-6 col-lg-4" key={ev.id}>
-              <div className="card shadow-sm h-100">
+              <div className="card h-100">
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{ev.title}</h5>
                   <p className="card-text text-muted small mb-1">
@@ -29,7 +29,7 @@ function Events() {
                   <p className="card-text small">
                     Teilnehmer: {ev.registered_count}/{ev.max_participants}
                   </p>
-                  <Link to={`/events/${ev.id}`} className="btn btn-primary btn-sm mt-auto">Details</Link>
+                  <Link to={`/events/${ev.id}`} className="btn btn-outline-primary btn-sm mt-auto align-self-start">Details ansehen</Link>
                 </div>
               </div>
             </div>

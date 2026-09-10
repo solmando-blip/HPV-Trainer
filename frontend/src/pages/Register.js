@@ -18,7 +18,7 @@ function Register() {
   };
 
   return (
-    <div className="col-md-6 mx-auto card card-body shadow-sm">
+    <div className="card card-body tp-authcard">
       <h2>Registrieren</h2>
       {msg && <div className="alert alert-success">{msg}</div>}
       {err && <div className="alert alert-danger">{err}</div>}
@@ -27,7 +27,7 @@ function Register() {
         <input className="form-control mb-3" type="email" placeholder="E-Mail" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
         <input className="form-control mb-3" placeholder="Verein (optional)" value={form.verein} onChange={e => setForm({ ...form, verein: e.target.value })} />
         <input className="form-control mb-3" type="password" placeholder="Passwort" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
-        <button className="btn btn-primary w-100" type="submit">Konto Erstellen</button>
+        <button className="btn btn-primary w-100" type="submit">Konto erstellen</button>
       </form>
     </div>
   );

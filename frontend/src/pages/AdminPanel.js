@@ -233,60 +233,41 @@ function AdminPanel() {
 
   return (
     <div className="container-fluid px-0">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h2 className="mb-0">Admin Panel</h2>
-        <div className="d-flex gap-2">
-          <Link to="/admin/create-user" className="btn btn-success btn-sm">
-            <i className="bi bi-plus-circle"></i> Neuer Benutzer
-          </Link>
-          <span className="badge bg-primary rounded-pill px-3 py-2">Verwaltung</span>
-        </div>
+        <Link to="/admin/create-user" className="btn btn-success btn-sm">Neuer Benutzer</Link>
       </div>
 
       <CollapsibleCard title="Weitere Verwaltung" bodyClass="d-flex gap-2 flex-wrap">
-        <Link to="/admin/events" className="btn btn-outline-primary btn-sm">📅 Events</Link>
-        <Link to="/admin/event-registrations" className="btn btn-outline-primary btn-sm">📋 Event-Anmeldungen</Link>
-        <Link to="/admin/hospitality" className="btn btn-outline-primary btn-sm">🤝 Hospitierungen</Link>
+        <Link to="/admin/events" className="btn btn-outline-secondary btn-sm">Events</Link>
+        <Link to="/admin/event-registrations" className="btn btn-outline-secondary btn-sm">Event-Anmeldungen</Link>
+        <Link to="/admin/hospitality" className="btn btn-outline-secondary btn-sm">Hospitierungen</Link>
       </CollapsibleCard>
 
       <div className="row g-3 mb-4">
         <div className="col-md-4">
-          <div className="card border-warning shadow-sm h-100">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center">
-                <span className="text-warning fw-bold">Ausstehende Freischaltungen</span>
-                <span className="badge bg-warning text-dark">{pendingUsers.length}</span>
-              </div>
-            </div>
+          <div className="tp-stat tp-stat--warn">
+            <span className="tp-stat__label">Ausstehende Freischaltungen</span>
+            <span className="tp-stat__value">{pendingUsers.length}</span>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card border-primary shadow-sm h-100">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center">
-                <span className="text-primary fw-bold">Mitglieder gesamt</span>
-                <span className="badge bg-primary">{users.length}</span>
-              </div>
-            </div>
+          <div className="tp-stat tp-stat--accent">
+            <span className="tp-stat__label">Mitglieder gesamt</span>
+            <span className="tp-stat__value">{users.length}</span>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card border-success shadow-sm h-100">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center">
-                <span className="text-success fw-bold">Kontaktanfragen</span>
-                <span className="badge bg-success">{contacts.length}</span>
-              </div>
-            </div>
+          <div className="tp-stat tp-stat--ok">
+            <span className="tp-stat__label">Kontaktanfragen</span>
+            <span className="tp-stat__value">{contacts.length}</span>
           </div>
         </div>
       </div>
 
       <CollapsibleCard
         title="Ausstehende Freischaltungen"
-        headerClass="bg-warning text-dark"
-        borderClass="border-warning"
-        badge={<span className="badge bg-dark">{pendingUsers.length}</span>}
+        badge={<span className="badge bg-secondary">{pendingUsers.length}</span>}
       >
         {pendingUsers.length === 0 ? <p className="mb-0 text-muted">Keine ausstehenden Anfragen.</p> : (
           <ul className="list-group list-group-flush">
@@ -305,9 +286,7 @@ function AdminPanel() {
 
       <CollapsibleCard
         title="Alle Benutzer"
-        headerClass="bg-primary text-white"
-        borderClass="border-primary"
-        badge={<span className="badge bg-light text-dark">{users.length}</span>}
+        badge={<span className="badge bg-secondary">{users.length}</span>}
       >
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
@@ -333,7 +312,7 @@ function AdminPanel() {
         </div>
       </CollapsibleCard>
 
-      <CollapsibleCard title="Gruppenverwaltung" badge={<span className="badge bg-light text-dark">{groups.length}</span>}>
+      <CollapsibleCard title="Gruppenverwaltung" badge={<span className="badge bg-secondary">{groups.length}</span>}>
           <form className="mb-3 row g-2" onSubmit={createGroup}>
             <div className="col-md-10">
               <input className="form-control" placeholder="Neue Gruppe..." value={groupName} onChange={e => setGroupName(e.target.value)} required />
@@ -400,10 +379,8 @@ function AdminPanel() {
       </CollapsibleCard>
 
       <CollapsibleCard
-        title="📲 WhatsApp-Gruppen (Interne Links)"
-        headerClass="bg-success text-white"
-        borderClass="border-success"
-        badge={<span className="badge bg-light text-dark">{waList.length}</span>}
+        title="WhatsApp-Gruppen (interne Links)"
+        badge={<span className="badge bg-secondary">{waList.length}</span>}
       >
           <form onSubmit={createWhatsApp} className="row g-2 mb-3">
             <div className="col-md-5">
@@ -426,11 +403,7 @@ function AdminPanel() {
           </ul>
       </CollapsibleCard>
 
-      <CollapsibleCard
-        title="✉️ E-Mail an Gruppe senden (BCC)"
-        headerClass="bg-info text-white"
-        borderClass="border-info"
-      >
+      <CollapsibleCard title="E-Mail an Gruppe senden (BCC)">
           <form onSubmit={sendGroupMail}>
             <div className="mb-2">
               <select className="form-select" value={selectedGroup} onChange={e => setSelectedGroup(e.target.value)} required>
@@ -444,23 +417,17 @@ function AdminPanel() {
             <div className="mb-2">
               <textarea className="form-control" rows="3" placeholder="Nachricht..." value={mailBody} onChange={e => setMailBody(e.target.value)} required />
             </div>
-            <button className="btn btn-info text-white" type="submit">BCC-Mail Senden</button>
+            <button className="btn btn-primary" type="submit">BCC-Mail senden</button>
           </form>
       </CollapsibleCard>
 
-      <CollapsibleCard
-        title="📧 E-Mail-Templates"
-        headerClass="bg-info text-white"
-        borderClass="border-info"
-      >
+      <CollapsibleCard title="E-Mail-Templates">
         <EmailTemplateManager />
       </CollapsibleCard>
 
       <CollapsibleCard
-        title="📄 Rechtstexte"
-        headerClass="bg-dark text-white"
-        borderClass="border-dark"
-        badge={<span className="badge bg-light text-dark">{legalData.length}</span>}
+        title="Rechtstexte"
+        badge={<span className="badge bg-secondary">{legalData.length}</span>}
       >
         {!isAdmin && (
           <div className="alert alert-info py-2">Rechtstexte können nur von Administratoren bearbeitet werden.</div>
@@ -504,10 +471,8 @@ function AdminPanel() {
       </CollapsibleCard>
 
       <CollapsibleCard
-        title="📥 Posteingang: Kontaktanfragen"
-        headerClass="bg-dark text-white"
-        borderClass="border-dark"
-        badge={<span className="badge bg-light text-dark">{contacts.length}</span>}
+        title="Posteingang: Kontaktanfragen"
+        badge={<span className="badge bg-secondary">{contacts.length}</span>}
       >
           {contacts.length === 0 ? <p className="mb-0 text-muted">Keine Kontaktanfragen vorhanden.</p> : (
             <div className="table-responsive">
@@ -523,13 +488,13 @@ function AdminPanel() {
                       <td><p className="mb-0" style={{ maxWidth: '300px' }}>{c.message}</p></td>
                       <td>{statusBadge(c.status)}</td>
                       <td>
-                        <a href={`mailto:${c.email}?subject=Re: ${c.subject}`} onClick={() => handleStatusChange(c.id, 'answered')} className="btn btn-sm btn-outline-primary me-1">✉️ Antworten</a>
+                        <a href={`mailto:${c.email}?subject=Re: ${c.subject}`} onClick={() => handleStatusChange(c.id, 'answered')} className="btn btn-sm btn-outline-primary me-1">Antworten</a>
                         {c.status !== 'archived' ? (
-                          <button onClick={() => handleStatusChange(c.id, 'archived')} className="btn btn-sm btn-outline-secondary me-1">📦 Archiv</button>
+                          <button onClick={() => handleStatusChange(c.id, 'archived')} className="btn btn-sm btn-outline-secondary me-1">Archivieren</button>
                         ) : (
-                          <button onClick={() => handleStatusChange(c.id, 'new')} className="btn btn-sm btn-outline-warning me-1">↩️ Aktivieren</button>
+                          <button onClick={() => handleStatusChange(c.id, 'new')} className="btn btn-sm btn-outline-warning me-1">Aktivieren</button>
                         )}
-                        <button onClick={async () => { await axios.delete(`/api/contact/${c.id}`, { headers }); loadContacts(); }} className="btn btn-sm btn-outline-danger">🗑️</button>
+                        <button onClick={async () => { await axios.delete(`/api/contact/${c.id}`, { headers }); loadContacts(); }} className="btn btn-sm btn-outline-danger">Löschen</button>
                       </td>
                     </tr>
                   ))}
@@ -539,11 +504,7 @@ function AdminPanel() {
           )}
       </CollapsibleCard>
 
-      <CollapsibleCard
-        title="⚙️ SMTP-Konfiguration"
-        headerClass="bg-light text-dark"
-        borderClass="border-light"
-      >
+      <CollapsibleCard title="SMTP-Konfiguration">
           <form onSubmit={saveSmtpSettings} className="row g-2">
             <div className="col-md-6">
               <input className="form-control" placeholder="SMTP Host" value={smtpHost} onChange={e => setSmtpHost(e.target.value)} />

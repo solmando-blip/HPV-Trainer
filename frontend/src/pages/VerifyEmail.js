@@ -29,9 +29,9 @@ function VerifyEmail() {
   }, [token, navigate]);
 
   return (
-    <div className="container py-5">
-      <div className="col-md-6 mx-auto card card-body shadow-sm">
-        <h2 className="mb-4">E-Mail-Bestätigung</h2>
+    <div>
+      <div className="card card-body tp-authcard">
+        <h2>E-Mail-Bestätigung</h2>
         {message && <div className="alert alert-info">{message}</div>}
         {error && <div className="alert alert-danger">{error}</div>}
         <p className="text-muted">

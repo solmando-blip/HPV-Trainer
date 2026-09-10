@@ -117,12 +117,12 @@ function News({ user }) {
 
   return (
     <div>
-      <h2 className="mb-4">📢 News & Mitteilungen</h2>
+      <h2 className="mb-4">News und Mitteilungen</h2>
 
       {user && ['Admin', 'Moderator'].includes(user.role) && (
-        <div className="card mb-4 shadow-sm border-primary">
-          <div className="card-header bg-primary text-white">
-            {editingArticle ? 'Artikel Bearbeiten' : 'Neuen Artikel Erstellen'}
+        <div className="card mb-4">
+          <div className="card-header">
+            {editingArticle ? 'Artikel bearbeiten' : 'Neuen Artikel erstellen'}
           </div>
           <div className="card-body">
             <form onSubmit={handleSave}>
@@ -153,9 +153,9 @@ function News({ user }) {
       )}
 
       {articles.length > 1 && (
-        <div className="card mb-4 shadow-sm" id="artikel-uebersicht">
+        <div className="card mb-4" id="artikel-uebersicht">
           <div className="card-header d-flex justify-content-between align-items-center">
-            <span className="fw-bold">📑 Artikel-Übersicht ({articles.length})</span>
+            <span className="fw-bold">Artikel-Übersicht ({articles.length})</span>
             <button
               className="btn btn-sm btn-outline-secondary"
               onClick={() => setShowIndex(v => !v)}
@@ -191,7 +191,7 @@ function News({ user }) {
       )}
 
       {articles.map(art => (
-        <div className="card mb-3 shadow-sm" key={art.id} id={`article-${art.id}`} style={{ scrollMarginTop: '1rem' }}>
+        <div className="card mb-3" key={art.id} id={`article-${art.id}`} style={{ scrollMarginTop: '1rem' }}>
           {art.image_path && (
             <img src={`/api/view-image/${encodeURIComponent(art.image_path)}`} alt={art.title} style={{ width: '100%', maxHeight: '400px', objectFit: 'cover' }} />
           )}
@@ -200,8 +200,8 @@ function News({ user }) {
               <h3>{art.title}</h3>
               {user && ['Admin', 'Moderator'].includes(user.role) && (
                 <div>
-                  <button className="btn btn-sm btn-outline-warning me-2" onClick={() => startEdit(art)}>✏️ Bearbeiten</button>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(art.id)}>🗑️ Löschen</button>
+                  <button className="btn btn-sm btn-outline-warning me-2" onClick={() => startEdit(art)}>Bearbeiten</button>
+                  <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(art.id)}>Löschen</button>
                 </div>
               )}
             </div>

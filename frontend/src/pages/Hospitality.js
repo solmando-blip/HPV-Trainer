@@ -89,7 +89,7 @@ function Hospitality() {
 
   return (
     <div>
-      <h2 className="mb-4">🤝 Hospitieren</h2>
+      <h2 className="mb-4">Hospitieren</h2>
 
       {requests.length === 0 ? <p className="text-muted">Noch keine Hospitier-Anfragen.</p> : (
         <div className="list-group">

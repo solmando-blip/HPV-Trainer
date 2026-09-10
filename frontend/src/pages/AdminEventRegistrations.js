@@ -74,7 +74,7 @@ function AdminEventRegistrations() {
     return (
       <div>
         <h2 className="mb-4">Event-Anmeldungen</h2>
-        <div className="card shadow-sm">
+        <div className="card">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
               <thead><tr><th>Event</th><th>Datum</th><th>Teilnehmer</th><th className="text-end">Aktion</th></tr></thead>
@@ -107,7 +107,7 @@ function AdminEventRegistrations() {
         </div>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
             <thead>
@@ -123,9 +123,9 @@ function AdminEventRegistrations() {
                   <td>{r.experience_level}</td>
                   <td>{statusBadge(r.status)}</td>
                   <td className="text-end text-nowrap">
-                    <button className="btn btn-sm btn-success me-2" onClick={() => updateStatus(r.id, 'accepted')}>Accept</button>
-                    <button className="btn btn-sm btn-outline-danger me-2" onClick={() => updateStatus(r.id, 'rejected')}>Reject</button>
-                    <button className="btn btn-sm btn-outline-secondary" title="Anmeldung löschen" onClick={() => deleteRegistration(r.id, r.name)}>🗑️</button>
+                    <button className="btn btn-sm btn-success me-2" onClick={() => updateStatus(r.id, 'accepted')}>Annehmen</button>
+                    <button className="btn btn-sm btn-outline-danger me-2" onClick={() => updateStatus(r.id, 'rejected')}>Ablehnen</button>
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => deleteRegistration(r.id, r.name)}>Löschen</button>
                   </td>
                 </tr>
               ))}

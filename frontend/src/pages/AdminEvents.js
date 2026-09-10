@@ -102,7 +102,7 @@ function AdminEvents() {
         <button className="btn btn-success btn-sm" onClick={openCreate}>Event erstellen</button>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0">
             <thead>

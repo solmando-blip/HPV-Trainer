@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Read `PROJECT_STATUS.md` first** for the current state (version, last work done, deployment,
+open points). This file covers architecture and conventions.
+
 ## Overview
 
 Full-stack membership-management web app for the Hessischer Pétanque Verband: user/role
@@ -18,6 +21,11 @@ user-facing strings.
   or an email trigger changes.
 - `docs/DB.md` — the full table/column reference derived from `backend/database.js`; keep it in
   sync when a `CREATE TABLE`/`ALTER TABLE`/CHECK changes.
+- `docs/DESIGN.md` — the "Terrain" design system (palette, fonts, spacing). Implemented in
+  `frontend/src/styles/theme.css`, loaded in `index.js` **after** `bootstrap.min.css` and
+  overriding Bootstrap 5.3 mostly via its CSS variables (`--bs-*`). No SCSS rebuild — Bootstrap
+  ships precompiled. Reusable classes: `.tp-eyebrow`, `.tp-prose`, `.tp-hero`, `.tp-tile`,
+  `.tp-collapsible`, `.tp-stat`, `.tp-authcard`. Keep the frontend emoji-free.
 
 ## Commands
 

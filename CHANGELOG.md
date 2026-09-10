@@ -2,6 +2,27 @@
 
 Alle wichtigen Änderungen am Trainer-Portal werden hier dokumentiert.
 
+## [2.4.0] - 2026-09-10
+
+### 🎨 Neues Design-System „Terrain"
+
+- **Eigene Farbwelt** statt Bootstrap-Default-Blau: Sand-Hintergrund, Pine-Ink,
+  Oliv + Terrakotta, Stahlgrau (Boule-Platz-Motiv des Hessischen Pétanque Verbandes).
+  Semantische Farben (Erfolg/Fehler/Hinweis) daran angeglichen.
+- **Zwei Schriften**: Fraunces (Headlines) + IBM Plex Sans (Fließtext/UI), IBM Plex
+  Mono für Code. Feste Type-Scale (16px-Basis, Verhältnis 1.2), 4px-Spacing-Raster.
+- **Flache Karten**: 1px-Rahmen statt Schlagschatten überall; genau ein Schatten-Token
+  nur noch für Modals/Toasts/Hilfe-Dialog.
+- **Umgesetzt** in einer zentralen `frontend/src/styles/theme.css` (überschreibt
+  Bootstrap 5.3 via CSS-Variablen) plus gezielte Anpassungen an Home (neuer Hero +
+  4 Kacheln), Header (Wortmarke statt Emoji, aktiver Terrakotta-Indikator,
+  Admin-Zugang als Pille), Admin-Panel (einheitliche Karten-Köpfe statt Farbmix,
+  neutrale Kennzahl-Kacheln) und allen Seiten-/Komponenten-Styles.
+- **Emoji entfernt** aus Wortmarke, allen Seitentiteln und Buttons.
+- **Navbar** klappt jetzt unter 1200px in ein Menü ein (vorher gedrängt bis 992px);
+  die pro Seite leckenden `CreateUser.css` / `Profile.css` sind auf ihre Seiten gescopet.
+- Design-Referenz: `docs/DESIGN.md`.
+
 ## [2.3.0] - 2026-09-09
 
 ### ✨ Neue Features

@@ -30,10 +30,10 @@ function TrainerDirectory() {
 
   return (
     <div>
-      <h2 className="mb-4">🏅 Trainer-Verzeichnis</h2>
+      <h2 className="mb-4">Trainer-Verzeichnis</h2>
       <div className="row">
         <div className="col-md-3 mb-4">
-          <div className="card shadow-sm">
+          <div className="card">
             <div className="card-header fw-bold">Filter</div>
             <div className="card-body">
               <div className="mb-3">
@@ -78,7 +78,7 @@ function TrainerDirectory() {
             <div className="row g-3">
               {profiles.map(p => (
                 <div className="col-md-6" key={p.id}>
-                  <div className="card shadow-sm h-100">
+                  <div className="card h-100">
                     <div className="card-body">
                       <h5 className="card-title">{p.user_name}</h5>
                       <p className="card-text text-muted small mb-1">{p.verein} {p.region ? `· ${p.region}` : ''}</p>

@@ -1,6 +1,6 @@
 .tpl-var {
-  background: #fff3cd;
-  color: #664d03;
+  background: #f6e4da;
+  color: var(--tp-terracotta-600);
   border-radius: 3px;
   padding: 0 2px;
   font-weight: 600;
@@ -14,11 +14,11 @@
 }
 
 .tpl-source {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--tp-font-mono);
 }
 
 .tpl-content-input {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--tp-font-mono);
   font-size: 0.9rem;
   min-height: 260px;
 }
@@ -28,8 +28,8 @@
   margin: 0 4px 4px 0;
   padding: 2px 8px;
   border-radius: 12px;
-  background: #e7f1ff;
-  color: #0a58ca;
+  background: var(--tp-sand-panel);
+  color: var(--tp-olive-text);
   font-size: 0.8rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--tp-font-mono);
 }

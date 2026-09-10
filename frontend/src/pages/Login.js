@@ -56,7 +56,7 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="col-md-6 mx-auto card card-body shadow-sm">
+    <div className="card card-body tp-authcard">
       <h2>Anmelden</h2>
       {err && <div className="alert alert-danger">{err}</div>}
       <form onSubmit={handleSubmit}>

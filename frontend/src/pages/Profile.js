@@ -129,9 +129,9 @@ function Profile() {
   }
 
   return (
-    <div className="container py-4">
-      <div className="row">
-        <div className="col-md-8 offset-md-2">
+    <div className="tp-profile mx-auto">
+      <div>
+        <div>
           <h1>Mein Profil</h1>
           <hr />
 

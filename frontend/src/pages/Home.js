@@ -1,42 +1,69 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+const TILES = [
+  {
+    mark: 'V',
+    title: 'Veranstaltungen',
+    text: 'Lehrgänge, Turniere und Trainertreffen mit Online-Anmeldung, Anmeldeschluss und Teilnehmerliste.',
+    to: '/events',
+    cta: 'Termine ansehen',
+  },
+  {
+    mark: 'T',
+    title: 'Trainer-Verzeichnis',
+    text: 'Lizenzierte Trainerinnen und Trainer in Hessen finden – filterbar nach Verein, Region und Qualifikation.',
+    to: '/trainer',
+    cta: 'Verzeichnis öffnen',
+  },
+  {
+    mark: 'N',
+    title: 'News und Mitteilungen',
+    text: 'Beschlüsse, Ankündigungen und Neuigkeiten aus dem Verband, chronologisch archiviert.',
+    to: '/news',
+    cta: 'Zu den Meldungen',
+  },
+  {
+    mark: 'D',
+    title: 'Dokumente',
+    text: 'Regelwerke, Formulare und Lehrmaterial zum Ansehen und Herunterladen.',
+    to: '/documents',
+    cta: 'Downloads öffnen',
+  },
+];
+
 function Home() {
   return (
     <div>
-      <div className="p-5 mb-4 bg-light rounded-3 shadow-sm text-center">
-        <h1 className="display-4 fw-bold">Willkommen im Trainer-Portal</h1>
-        <p className="lead">Die zentrale Plattform des Hessischen Pétanque Verbandes zur Verwaltung von Mitgliedern, Trainingseinheiten und Terminen.</p>
-        <Link to="/register" className="btn btn-primary btn-lg">Jetzt Registrieren</Link>
-      </div>
+      <section className="tp-hero mb-5">
+        <div style={{ maxWidth: '640px', position: 'relative', zIndex: 1 }}>
+          <p className="tp-eyebrow mb-2">Hessischer Pétanque Verband</p>
+          <h1 className="display-4 mb-3">Das Trainer-Portal</h1>
+          <p className="lead mb-4">
+            Die zentrale Arbeitsplattform für Trainerinnen und Trainer im hessischen
+            Pétanque: Mitglieder verwalten, Trainingseinheiten planen und Termine
+            koordinieren – an einem Ort.
+          </p>
+          <div className="d-flex flex-wrap gap-2">
+            <Link to="/register" className="btn btn-primary btn-lg">Registrieren</Link>
+            <Link to="/login" className="btn btn-outline-light btn-lg">Anmelden</Link>
+          </div>
+        </div>
+      </section>
+
+      <p className="tp-eyebrow mb-2">Im Portal</p>
+      <h2 className="mb-4">Was du hier findest</h2>
       <div className="row g-4">
-        <div className="col-md-4">
-          <div className="card h-100 shadow-sm border-0">
-            <div className="card-body">
-              <h5 className="card-title text-primary">📢 Aktuelles & News</h5>
-              <p className="card-text">Bleiben Sie stets informiert über aktuelle Geschehnisse und Mitteilungen des Verbandes.</p>
-              <Link to="/news" className="btn btn-outline-primary btn-sm">Zu den News</Link>
-            </div>
+        {TILES.map((t) => (
+          <div className="col-sm-6 col-lg-3" key={t.to}>
+            <Link to={t.to} className="tp-tile">
+              <span className="tp-tile__mark" aria-hidden="true">{t.mark}</span>
+              <h3>{t.title}</h3>
+              <p>{t.text}</p>
+              <span className="tp-tile__cta">{t.cta} &rarr;</span>
+            </Link>
           </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card h-100 shadow-sm border-0">
-            <div className="card-body">
-              <h5 className="card-title text-primary">📁 Dokumente & Downloads</h5>
-              <p className="card-text">Greifen Sie auf Regelwerke, Formulare und Verbandsdokumente jederzeit zu.</p>
-              <Link to="/documents" className="btn btn-outline-primary btn-sm">Zu den Dokumenten</Link>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card h-100 shadow-sm border-0">
-            <div className="card-body">
-              <h5 className="card-title text-primary">👥 Vernetzung & Gruppen</h5>
-              <p className="card-text">Verwaltung von Trainergruppen und direkter Austausch innerhalb der Teams.</p>
-              <Link to="/contact" className="btn btn-outline-primary btn-sm">Kontakt Aufnehmen</Link>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

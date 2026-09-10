@@ -20,7 +20,7 @@ function ResetPassword() {
   };
 
   return (
-    <div className="col-md-6 mx-auto card card-body shadow-sm">
+    <div className="card card-body tp-authcard">
       <h2>Neues Passwort festlegen</h2>
       {msg && <div className="alert alert-info">{msg}</div>}
       <form onSubmit={handleSubmit}>

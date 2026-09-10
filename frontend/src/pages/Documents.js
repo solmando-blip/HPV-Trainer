@@ -177,10 +177,9 @@ function Documents({ user }) {
 
   return (
     <div>
-      <h2 className="mb-4">📁 Dokumente & Downloads</h2>
+      <h2 className="mb-4">Dokumente</h2>
 
-      <div className="alert alert-warning d-flex gap-2" role="alert">
-        <span aria-hidden="true">⚠️</span>
+      <div className="alert alert-warning" role="alert">
         <span>
           <strong>Keine Viren-/Schadsoftware-Prüfung:</strong> Hochgeladene Dateien werden nicht
           serverseitig gescannt. Laden Sie nur selbst geprüfte Dateien hoch und lassen Sie jeden
@@ -189,14 +188,14 @@ function Documents({ user }) {
       </div>
 
       {user && ['Admin', 'Moderator'].includes(user.role) && (
-        <form className="mb-4 card card-body shadow-sm" onSubmit={handleUpload}>
-          <h5>Neue Datei Hochladen</h5>
+        <form className="mb-4 card card-body" onSubmit={handleUpload}>
+          <h5>Neue Datei hochladen</h5>
           <input className="form-control mb-2" placeholder="Anzeigename (optional)" value={title} onChange={e => setTitle(e.target.value)} />
           <input className="form-control mb-2" type="file" onChange={e => setFile(e.target.files[0])} required />
           <div className="form-text mb-2">
             Bitte nur Dateien hochladen, die zuvor mit einem aktuellen Virenscanner geprüft wurden.
           </div>
-          <button className="btn btn-primary" type="submit">Upload Starten</button>
+          <button className="btn btn-primary" type="submit">Upload starten</button>
         </form>
       )}
 
@@ -204,7 +203,7 @@ function Documents({ user }) {
         Tipp: Auf den Typ einer Datei (PDF, Text- oder Word-Datei, Bild) klicken, um eine Vorschau zu öffnen.
       </p>
 
-      <div className="table-responsive shadow-sm">
+      <div className="table-responsive">
         <table className="table table-hover bg-white align-middle">
           <thead className="table-light">
             <tr>
@@ -229,7 +228,7 @@ function Documents({ user }) {
                         title="Vorschau anzeigen"
                         onClick={() => openPreview(doc)}
                       >
-                        {label} <span aria-hidden="true">👁</span>
+                        {label}
                       </button>
                     ) : (
                       <span className={`badge bg-${badgeColor(doc.file_type)}`}>{label}</span>
@@ -241,14 +240,14 @@ function Documents({ user }) {
                   <td className="text-end">
                     {canPreview(doc.file_type) && (
                       <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => openPreview(doc)}>
-                        👁 Vorschau
+                        Vorschau
                       </button>
                     )}
                     <a href={`/api/documents/download/${doc.id}`} className="btn btn-sm btn-outline-primary me-2" download>
-                      💾 Download
+                      Download
                     </a>
                     {user && ['Admin', 'Moderator'].includes(user.role) && (
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(doc.id)}>🗑️</button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(doc.id)}>Löschen</button>
                     )}
                   </td>
                 </tr>
@@ -272,7 +271,7 @@ function Documents({ user }) {
               <div className="modal-header">
                 <h5 className="modal-title text-truncate">
                   Vorschau: {preview.doc.title}
-                  <span className="badge bg-light text-dark ms-2">
+                  <span className="badge bg-light ms-2">
                     {preview.doc.file_type ? preview.doc.file_type.toUpperCase() : 'FILE'}
                   </span>
                 </h5>
@@ -320,7 +319,7 @@ function Documents({ user }) {
 
               <div className="modal-footer">
                 <a href={`/api/documents/download/${preview.doc.id}`} className="btn btn-primary" download>
-                  💾 Herunterladen
+                  Herunterladen
                 </a>
                 <button type="button" className="btn btn-secondary" onClick={closePreview}>Schließen</button>
               </div>

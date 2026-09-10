@@ -16,12 +16,12 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="col-md-6 mx-auto card card-body shadow-sm">
-      <h2>Passwort Reset</h2>
+    <div className="card card-body tp-authcard">
+      <h2>Passwort zurücksetzen</h2>
       {msg && <div className="alert alert-info">{msg}</div>}
       <form onSubmit={handleSubmit}>
         <input className="form-control mb-3" type="email" placeholder="E-Mail" value={email} onChange={e => setEmail(e.target.value)} required />
-        <button className="btn btn-primary w-100" type="submit">Reset Link Senden</button>
+        <button className="btn btn-primary w-100" type="submit">Link anfordern</button>
       </form>
     </div>
   );

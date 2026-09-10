@@ -17,7 +17,7 @@
 
 .docx-preview td,
 .docx-preview th {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--tp-sand-border);
   padding: 0.35rem 0.5rem;
   vertical-align: top;
 }
@@ -27,9 +27,9 @@
   word-break: break-word;
   max-height: 70vh;
   overflow: auto;
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
+  background: var(--tp-sand-panel);
+  border: 1px solid var(--tp-sand-border);
+  border-radius: var(--tp-radius-sm);
   padding: 1rem;
   font-size: 0.9rem;
 }

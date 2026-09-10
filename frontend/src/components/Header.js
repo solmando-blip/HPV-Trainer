@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 function Header({ user, onLogout }) {
   const navigate = useNavigate();
@@ -10,9 +10,9 @@ function Header({ user, onLogout }) {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <nav className="navbar navbar-expand-xl navbar-dark bg-primary">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/">🎯 Trainer-Portal</Link>
+        <Link className="navbar-brand" to="/">Trainer-Portal</Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -28,24 +28,24 @@ function Header({ user, onLogout }) {
                 Turniersoftware <span aria-hidden="true">↗</span>
               </a>
             </li>
-            <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/events">Events</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/trainer">Trainer</Link></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/" end>Home</NavLink></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/events">Events</NavLink></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/trainer">Trainer</NavLink></li>
             {user && (
-              <li className="nav-item"><Link className="nav-link" to="/hospitality">Hospitieren</Link></li>
+              <li className="nav-item"><NavLink className="nav-link" to="/hospitality">Hospitieren</NavLink></li>
             )}
-            <li className="nav-item"><Link className="nav-link" to="/news">News</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/documents">Dokumente</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/contact">Kontakt</Link></li>
-            <li className="nav-item"><Link className="nav-link" to="/legal">Rechtliches</Link></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/news">News</NavLink></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/documents">Dokumente</NavLink></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/contact">Kontakt</NavLink></li>
+            <li className="nav-item"><NavLink className="nav-link" to="/legal">Rechtliches</NavLink></li>
             {user && ['Admin', 'Moderator'].includes(user.role) && (
-              <li className="nav-item"><Link className="nav-link fw-bold text-warning" to="/admin">Admin Panel</Link></li>
+              <li className="nav-item"><NavLink className="nav-link tp-nav-admin" to="/admin">Admin</NavLink></li>
             )}
           </ul>
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center gap-2">
             {user ? (
               <>
-                <span className="text-light me-3">Hallo, <strong>{user.name}</strong></span>
+                <span className="text-light me-1 d-none d-xxl-inline">Hallo, <strong>{user.name}</strong></span>
                 <Link className="btn btn-outline-light btn-sm me-2" to="/profile">Profil</Link>
                 <button className="btn btn-outline-light btn-sm" onClick={handleLogoutClick}>Abmelden</button>
               </>

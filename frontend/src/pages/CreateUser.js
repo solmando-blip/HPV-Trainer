@@ -93,16 +93,16 @@ function CreateUser() {
   };
 
   return (
-    <div className="container mt-4">
-      <div className="create-user-card card shadow-sm">
-        <div className="card-header bg-primary text-white">
-          <h2 className="mb-0">Neuer Benutzer</h2>
+    <div className="tp-create-user">
+      <div className="card">
+        <div className="card-header">
+          <span className="fw-bold">Neuer Benutzer</span>
         </div>
         <div className="card-body">
           <form onSubmit={handleSubmit}>
             {/* Persönliche Daten */}
-            <fieldset className="mb-4 border p-3 rounded">
-              <legend className="text-lg font-weight-bold">Persönliche Daten</legend>
+            <fieldset className="mb-4">
+              <legend className="fw-bold">Persönliche Daten</legend>
               
               <div className="row">
                 <div className="col-md-6 mb-3">
@@ -149,8 +149,8 @@ function CreateUser() {
             </fieldset>
 
             {/* Anmeldedaten */}
-            <fieldset className="mb-4 border p-3 rounded">
-              <legend className="text-lg font-weight-bold">Anmeldedaten</legend>
+            <fieldset className="mb-4">
+              <legend className="fw-bold">Anmeldedaten</legend>
               
               <div className="row">
                 <div className="col-md-6 mb-3">
@@ -184,8 +184,8 @@ function CreateUser() {
             </fieldset>
 
             {/* Rollen & Status */}
-            <fieldset className="mb-4 border p-3 rounded">
-              <legend className="text-lg font-weight-bold">Rollen & Status</legend>
+            <fieldset className="mb-4">
+              <legend className="fw-bold">Rollen und Status</legend>
               
               <div className="row">
                 <div className="col-md-6 mb-3">
@@ -222,8 +222,8 @@ function CreateUser() {
             </fieldset>
 
             {/* Trainerlizenz */}
-            <fieldset className="mb-4 border p-3 rounded">
-              <legend className="text-lg font-weight-bold">Trainerlizenz</legend>
+            <fieldset className="mb-4">
+              <legend className="fw-bold">Trainerlizenz</legend>
               
               <div className="row">
                 <div className="col-md-6 mb-3">

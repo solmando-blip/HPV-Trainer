@@ -63,9 +63,9 @@ function TrainerProfileForm() {
   };
 
   return (
-    <div className="card shadow-sm">
-      <div className="card-header bg-primary text-white">
-        <h2 className="mb-0 h5">Mein Trainer-Profil</h2>
+    <div className="card">
+      <div className="card-header">
+        <span className="fw-bold">Mein Trainer-Profil</span>
       </div>
       <div className="card-body">
         <form onSubmit={handleSubmit}>
